@@ -38,8 +38,8 @@ If you use Maven to manage your project, you can reference the Extension as a de
   
 ```xml
 <dependency>
-    <groupId>xyz.morphia</groupId>
+    <groupId>xyz.morphia.morphia</groupId>
     <artifactId>morphia-jrebel-plug</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>{{< version >}}</version>
 </dependency>
 ```

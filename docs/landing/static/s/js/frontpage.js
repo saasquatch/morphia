@@ -13,7 +13,7 @@ function initializeJS() {
     var button = jQuery(".clipboard button");
     button.addClass('btn-success');
     clipboard.clearData();
-    prefix = $('.distroPicker').prop('checked') ? "#maven" : "#gradle";
+    prefix = $('.distroPicker').prop('checked') ? "#maven" : "#gradle"
     releaseVersion = $('.releasePicker').selectpicker().val();
     activeSample = prefix + "-" + releaseVersion;
     clipboard.setText($(activeSample).text());
@@ -23,10 +23,11 @@ function initializeJS() {
       clipBridge.attr('title', 'copy to clipboard').tooltip('hide').tooltip('fixTitle');
     });
   });
-}
+};
+
 var toggleDownload = function() {
   downloadLink = 'https://oss.sonatype.org/content/repositories/releases/xyz/morphia/morphia';
-  prefix = $('.distroPicker').prop('checked') ? "#maven" : "#gradle";
+  prefix = $('.distroPicker').prop('checked') ? "#maven" : "#gradle"
   releaseVersion = $('.releasePicker').selectpicker().val();
   activeVersion = $('.releasePicker option:selected').text();
 

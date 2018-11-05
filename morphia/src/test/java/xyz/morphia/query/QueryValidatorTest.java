@@ -354,7 +354,7 @@ public class QueryValidatorTest extends TestBase {
     @Test
     public void shouldReferToMappedClassInExceptionWhenQueryingPastReferenceField() {
         thrown.expect(ValidationException.class);
-        thrown.expectMessage("Cannot use dot-notation past 'reference' in 'QueryValidatorTest$WithReference'");
+        thrown.expectMessage("Cannot use dot-notation past 'reference' in 'xyz.morphia.query.QueryValidatorTest$WithReference'");
         validateQuery(WithReference.class, getMapper(), new StringBuilder("reference.name"), FilterOperator.EQUAL, "", true,
             true);
     }
