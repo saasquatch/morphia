@@ -198,6 +198,8 @@
         <!--<module name="TodoComment"/>-->
         <module name="UpperEll"/>
 
+        <module name="FileContentsHolder"/>
+
         <!--System.out.println not allowed-->
         <module name="Regexp">
             <property name="format" value="System\.out\.println"/>
@@ -219,9 +221,5 @@
             <property name="ignoreComments" value="true"/>
         </module>
     </module>
-    <!--<module name="SuppressWithPlainTextCommentFilter"/>-->
-    <module name="SuppressionFilter">
-        <property name="file" value="config/checkstyle-exclude.xml"/>
-    </module>
-
+    <module name="SuppressionCommentFilter"/>
 </module>
