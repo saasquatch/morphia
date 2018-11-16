@@ -68,26 +68,6 @@
 
         <plugins>
             <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-enforcer-plugin</artifactId>
-              <version>3.0.0-M2</version>
-              <executions>
-                <execution>
-                  <id>enforce-maven</id>
-                  <goals>
-                    <goal>enforce</goal>
-                  </goals>
-                  <configuration>
-                    <rules>
-                      <requireMavenVersion>
-                        <version>3.5.4</version>
-                      </requireMavenVersion>
-                    </rules>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
                 <version>${surefire.version}</version>
@@ -172,8 +152,7 @@
         <module>morphia</module>
         <!--<module>guice-plug</module>-->
         <!--<module>logging-slf4j</module>-->
-        <!--<module>entityscanner-plug</module>-->
         <!--<module>no-proxy-deps-tests</module>-->
-        <module>docs</module>
+        <module>examples</module>
     </modules>
 </project>

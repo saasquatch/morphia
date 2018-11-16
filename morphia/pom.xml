@@ -16,25 +16,6 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>1.7</version>
-                <executions>
-                    <execution>
-                        <id>add-source</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-test-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>src/examples/java</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.1.0</version>
@@ -58,6 +39,7 @@
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>3.1.8</version>
                 <configuration>
                     <spotbugsXmlOutputDirectory>target/spotbugs</spotbugsXmlOutputDirectory>
                     <excludeFilterFile>../config/findbugs-exclude.xml</excludeFilterFile>
@@ -137,6 +119,7 @@
                 <artifactId>clirr-maven-plugin</artifactId>
                 <version>2.8</version>
                 <configuration>
+                    <comparisonVersion>1.5.0-SNAPSHOT</comparisonVersion>
                     <ignoredDifferencesFile>../config/clirr-exclude.xml</ignoredDifferencesFile>
                 </configuration>
             </plugin>
