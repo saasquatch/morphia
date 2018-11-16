@@ -50,17 +50,6 @@ public class MappingValidator {
     }
 
     /**
-     * Validates a MappedClass
-     *
-     * @param mappedClass the MappedClass to validate
-     * @param mapper the Mapper to use for validation
-     */
-    @Deprecated
-    public void validate(final Mapper mapper, final MappedClass mappedClass) {
-        validate(mapper, singletonList(mappedClass));
-    }
-
-    /**
      * Validates a List of MappedClasses
      *
      * @param classes the MappedClasses to validate

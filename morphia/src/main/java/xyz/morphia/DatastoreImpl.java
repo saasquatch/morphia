@@ -1,11 +1,9 @@
 package xyz.morphia;
 
-import com.mongodb.MapReduceCommand.OutputType;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoCommandException;
 import com.mongodb.ReadPreference;
 import com.mongodb.WriteConcern;
-import com.mongodb.client.MapReduceIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.CountOptions;
@@ -493,21 +491,6 @@ public class DatastoreImpl implements AdvancedDatastore {
     }
 
     @Override
-    public <T> MapReduceIterable<T> mapReduce(final MapReduceOptions<T> options) {
-        MongoCollection<?> collection = options.getQuery().getCollection();
-
-        final MapReduceIterable<T> iterable = options.apply(
-            (MapReduceIterable<T>) collection.mapReduce(options.getMap(), options.getReduce()));
-
-        if (!OutputType.INLINE.equals(options.getOutputType())) {
-            iterable.toCollection();
-        }
-
-        return iterable;
-
-    }
-
-    @Override
     public <T> void merge(final T entity) {
         merge(entity, new InsertOneOptions(), getWriteConcern(entity));
     }
@@ -932,11 +915,6 @@ public class DatastoreImpl implements AdvancedDatastore {
 
     private <T> MongoCollection<T> getCollection(final String collectionName, final Class<T> aClass) {
         return collectionName == null ? null : getDatabase().getCollection(collectionName, aClass);
-    }
-
-    @Deprecated
-    protected Object getId(final Object entity) {
-        return mapper.getId(entity);
     }
 
     private <T> UpdateResult update(final Query<T> query, final UpdateOperations<T> update) {

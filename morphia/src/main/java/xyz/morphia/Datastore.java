@@ -420,48 +420,6 @@ public interface Datastore {
     void setQueryFactory(QueryFactory queryFactory);
 
     /**
-     * Runs a map/reduce job at the server
-     *
-     * @param <T>     The type of resulting data
-     * @param options the options to apply to the map/reduce job
-     * @return the results
-     * @since 1.3
-     */
-    <T> MapReduceIterable<T> mapReduce(MapReduceOptions<T> options);
-
-    /**
-     * Runs a map/reduce job at the server; this should be used with a server version 1.7.4 or higher
-     *
-     * @param <T>         The type of resulting data
-     * @param type        MapreduceType
-     * @param q           The query (only the criteria, limit and sort will be used)
-     * @param outputType  The type of resulting data; inline is not working yet
-     * @param baseCommand The base command to fill in and send to the server
-     * @return counts and stuff
-     * @deprecated use {@link #mapReduce(MapReduceOptions)} instead
-     */
-    @Deprecated
-    default <T> MapReduceIterable mapReduce(final MapreduceType type, final Query q, final Class<T> outputType,
-                                            final MapReduceCommand baseCommand) {
-        return mapReduce(new MapReduceOptions<T>()
-                             .outputType(type.toOutputType())
-                             .query(q)
-                             .map(baseCommand.getMap())
-                             .reduce(baseCommand.getReduce())
-                             .finalize(baseCommand.getFinalize())
-                             .scope(new Document(baseCommand.getScope()))
-                             .resultType(outputType)
-                             .outputCollection(baseCommand.getOutputTarget())
-                             .outputDB(baseCommand.getOutputDB())
-                             .limit(baseCommand.getLimit())
-                             .maxTimeMS(baseCommand.getMaxTime(TimeUnit.MILLISECONDS))
-                             .jsMode(baseCommand.getJsMode())
-                             .verbose(baseCommand.isVerbose())
-                             .bypassDocumentValidation(baseCommand.getBypassDocumentValidation())
-                             .collation(baseCommand.getCollation()));
-    }
-
-    /**
      * Work as if you did an update with each field in the entity doing a $set; Only at the top level of the entity.
      *
      * @param <T>    the type of the entity

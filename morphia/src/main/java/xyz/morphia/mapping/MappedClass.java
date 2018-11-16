@@ -44,6 +44,7 @@ import java.util.Map;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.groupingBy;
 
 
@@ -442,7 +443,7 @@ public class MappedClass {
      */
     @SuppressWarnings("deprecation")
     public void validate(final Mapper mapper) {
-        new MappingValidator(mapper.getOptions().getObjectFactory()).validate(mapper, this);
+        new MappingValidator(mapper.getOptions().getObjectFactory()).validate(mapper, singletonList(this));
     }
 
     /**
