@@ -426,16 +426,6 @@ public class QueryImpl<T> extends CriteriaContainerImpl implements Query<T> {
     }
 
     @Override
-    @Deprecated
-    public long countAll() {
-        final Document query = getQueryDocument();
-        if (LOG.isTraceEnabled()) {
-            LOG.trace("Executing count(" + collection.getNamespace().getCollectionName() + ") for query: " + query);
-        }
-        return collection.count(query);
-    }
-
-    @Override
     public long count() {
         return collection.countDocuments(getQueryDocument());
     }

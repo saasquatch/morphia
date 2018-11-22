@@ -41,7 +41,7 @@ public class TestFrontPageExample extends TestBase {
 
         final Employee boss = getDatastore().find(Employee.class).field("manager").equal(null).get(); // get an employee without a manager
         Assert.assertNotNull(boss);
-        final Key<Employee> key = getDatastore().save(new Employee("Scott", "Hernandez", getDatastore().getKey(boss), 150 * 1000));
+        final Key<Employee> key = getDatastore().save(new Employee("Scott", "Hernandez", getMapper().getKey(boss), 150 * 1000));
         Assert.assertNotNull(key);
 
         final UpdateResult res = getDatastore().update(boss, getDatastore().createUpdateOperations(Employee.class)

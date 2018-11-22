@@ -20,7 +20,6 @@ public interface EntityInterceptor {
      * @see PostLoad
      */
     default void postLoad(final Object ent, final Document document, final Mapper mapper) {
-
     }
 
     /**
@@ -30,7 +29,6 @@ public interface EntityInterceptor {
      * @see PostPersist
      */
     default void postPersist(final Object ent, final Document document, final Mapper mapper) {
-
     }
 
     /**
@@ -40,7 +38,6 @@ public interface EntityInterceptor {
      * @see PreLoad
      */
     default void preLoad(final Object ent, final Document document, final Mapper mapper) {
-
     }
 
     /**

@@ -37,13 +37,6 @@ import java.lang.annotation.Target;
 @Handler(ReferenceHandler.class)
 public @interface Reference {
     /**
-     * @return the concrete class to instantiate.
-     *
-     * @deprecated unimplemented
-     */
-    @Deprecated Class<?> concreteClass() default Object.class;
-
-    /**
      * @return whether only _id should be stored versus storing a DBRef
      */
     boolean idOnly() default false;

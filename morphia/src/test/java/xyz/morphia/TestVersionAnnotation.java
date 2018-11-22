@@ -129,7 +129,7 @@ public class TestVersionAnnotation extends TestBase {
 
         ops = datastore.createUpdateOperations(Versioned.class);
         ops.set("name", "Value 4");
-        datastore.update(datastore.getKey(entity), ops, new UpdateOptions(), WriteConcern.ACKNOWLEDGED);
+        datastore.update(getMapper().getKey(entity), ops, new UpdateOptions(), WriteConcern.ACKNOWLEDGED);
 
         entity = datastore.get(Versioned.class, entity.getId());
         Assert.assertEquals("Value 4", entity.getName());

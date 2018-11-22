@@ -1,9 +1,7 @@
 package xyz.morphia;
 
 
-import com.mongodb.MapReduceCommand;
 import com.mongodb.WriteConcern;
-import com.mongodb.client.MapReduceIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.CountOptions;
@@ -15,7 +13,6 @@ import com.mongodb.client.model.InsertOneOptions;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
-import org.bson.Document;
 import xyz.morphia.aggregation.AggregationPipeline;
 import xyz.morphia.annotations.Indexed;
 import xyz.morphia.annotations.Indexes;
@@ -27,7 +24,6 @@ import xyz.morphia.query.QueryFactory;
 import xyz.morphia.query.UpdateOperations;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -395,15 +391,6 @@ public interface Datastore {
      * @param wc the default WriteConcern to be used by this Datastore
      */
     void setDefaultWriteConcern(WriteConcern wc);
-
-    /**
-     * Creates a (type-safe) reference to the entity.
-     *
-     * @param entity the entity whose key is to be returned
-     * @param <T>    the type of the entity
-     * @return the Key
-     */
-    <T> Key<T> getKey(T entity);
 
     /**
      * @return the current {@link QueryFactory}.

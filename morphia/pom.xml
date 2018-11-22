@@ -33,7 +33,24 @@
                 <version>2.8</version>
                 <configuration>
                     <comparisonVersion>1.5.0-SNAPSHOT</comparisonVersion>
-                    <ignoredDifferencesFile>../config/clirr-exclude.xml</ignoredDifferencesFile>
+                    <!--<ignoredDifferencesFile>../config/clirr-exclude.xml</ignoredDifferencesFile>-->
+                    <ignored>
+
+                        <difference>
+                            <className>org.slf4j.*</className>
+                        </difference>
+                        <difference>
+                            <className>com.mongodb.*</className>
+                        </difference>
+                        <difference>
+                            <className>**/relocated/**</className>
+                        </difference>
+                        <difference>
+                            <className>**</className>
+                            <method>**</method>
+                            <differenceType>7012</differenceType>
+                        </difference>
+                    </ignored>
                 </configuration>
             </plugin>
             <plugin>
@@ -54,6 +71,63 @@
                     <suppressionsLocation>../config/checkstyle-exclude.xml</suppressionsLocation>
                     <encoding>UTF-8</encoding>
                     <linkXRef>false</linkXRef>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.antwerkz.github</groupId>
+                <artifactId>issues-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <executions>
+                    <execution>
+                        <id>issues</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <phase>deploy</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <repository>MorphiaOrg/morphia</repository>
+                    <javadocUrl>http://morphiaorg.github.io/morphia/2.0/javadoc/</javadocUrl>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.revapi</groupId>
+                <artifactId>revapi-maven-plugin</artifactId>
+                <version>0.10.4</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.revapi</groupId>
+                        <artifactId>revapi-java</artifactId>
+                        <version>0.18.0</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>revapi</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <oldVersion>1.5.0-SNAPSHOT</oldVersion>
+                    <analysisConfiguration>
+                        <![CDATA[
+                            [
+                              {
+                                "extension": "revapi.semver.ignore",
+                                "configuration": {
+                                  "enabled" : true,
+                                  "passThroughDifferences": ["java.class.nonPublicPartOfAPI"]
+                                }
+                              }
+                            ]
+                        ]]>
+                    </analysisConfiguration>
+                    <analysisConfigurationFiles>
+                        <!--<analysisConfigurationFile>../config/revapi.xml</analysisConfigurationFile>-->
+                    </analysisConfigurationFiles>
                 </configuration>
             </plugin>
         </plugins>
@@ -100,7 +174,7 @@
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-jcl</artifactId>
+            <artifactId>slf4j-jdk14</artifactId>
             <version>1.7.25</version>
             <scope>test</scope>
         </dependency>

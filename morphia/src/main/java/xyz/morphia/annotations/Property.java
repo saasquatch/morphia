@@ -33,14 +33,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface Property {
-
-    /**
-     * @return the concrete class to instantiate.
-     * @deprecated this value is currently ignored
-     */
-    @Deprecated
-    Class<?> concreteClass() default Object.class;
-
     /**
      * @return the field name to use in the document.  Defaults to the java field name.
      */

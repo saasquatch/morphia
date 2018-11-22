@@ -474,13 +474,6 @@ public class DatastoreImpl implements AdvancedDatastore {
     }
 
     @Override
-    @Deprecated
-    // use mapper instead.
-    public <T> Key<T> getKey(final T entity) {
-        return mapper.getKey(entity);
-    }
-
-    @Override
     public QueryFactory getQueryFactory() {
         return queryFactory;
     }

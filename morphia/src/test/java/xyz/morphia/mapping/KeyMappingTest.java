@@ -24,7 +24,7 @@ public class KeyMappingTest extends TestBase {
 
         Channel channel = datastore.find(Channel.class).filter("name", "Sport channel").get();
 
-        Key<Channel> key = datastore.getKey(channel);
+        Key<Channel> key = getMapper().getKey(channel);
         Assert.assertTrue(followedChannels.contains(key));
     }
 
@@ -33,7 +33,7 @@ public class KeyMappingTest extends TestBase {
         final User user = new User("Luke Skywalker");
         getDatastore().save(user);
         final Key<User> k1 = new Key<>(User.class, "User", user.id);
-        final Key<User> k2 = getDatastore().getKey(user);
+        final Key<User> k2 = getMapper().getKey(user);
 
         Assert.assertTrue(k1.equals(k2));
         Assert.assertTrue(k2.equals(k1));
@@ -52,10 +52,10 @@ public class KeyMappingTest extends TestBase {
         datastore.save(fitnessChannel);
 
         final List<Key<Channel>> followedChannels = new ArrayList<>();
-        followedChannels.add(datastore.getKey(sportChannel));
-        followedChannels.add(datastore.getKey(fitnessChannel));
+        followedChannels.add(getMapper().getKey(sportChannel));
+        followedChannels.add(getMapper().getKey(fitnessChannel));
 
-        datastore.save(new User("Roberto", datastore.getKey(sportChannel), followedChannels));
+        datastore.save(new User("Roberto", getMapper().getKey(sportChannel), followedChannels));
     }
 
     @Entity(useDiscriminator = false)

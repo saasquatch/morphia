@@ -50,15 +50,6 @@ public interface QueryResults<T> extends Iterable<T> {
      * Count the total number of values in the result, ignoring limit and offset
      *
      * @return the count
-     * @deprecated use {@link #count()} instead
-     */
-    @Deprecated
-    long countAll();
-
-    /**
-     * Count the total number of values in the result, ignoring limit and offset
-     *
-     * @return the count
      * @since 1.3
      */
     long count();

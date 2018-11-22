@@ -168,22 +168,6 @@ public final class GeoJson {
      * @return a MultiLineString object containing all the given lines
      * @mongodb.server.release 2.6
      * @see <a href="http://docs.mongodb.org/manual/apps/geospatial-indexes/#geojson-objects">GeoJSON</a>
-     * @deprecated use {@link #multiLineString(List)}
-     */
-    @Deprecated
-    public static MultiLineString multiLineString(final LineString... lines) {
-        final List<List<Position>> list = stream(lines).map(line -> line.getCoordinates())
-                                                .collect(toList());
-        return new MultiLineString(list);
-    }
-
-    /**
-     * Create a new MultiLineString representing a GeoJSON MultiLineString type.
-     *
-     * @param lines a set of lines that make up the MultiLineString object
-     * @return a MultiLineString object containing all the given lines
-     * @mongodb.server.release 2.6
-     * @see <a href="http://docs.mongodb.org/manual/apps/geospatial-indexes/#geojson-objects">GeoJSON</a>
      */
     public static MultiLineString multiLineString(final List<List<Position>> lines) {
         return new MultiLineString(lines);
