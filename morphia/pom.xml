@@ -112,19 +112,6 @@
                 </executions>
                 <configuration>
                     <oldVersion>1.5.0-SNAPSHOT</oldVersion>
-                    <analysisConfiguration>
-                        <![CDATA[
-                            [
-                              {
-                                "extension": "revapi.semver.ignore",
-                                "configuration": {
-                                  "enabled" : true,
-                                  "passThroughDifferences": ["java.class.nonPublicPartOfAPI"]
-                                }
-                              }
-                            ]
-                        ]]>
-                    </analysisConfiguration>
                     <analysisConfigurationFiles>
                         <!--<analysisConfigurationFile>../config/revapi.xml</analysisConfigurationFile>-->
                     </analysisConfigurationFiles>
