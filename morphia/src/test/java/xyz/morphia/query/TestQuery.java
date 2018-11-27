@@ -865,32 +865,6 @@ public class TestQuery extends TestBase {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
-    public void testNonSnapshottedQuery() {
-        if (serverIsAtMostVersion(3.6)) {
-            getDatastore().deleteMany(getDatastore().find(PhotoWithKeywords.class));
-            getDatastore().saveMany(asList(new PhotoWithKeywords("scott", "hernandez"),
-                new PhotoWithKeywords("scott", "hernandez"),
-                new PhotoWithKeywords("scott", "hernandez")));
-            final Iterator<PhotoWithKeywords> it = getDatastore().find(PhotoWithKeywords.class)
-                                                                 .fetch(new FindOptions()
-                                                                            .snapshot(true)
-                                                                            .batchSize(2));
-            getDatastore().saveMany(asList(new PhotoWithKeywords("1", "2"),
-                new PhotoWithKeywords("3", "4"),
-                new PhotoWithKeywords("5", "6")));
-
-            assertNotNull(it.next());
-            assertNotNull(it.next());
-            //okay, now we should getMore...
-            assertTrue(it.hasNext());
-            assertNotNull(it.next());
-            assertTrue(it.hasNext());
-            assertNotNull(it.next());
-        }
-    }
-
-    @Test
     public void testNonexistentFindGet() {
         assertNull(getDatastore().find(Hotel.class).filter("_id", -1).get());
     }
@@ -1141,32 +1115,6 @@ public class TestQuery extends TestBase {
         assertEquals(new Document("keywords", new Document("$size", 3)), getDatastore().find(PhotoWithKeywords.class)
                                                                                        .field("keywords")
                                                                                        .sizeEq(3).getQueryDocument());
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
-    public void testSnapshottedQuery() {
-        if (serverIsAtMostVersion(3.6)) {
-            getDatastore().deleteMany(getDatastore().find(PhotoWithKeywords.class));
-            getDatastore().saveMany(asList(new PhotoWithKeywords("scott", "hernandez"),
-                new PhotoWithKeywords("scott", "hernandez"),
-                new PhotoWithKeywords("scott", "hernandez")));
-            final Iterator<PhotoWithKeywords> it = getDatastore().find(PhotoWithKeywords.class)
-                                                                 .filter("keywords.keyword", "scott")
-                                                                 .fetch(new FindOptions()
-                                                                            .snapshot(true)
-                                                                            .batchSize(2));
-            getDatastore().saveMany(asList(new PhotoWithKeywords("1", "2"),
-                new PhotoWithKeywords("3", "4"),
-                new PhotoWithKeywords("5", "6")));
-
-            assertNotNull(it.next());
-            assertNotNull(it.next());
-            //okay, now we should getMore...
-            assertTrue(it.hasNext());
-            assertNotNull(it.next());
-            assertTrue(!it.hasNext());
-        }
     }
 
     @Test
