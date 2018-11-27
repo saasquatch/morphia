@@ -1010,9 +1010,6 @@ public class DatastoreImpl implements AdvancedDatastore {
         final List<MappedField> fields = mc.getFieldsAnnotatedWith(Version.class);
 
         Document queryObject = query.getQueryDocument();
-        if (operations.isIsolated()) {
-            queryObject.put("$isolated", true);
-        }
 
         if (!fields.isEmpty()) {
             operations.inc(fields.get(0).getNameToStore(), 1);

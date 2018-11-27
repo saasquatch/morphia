@@ -21,7 +21,6 @@ public class UpdateOpsImpl<T> implements UpdateOperations<T> {
     private final Class<T> clazz;
     private Document operations = new Document();
     private boolean validateNames = true;
-    private boolean isolated;
 
     /**
      * Creates an UpdateOpsImpl for the type given.
@@ -97,12 +96,6 @@ public class UpdateOpsImpl<T> implements UpdateOperations<T> {
         return this;
     }
 
-    @Override
-    public UpdateOperations<T> isolated() {
-        isolated = true;
-        return this;
-    }
-
     /**
      * @return the operations listed
      */
@@ -119,14 +112,6 @@ public class UpdateOpsImpl<T> implements UpdateOperations<T> {
     @SuppressWarnings("unchecked")
     public void setOperations(final Document operations) {
         this.operations = operations;
-    }
-
-    /**
-     * @return true if isolated
-     */
-    @Override
-    public boolean isIsolated() {
-        return isolated;
     }
 
     @Override

@@ -888,24 +888,6 @@ public class TestUpdateOps extends TestBase {
             getDatastore().createUpdateOperations(Circle.class).inc("r", 1D));
     }
 
-    @Test
-    public void isolated() {
-        if (serverIsAtMostVersion(3.6)) {
-            UpdateOperations<Circle> updates = getDatastore().createUpdateOperations(Circle.class)
-                                                             .inc("radius", 1D);
-            assertFalse(updates.isIsolated());
-            updates.isolated();
-            assertTrue(updates.isIsolated());
-
-            getDatastore().updateMany(getDatastore().find(Circle.class)
-                                                    .field("radius").equal(0),
-                updates,
-                new UpdateOptions()
-                    .upsert(true),
-                WriteConcern.ACKNOWLEDGED);
-        }
-    }
-
     private static class ContainsIntArray {
         private final Integer[] values = {1, 2, 3};
         @Id
