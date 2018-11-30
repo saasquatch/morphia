@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package xyz.morphia;
+package xyz.morphia.internal;
 
 import com.mongodb.client.model.ValidationAction;
 import com.mongodb.client.model.ValidationLevel;

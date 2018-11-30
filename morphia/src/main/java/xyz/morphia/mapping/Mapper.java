@@ -6,7 +6,7 @@ import org.bson.codecs.Codec;
 import org.bson.codecs.EncoderContext;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.ClassModel;
-import xyz.morphia.DatastoreImpl;
+import xyz.morphia.internal.DatastoreImpl;
 import xyz.morphia.EntityInterceptor;
 import xyz.morphia.Key;
 import xyz.morphia.logging.Logger;

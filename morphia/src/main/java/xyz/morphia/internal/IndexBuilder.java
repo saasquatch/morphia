@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package xyz.morphia;
+package xyz.morphia.internal;
 
 import xyz.morphia.annotations.Field;
 import xyz.morphia.annotations.Index;
@@ -25,8 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("deprecation")
-class IndexBuilder extends AnnotationBuilder<Index> implements Index {
-    IndexBuilder() {
+public class IndexBuilder extends AnnotationBuilder<Index> implements Index {
+    public IndexBuilder() {
     }
 
     IndexBuilder(final Index original) {
@@ -76,7 +76,7 @@ class IndexBuilder extends AnnotationBuilder<Index> implements Index {
         return this;
     }
 
-    IndexBuilder fields(final Field... fields) {
+    public IndexBuilder fields(final Field... fields) {
         put("fields", fields);
         return this;
     }
@@ -84,7 +84,7 @@ class IndexBuilder extends AnnotationBuilder<Index> implements Index {
     /**
      * Options to apply to the index.  Use of this field will ignore any of the deprecated options defined on {@link Index} directly.
      */
-    IndexBuilder options(final IndexOptions options) {
+    public IndexBuilder options(final IndexOptions options) {
         put("options", options);
         return this;
     }

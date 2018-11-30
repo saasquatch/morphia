@@ -7,7 +7,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoIterable;
 import org.bson.Document;
 import xyz.morphia.Datastore;
-import xyz.morphia.DatastoreImpl;
+import xyz.morphia.internal.DatastoreImpl;
 import xyz.morphia.logging.Logger;
 import xyz.morphia.logging.MorphiaLoggerFactory;
 import xyz.morphia.query.Query;

@@ -13,7 +13,7 @@ import com.mongodb.client.model.FindOptions;
 import org.bson.Document;
 import org.bson.types.CodeWithScope;
 import xyz.morphia.Datastore;
-import xyz.morphia.DatastoreImpl;
+import xyz.morphia.internal.DatastoreImpl;
 import xyz.morphia.Key;
 import xyz.morphia.annotations.Entity;
 import xyz.morphia.logging.Logger;

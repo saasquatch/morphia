@@ -1,0 +1,96 @@
+[ {
+  "extension" : "revapi.ignore",
+  "configuration" : [ {
+    "code" : "java.annotation.noLongerPresent",
+    "classQualifiedname" : "xyz.morphia.MapReduceOptions"
+  }, {
+    "code" : "java.annotation.noLongerPresent",
+    "classQualifiedname" : "xyz.morphia.annotations.Converters"
+  }, {
+    "code" : "java.annotation.noLongerPresent",
+    "classQualifiedname" : "xyz.morphia.query.MorphiaKeyIterator"
+  }, {
+    "code" : "java.class.added",
+    "justification" : "Additions are fine"
+  }, {
+    "code" : "java.class.externalClassExposedInAPI",
+    "packages" : "com.mongodb..*",
+    "justification" : "Driver classes shouldn't impact checks"
+  }, {
+    "code" : "java.class.externalClassNoLongerExposedInAPI",
+    "classQualifiedName" : "xyz.morphia.utils.ReflectionUtils",
+    "justification" : "This is an internal utility and shouldn't be used by anyone else anyway"
+  }, {
+    "code" : "java.class.externalClassNoLongerExposedInAPI",
+    "classQualifiedName" : "xyz.morphia.utils.ReflectionUtilsTheSecond",
+    "justification" : "I'm not even real!"
+  }, {
+    "code" : "java.class.externalClassNoLongerExposedInAPI",
+    "packages" : "com.mongodb..*",
+    "justification" : "Driver classes shouldn't impact checks"
+  }, {
+    "code" : "java.class.noLongerImplementsInterface",
+    "justification" : "pffft"
+  }, {
+    "code" : "java.class.nonPublicPartOfAPI",
+    "packages" : "org.bson..*",
+    "justification" : "Driver classes shouldn't impact checks"
+  }, {
+    "code" : "java.class.nowFinal",
+    "classQualifiedName" : "xyz.morphia.Morphia",
+    "justification" : "Shifting API requirements"
+  }, {
+    "code" : "java.class.removed",
+    "packages" : "relocated.*",
+    "justification" : "Driver classes shouldn't impact checks"
+  }, {
+    "code" : "java.element.noLongerDeprecated",
+    "classQualifiedName" : "xyz.morphia.Datastore",
+    "methodName" : "getCollection",
+    "justification" : "The return type has been updated"
+  }, {
+    "code" : "java.element.noLongerDeprecated",
+    "classQualifiedName" : "xyz.morphia.DatastoreImpl",
+    "justification" : "Type is being hidden"
+  }, {
+    "code" : "java.element.noLongerDeprecated",
+    "classQualifiedName" : "xyz.morphia.AdvancedDatastore",
+    "methodName" : "getCollection",
+    "justification" : "The return type has been updated"
+  }, {
+    "code" : "java.field.removed",
+    "classQualifiedName" : "xyz.morphia.query.FilterOperator",
+    "fieldName" : "WITHIN",
+    "justification" : "Removed deprecated item"
+  }, {
+    "code" : "java.method.attributeRemovedFromAnnotationType",
+    "classQualifiedName" : "xyz.morphia.annotations.Embedded"
+  }, {
+    "code" : "java.method.attributeRemovedFromAnnotationType",
+    "classQualifiedName" : "xyz.morphia.annotations.Entity"
+  }, {
+    "code" : "java.method.attributeRemovedFromAnnotationType",
+    "classQualifiedName" : "xyz.morphia.annotations.Index"
+  }, {
+    "code" : "java.method.attributeRemovedFromAnnotationType",
+    "classQualifiedName" : "xyz.morphia.annotations.Indexed"
+  }, {
+    "code" : "java.method.attributeRemovedFromAnnotationType",
+    "classQualifiedName" : "xyz.morphia.annotations.IndexOptions"
+  }, {
+    "code" : "java.method.attributeRemovedFromAnnotationType",
+    "classQualifiedName" : "xyz.morphia.annotations.Reference"
+  }, {
+    "code" : "java.method.removed",
+    "classQualifiedName" : "xyz.morphia.utils.ReflectionUtils",
+    "justification" : "This is an internal utility and shouldn't be used by anyone else anyway"
+  }, {
+    "code" : "java.method.nowStatic",
+    "classQualifiedName" : "xyz.morphia.Morphia",
+    "justification" : "Shifting API requirements"
+  }, {
+    "code" : "*",
+    "package" : "xyz.morphia.internal",
+    "justification" : "Internal entities should not be considered"
+  } ]
+} ]

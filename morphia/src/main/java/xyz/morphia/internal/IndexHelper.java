@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package xyz.morphia;
+package xyz.morphia.internal;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -51,17 +51,17 @@ import java.util.concurrent.TimeUnit;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import static xyz.morphia.AnnotationBuilder.toMap;
+import static xyz.morphia.internal.AnnotationBuilder.toMap;
 import static xyz.morphia.utils.IndexType.fromValue;
 
-final class IndexHelper {
+public final class IndexHelper {
     private static final Logger LOG = MorphiaLoggerFactory.get(IndexHelper.class);
     private static final EncoderContext ENCODER_CONTEXT = EncoderContext.builder().build();
 
     private final Mapper mapper;
     private final MongoDatabase database;
 
-    IndexHelper(final Mapper mapper, final MongoDatabase database) {
+    public IndexHelper(final Mapper mapper, final MongoDatabase database) {
         this.mapper = mapper;
         this.database = database;
     }
@@ -92,7 +92,7 @@ final class IndexHelper {
         }
     }
 
-    Index convert(final Text text, final String nameToStore) {
+    public Index convert(final Text text, final String nameToStore) {
         return new IndexBuilder()
                    .options(text.options())
                    .fields(Collections.singletonList(new FieldBuilder()
@@ -102,7 +102,7 @@ final class IndexHelper {
     }
 
     @SuppressWarnings("deprecation")
-    Index convert(final Indexed indexed, final String nameToStore) {
+    public Index convert(final Indexed indexed, final String nameToStore) {
         final Map<String, Object> newOptions = extractOptions(indexed.options());
         if (!extractOptions(indexed).isEmpty() && !newOptions.isEmpty()) {
             throw new MappingException("Mixed usage of deprecated @Indexed values with the new @IndexOption values is not "
@@ -244,7 +244,7 @@ final class IndexHelper {
         return writer.getDocument();
     }
 
-    BsonDocument calculateKeys(final MappedClass mc, final Index index) {
+    public BsonDocument calculateKeys(final MappedClass mc, final Index index) {
         BsonDocument keys = new BsonDocument();
         for (Field field : index.fields()) {
             String path;
@@ -265,7 +265,7 @@ final class IndexHelper {
     }
 
     @SuppressWarnings("deprecation")
-    com.mongodb.client.model.IndexOptions convert(final IndexOptions options, final boolean background) {
+    public com.mongodb.client.model.IndexOptions convert(final IndexOptions options, final boolean background) {
         com.mongodb.client.model.IndexOptions indexOptions = new com.mongodb.client.model.IndexOptions()
                                                                  .background(options.background() || background)
                                                                  .sparse(options.sparse())
@@ -293,7 +293,7 @@ final class IndexHelper {
         return indexOptions;
     }
 
-    com.mongodb.client.model.Collation convert(final Collation collation) {
+    public com.mongodb.client.model.Collation convert(final Collation collation) {
         return com.mongodb.client.model.Collation.builder()
                                                  .locale(collation.locale())
                                                  .backwards(collation.backwards())
@@ -307,7 +307,7 @@ final class IndexHelper {
                                                  .build();
     }
 
-    String findField(final MappedClass mc, final IndexOptions options, final List<String> path) {
+    public String findField(final MappedClass mc, final IndexOptions options, final List<String> path) {
         if (mc == null) {
             throw new MappingException("The MappedClass can not be null.");
         }
@@ -355,7 +355,7 @@ final class IndexHelper {
         return namePath;
     }
 
-    void createIndex(final MongoCollection collection, final MappedClass mc, final boolean background) {
+    public void createIndex(final MongoCollection collection, final MappedClass mc, final boolean background) {
         if (!mc.isInterface() && !mc.isAbstract()) {
             for (Index index : collectIndexes(mc, Collections.emptyList())) {
                 createIndex(collection, mc, index, background);
@@ -363,7 +363,7 @@ final class IndexHelper {
         }
     }
 
-    void createIndex(final MongoCollection collection, final MappedClass mc, final Index index, final boolean background) {
+    public void createIndex(final MongoCollection collection, final MappedClass mc, final Index index, final boolean background) {
 
         BsonDocument keys = calculateKeys(mc, index);
         com.mongodb.client.model.IndexOptions indexOptions = convert(index.options(), background);

@@ -34,6 +34,8 @@ import org.junit.Before;
 import org.junit.Test;
 import xyz.morphia.annotations.Validation;
 import xyz.morphia.entities.DocumentValidation;
+import xyz.morphia.internal.DatastoreImpl;
+import xyz.morphia.internal.ValidationBuilder;
 import xyz.morphia.mapping.MappedClass;
 import xyz.morphia.query.Query;
 import xyz.morphia.query.UpdateOperations;

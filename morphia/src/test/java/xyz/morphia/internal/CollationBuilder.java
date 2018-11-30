@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package xyz.morphia;
+package xyz.morphia.internal;
 
 import com.mongodb.client.model.CollationAlternate;
 import com.mongodb.client.model.CollationCaseFirst;
@@ -22,7 +22,7 @@ import com.mongodb.client.model.CollationMaxVariable;
 import com.mongodb.client.model.CollationStrength;
 import xyz.morphia.annotations.Collation;
 
-class CollationBuilder extends AnnotationBuilder<Collation> implements Collation {
+public class CollationBuilder extends AnnotationBuilder<Collation> implements Collation {
     @Override
     public Class<Collation> annotationType() {
         return Collation.class;
@@ -73,47 +73,47 @@ class CollationBuilder extends AnnotationBuilder<Collation> implements Collation
         return get("strength");
     }
 
-    CollationBuilder backwards(final boolean backwards) {
+    public CollationBuilder backwards(final boolean backwards) {
         put("backwards", backwards);
         return this;
     }
 
-    CollationBuilder caseLevel(final boolean caseLevel) {
+    public CollationBuilder caseLevel(final boolean caseLevel) {
         put("caseLevel", caseLevel);
         return this;
     }
 
-    CollationBuilder locale(final String locale) {
+    public CollationBuilder locale(final String locale) {
         put("locale", locale);
         return this;
     }
 
-    CollationBuilder normalization(final boolean normalization) {
+    public CollationBuilder normalization(final boolean normalization) {
         put("normalization", normalization);
         return this;
     }
 
-    CollationBuilder numericOrdering(final boolean numericOrdering) {
+    public CollationBuilder numericOrdering(final boolean numericOrdering) {
         put("numericOrdering", numericOrdering);
         return this;
     }
 
-    CollationBuilder alternate(final CollationAlternate alternate) {
+    public CollationBuilder alternate(final CollationAlternate alternate) {
         put("alternate", alternate);
         return this;
     }
 
-    CollationBuilder caseFirst(final CollationCaseFirst caseFirst) {
+    public CollationBuilder caseFirst(final CollationCaseFirst caseFirst) {
         put("caseFirst", caseFirst);
         return this;
     }
 
-    CollationBuilder maxVariable(final CollationMaxVariable maxVariable) {
+    public CollationBuilder maxVariable(final CollationMaxVariable maxVariable) {
         put("maxVariable", maxVariable);
         return this;
     }
 
-    CollationBuilder strength(final CollationStrength strength) {
+    public CollationBuilder strength(final CollationStrength strength) {
         put("strength", strength);
         return this;
     }

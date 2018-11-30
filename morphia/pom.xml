@@ -99,7 +99,7 @@
                     <dependency>
                         <groupId>org.revapi</groupId>
                         <artifactId>revapi-java</artifactId>
-                        <version>0.18.1</version>
+                        <version>${revapi-java.version}</version>
                     </dependency>
                 </dependencies>
                 <executions>
@@ -111,11 +111,28 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <failSeverity>nonBreaking</failSeverity>
+                    <failBuildOnProblemsFound>false</failBuildOnProblemsFound>
                     <oldVersion>1.5.0-SNAPSHOT</oldVersion>
                     <analysisConfigurationFiles>
                         <analysisConfigurationFile>../config/revapi.json</analysisConfigurationFile>
                     </analysisConfigurationFiles>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>util</artifactId>
+                <version>${project.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>revapi-config</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <input>../config/revapi-input.json</input>
+                    <output>../config/revapi.json</output>
                 </configuration>
             </plugin>
         </plugins>

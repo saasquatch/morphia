@@ -23,6 +23,7 @@ import xyz.morphia.annotations.Reference;
 import xyz.morphia.annotations.Transient;
 import xyz.morphia.generics.model.ChildEmbedded;
 import xyz.morphia.generics.model.ChildEntity;
+import xyz.morphia.internal.DatastoreImpl;
 import xyz.morphia.mapping.Mapper;
 import xyz.morphia.query.Query;
 import xyz.morphia.query.UpdateException;

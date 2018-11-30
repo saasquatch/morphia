@@ -1,4 +1,4 @@
-package xyz.morphia;
+package xyz.morphia.internal;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoCommandException;
@@ -25,6 +25,9 @@ import org.bson.Document;
 import org.bson.codecs.EncoderContext;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.ClassModel;
+import xyz.morphia.AdvancedDatastore;
+import xyz.morphia.Datastore;
+import xyz.morphia.Key;
 import xyz.morphia.aggregation.AggregationPipeline;
 import xyz.morphia.aggregation.AggregationPipelineImpl;
 import xyz.morphia.annotations.CappedAt;
@@ -83,7 +86,7 @@ public class DatastoreImpl implements AdvancedDatastore {
      * @param mongoClient the connection to the MongoDB instance
      * @param dbName      the name of the database for this data store.
      */
-    DatastoreImpl(final MongoClient mongoClient, final String dbName) {
+    public DatastoreImpl(final MongoClient mongoClient, final String dbName) {
         this.mapper = new Mapper(this, mongoClient.getMongoClientOptions().getCodecRegistry());
         this.defaultWriteConcern = mongoClient.getWriteConcern();
 

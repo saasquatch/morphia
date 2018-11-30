@@ -14,34 +14,44 @@
  * limitations under the License.
  */
 
-package xyz.morphia;
+package xyz.morphia.internal;
 
-import xyz.morphia.annotations.IndexOptions;
-import xyz.morphia.annotations.Text;
+import xyz.morphia.annotations.Field;
+import xyz.morphia.utils.IndexType;
 
-class TextBuilder extends AnnotationBuilder<Text> implements Text {
+public class FieldBuilder extends AnnotationBuilder<Field> implements Field {
     @Override
-    public Class<Text> annotationType() {
-        return Text.class;
+    public Class<Field> annotationType() {
+        return Field.class;
     }
 
     @Override
-    public IndexOptions options() {
-        return get("options");
+    public IndexType type() {
+        return get("type");
     }
 
     @Override
-    public int value() {
+    public String value() {
         return get("value");
     }
 
-    TextBuilder options(final IndexOptions options) {
-        put("options", options);
+    @Override
+    public int weight() {
+        return get("weight");
+    }
+
+    public FieldBuilder type(final IndexType type) {
+        put("type", type);
         return this;
     }
 
-    TextBuilder value(final int value) {
+    public FieldBuilder value(final String value) {
         put("value", value);
+        return this;
+    }
+
+    public FieldBuilder weight(final int weight) {
+        put("weight", weight);
         return this;
     }
 

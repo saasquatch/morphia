@@ -16,6 +16,7 @@ package xyz.morphia;
 
 
 import com.mongodb.MongoClient;
+import xyz.morphia.internal.DatastoreImpl;
 
 /**
  * The entry point to using Morphia.

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package xyz.morphia;
+package xyz.morphia.internal;
 
 import xyz.morphia.annotations.Collation;
 import xyz.morphia.annotations.Index;
@@ -22,7 +22,7 @@ import xyz.morphia.annotations.IndexOptions;
 import xyz.morphia.annotations.Indexed;
 
 @SuppressWarnings("deprecation")
-class IndexOptionsBuilder extends AnnotationBuilder<IndexOptions> implements IndexOptions {
+public class IndexOptionsBuilder extends AnnotationBuilder<IndexOptions> implements IndexOptions {
     @Override
     public Class<IndexOptions> annotationType() {
         return IndexOptions.class;
@@ -78,17 +78,17 @@ class IndexOptionsBuilder extends AnnotationBuilder<IndexOptions> implements Ind
         return get("collation");
     }
 
-    IndexOptionsBuilder background(final boolean background) {
+    public IndexOptionsBuilder background(final boolean background) {
         put("background", background);
         return this;
     }
 
-    IndexOptionsBuilder disableValidation(final boolean disableValidation) {
+    public IndexOptionsBuilder disableValidation(final boolean disableValidation) {
         put("disableValidation", disableValidation);
         return this;
     }
 
-    IndexOptionsBuilder expireAfterSeconds(final int expireAfterSeconds) {
+    public IndexOptionsBuilder expireAfterSeconds(final int expireAfterSeconds) {
         put("expireAfterSeconds", expireAfterSeconds);
         return this;
     }
@@ -103,22 +103,22 @@ class IndexOptionsBuilder extends AnnotationBuilder<IndexOptions> implements Ind
         return this;
     }
 
-    IndexOptionsBuilder name(final String name) {
+    public IndexOptionsBuilder name(final String name) {
         put("name", name);
         return this;
     }
 
-    IndexOptionsBuilder sparse(final boolean sparse) {
+    public IndexOptionsBuilder sparse(final boolean sparse) {
         put("sparse", sparse);
         return this;
     }
 
-    IndexOptionsBuilder unique(final boolean unique) {
+    public IndexOptionsBuilder unique(final boolean unique) {
         put("unique", unique);
         return this;
     }
 
-    IndexOptionsBuilder partialFilter(final String partialFilter) {
+    public IndexOptionsBuilder partialFilter(final String partialFilter) {
         put("partialFilter", partialFilter);
         return this;
     }

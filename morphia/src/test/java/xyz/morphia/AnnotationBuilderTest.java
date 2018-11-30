@@ -24,6 +24,14 @@ import xyz.morphia.annotations.IndexOptions;
 import xyz.morphia.annotations.Indexed;
 import xyz.morphia.annotations.Text;
 import xyz.morphia.annotations.Validation;
+import xyz.morphia.internal.AnnotationBuilder;
+import xyz.morphia.internal.CollationBuilder;
+import xyz.morphia.internal.FieldBuilder;
+import xyz.morphia.internal.IndexBuilder;
+import xyz.morphia.internal.IndexOptionsBuilder;
+import xyz.morphia.internal.IndexedBuilder;
+import xyz.morphia.internal.TextBuilder;
+import xyz.morphia.internal.ValidationBuilder;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
