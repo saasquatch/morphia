@@ -150,6 +150,7 @@
     </dependencyManagement>
 
     <modules>
+        <module>build-plugins</module>
         <module>util</module>
         <module>morphia</module>
         <!--<module>guice-plug</module>-->

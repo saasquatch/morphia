@@ -120,7 +120,7 @@
             </plugin>
             <plugin>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>util</artifactId>
+                <artifactId>build-plugins</artifactId>
                 <version>${project.version}</version>
                 <executions>
                     <execution>
