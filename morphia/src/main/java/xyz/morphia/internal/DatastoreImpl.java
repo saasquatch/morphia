@@ -240,7 +240,7 @@ public class DatastoreImpl implements AdvancedDatastore {
         }
     }
 
-    void process(final MappedClass mc, final Validation validation) {
+    public void process(final MappedClass mc, final Validation validation) {
         if (validation != null) {
             String collectionName = mc.getCollectionName();
             try {
@@ -596,7 +596,7 @@ public class DatastoreImpl implements AdvancedDatastore {
         return keys;
     }
 
-    <T> WriteConcern enforceWriteConcern(final Class<T> klass) {
+    public <T> WriteConcern enforceWriteConcern(final Class<T> klass) {
         final WriteConcern klassConcern = getWriteConcern(klass);
         return klassConcern != null ? klassConcern : getDefaultWriteConcern();
     }

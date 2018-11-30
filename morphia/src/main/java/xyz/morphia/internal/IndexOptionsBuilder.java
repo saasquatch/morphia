@@ -93,12 +93,12 @@ public class IndexOptionsBuilder extends AnnotationBuilder<IndexOptions> impleme
         return this;
     }
 
-    IndexOptionsBuilder language(final String language) {
+    public IndexOptionsBuilder language(final String language) {
         put("language", language);
         return this;
     }
 
-    IndexOptionsBuilder languageOverride(final String languageOverride) {
+    public IndexOptionsBuilder languageOverride(final String languageOverride) {
         put("languageOverride", languageOverride);
         return this;
     }
@@ -123,7 +123,7 @@ public class IndexOptionsBuilder extends AnnotationBuilder<IndexOptions> impleme
         return this;
     }
 
-    IndexOptionsBuilder collation(final Collation collation) {
+    public IndexOptionsBuilder collation(final Collation collation) {
         put("collation", collation);
         return this;
     }
