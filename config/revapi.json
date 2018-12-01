@@ -1,6 +1,12 @@
 [ {
   "extension" : "revapi.ignore",
   "configuration" : [ {
+    "code" : "java.annotation.added",
+    "classQualifiedName" : "xyz.morphia.annotations.Reference"
+  }, {
+    "code" : "java.annotation.attributeValueChanged",
+    "classQualifiedName" : "xyz.morphia.annotations.Embedded"
+  }, {
     "code" : "java.annotation.noLongerPresent",
     "classQualifiedname" : "xyz.morphia.MapReduceOptions"
   }, {
@@ -58,13 +64,25 @@
     "methodName" : "getCollection",
     "justification" : "The return type has been updated"
   }, {
+    "code" : "java.field.enumConstantOrderChanged",
+    "packages" : "*"
+  }, {
     "code" : "java.field.removed",
     "classQualifiedName" : "xyz.morphia.query.FilterOperator",
     "fieldName" : "WITHIN",
     "justification" : "Removed deprecated item"
   }, {
+    "code" : "java.generics.elementNowParameterized",
+    "packages" : "*"
+  }, {
+    "code" : "java.generics.formalTypeParameterAdded",
+    "packages" : "*"
+  }, {
+    "code" : "java.method.addedToInterface",
+    "method" : "deleteMany"
+  }, {
     "code" : "java.method.attributeRemovedFromAnnotationType",
-    "classQualifiedName" : "xyz.morphia.annotations.Embedded"
+    "method" : "concreteClass"
   }, {
     "code" : "java.method.attributeRemovedFromAnnotationType",
     "classQualifiedName" : "xyz.morphia.annotations.Entity"
@@ -80,6 +98,9 @@
   }, {
     "code" : "java.method.attributeRemovedFromAnnotationType",
     "classQualifiedName" : "xyz.morphia.annotations.Reference"
+  }, {
+    "code" : "java.method.exception.checkedRemoved",
+    "packages" : "*"
   }, {
     "code" : "java.method.removed",
     "classQualifiedName" : "xyz.morphia.utils.ReflectionUtils",
