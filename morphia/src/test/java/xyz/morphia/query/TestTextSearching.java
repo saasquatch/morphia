@@ -13,6 +13,7 @@ import xyz.morphia.utils.IndexType;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static xyz.morphia.query.Sort.ascending;
 
 public class TestTextSearching extends TestBase {
     @Test
@@ -35,7 +36,7 @@ public class TestTextSearching extends TestBase {
 
         List<Greeting> good = getDatastore().find(Greeting.class)
                                             .search("good")
-                                            .order("_id")
+                                            .order(ascending("_id"))
                                             .asList();
         Assert.assertEquals(4, good.size());
         Assert.assertEquals("good morning", good.get(0).value);
@@ -45,7 +46,7 @@ public class TestTextSearching extends TestBase {
 
         good = getDatastore().find(Greeting.class)
                              .search("good", "english")
-                             .order("_id")
+                             .order(ascending("_id"))
                              .asList();
         Assert.assertEquals(4, good.size());
         Assert.assertEquals("good morning", good.get(0).value);

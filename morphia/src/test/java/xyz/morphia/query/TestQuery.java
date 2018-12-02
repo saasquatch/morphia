@@ -121,14 +121,14 @@ public class TestQuery extends TestBase {
             new Rectangle(10, 1)));
 
         Rectangle r1 = getDatastore().find(Rectangle.class)
-                                     .order("w")
+                                     .order(ascending("w"))
                                      .get(new FindOptions()
                                               .limit(1));
         assertNotNull(r1);
         assertEquals(1, r1.getWidth(), 0);
 
         r1 = getDatastore().find(Rectangle.class)
-                           .order("-w")
+                           .order(descending("w"))
                            .get(new FindOptions()
                                     .limit(1));
         assertNotNull(r1);
@@ -340,12 +340,12 @@ public class TestQuery extends TestBase {
             new Rectangle(10, 10),
             new Rectangle(10, 1)));
 
-        Rectangle r1 = getDatastore().find(Rectangle.class).order("width,-height").get();
+        Rectangle r1 = getDatastore().find(Rectangle.class).order(ascending("width"), descending("height")).get();
         assertNotNull(r1);
         assertEquals(1, r1.getWidth(), 0);
         assertEquals(10, r1.getHeight(), 0);
 
-        r1 = getDatastore().find(Rectangle.class).order("-height,-width").get();
+        r1 = getDatastore().find(Rectangle.class).order(descending("height"), descending("width")).get();
         assertNotNull(r1);
         assertEquals(10, r1.getWidth(), 0);
         assertEquals(10, r1.getHeight(), 0);
@@ -363,28 +363,22 @@ public class TestQuery extends TestBase {
         getDatastore().saveMany(list);
 
         compareLists(list,
-            getDatastore().find(Rectangle.class).order("width,-height"),
             getDatastore().find(Rectangle.class).order(ascending("width"), descending("height")),
             new RectangleComparator());
         compareLists(list,
-            getDatastore().find(Rectangle.class).order("-height,-width"),
             getDatastore().find(Rectangle.class).order(descending("height"), descending("width")),
             new RectangleComparator1());
         compareLists(list,
-            getDatastore().find(Rectangle.class).order("width,height"),
             getDatastore().find(Rectangle.class).order(ascending("width"), ascending("height")),
             new RectangleComparator2());
         compareLists(list,
-            getDatastore().find(Rectangle.class).order("width,height"),
-            getDatastore().find(Rectangle.class).order("width, height"),
+            getDatastore().find(Rectangle.class).order(ascending("width"), ascending("height")),
             new RectangleComparator3());
     }
 
-    private void compareLists(final List<Rectangle> list, final Query<Rectangle> query1, final Query<Rectangle> query2,
-                              final Comparator<Rectangle> comparator) {
+    private void compareLists(final List<Rectangle> list, final Query<Rectangle> query, final Comparator<Rectangle> comparator) {
         list.sort(comparator);
-        assertEquals(query1.asList(), list);
-        assertEquals(query2.asList(), list);
+        assertEquals(query.asList(), list);
     }
 
     @Test
@@ -1097,13 +1091,13 @@ public class TestQuery extends TestBase {
             new Rectangle(10, 1)));
 
         Rectangle r1 = getDatastore().find(Rectangle.class)
-                                     .order("width")
+                                     .order(ascending("width"))
                                      .get();
         assertNotNull(r1);
         assertEquals(1, r1.getWidth(), 0);
 
         r1 = getDatastore().find(Rectangle.class)
-                           .order("-width")
+                           .order(descending("width"))
                            .get();
         assertNotNull(r1);
         assertEquals(10, r1.getWidth(), 0);

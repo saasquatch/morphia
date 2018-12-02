@@ -120,13 +120,11 @@ public class QueryImpl<T> extends CriteriaContainerImpl implements Query<T> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Map<String, Object> explain() {
         return explain(new FindOptions());
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Map<String, Object> explain(final FindOptions options) {
         return new LinkedHashMap<>(getDatastore().getDatabase()
                                                  .runCommand(new Document("explain",
@@ -166,7 +164,7 @@ public class QueryImpl<T> extends CriteriaContainerImpl implements Query<T> {
 
     @Override
     public Document getFields() {
-        if (projection == null || projection.keySet().size() == 0) {
+        if (projection == null || projection.keySet().isEmpty()) {
             return null;
         }
 
@@ -207,46 +205,6 @@ public class QueryImpl<T> extends CriteriaContainerImpl implements Query<T> {
     @Override
     public Document getSortDocument() {
         return sort == null ? null : new Document(sort);
-    }
-
-    @Override
-    public Query<T> order(final String order) {
-        if (sort == null) {
-            sort = new Document();
-        }
-        sort.putAll(parseFieldsString(order, clazz, ds.getMapper(), validateName));
-        return this;
-    }
-
-    /**
-     * Parses the string and validates each part
-     *
-     * @param str      the String to parse
-     * @param clazz    the class to use when validating
-     * @param mapper   the Mapper to use
-     * @param validate true if the results should be validated
-     * @return the Document
-     */
-    private static Document parseFieldsString(final String str, final Class clazz, final Mapper mapper, final boolean validate) {
-        Document ret = new Document();
-        final String[] parts = str.split(",");
-        for (String s : parts) {
-            s = s.trim();
-            int dir = 1;
-
-            if (s.startsWith("-")) {
-                dir = -1;
-                s = s.substring(1).trim();
-            }
-
-            if (validate) {
-                final StringBuilder sb = new StringBuilder(s);
-                validateQuery(clazz, mapper, sb, FilterOperator.IN, "", true, false);
-                s = sb.toString();
-            }
-            ret.put(s, dir);
-        }
-        return ret;
     }
 
     @Override

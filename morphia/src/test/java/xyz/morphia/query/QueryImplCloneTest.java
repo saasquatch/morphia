@@ -7,6 +7,8 @@ import org.junit.Test;
 import xyz.morphia.TestBase;
 import xyz.morphia.annotations.Id;
 
+import static xyz.morphia.query.Sort.ascending;
+
 public class QueryImplCloneTest extends TestBase {
 
     @Test
@@ -16,7 +18,7 @@ public class QueryImplCloneTest extends TestBase {
                                       .equal(5)
                                       .filter("a", "value_a")
                                       .filter("b", "value_b")
-                                      .order("a");
+                                      .order(ascending("a"));
         q.disableValidation().filter("foo", "bar");
         Assert.assertEquals(q, q.cloneQuery());
     }

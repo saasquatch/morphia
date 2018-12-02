@@ -17,6 +17,9 @@ import xyz.morphia.annotations.Indexes;
 
 import java.util.List;
 
+import static xyz.morphia.query.Sort.ascending;
+import static xyz.morphia.query.Sort.descending;
+
 public class TestMaxMin extends TestBase {
 
     @Override
@@ -49,7 +52,7 @@ public class TestMaxMin extends TestBase {
         Assert.assertEquals("last",
             b.id,
             ds.find(IndexedEntity.class)
-              .order("-id")
+              .order(descending("id"))
               .get(new FindOptions()
                        .max(new Document("testField", "c")))
                 .id);
@@ -74,7 +77,7 @@ public class TestMaxMin extends TestBase {
         ds.save(c1);
         ds.save(c2);
 
-        final List<IndexedEntity> l = ds.find(IndexedEntity.class).order("testField, id")
+        final List<IndexedEntity> l = ds.find(IndexedEntity.class).order(ascending("testField"), ascending("id"))
                                         .asList(new FindOptions()
                                                     .max(new Document("testField", "b")
                                                              .append("_id", b2.id)));
@@ -96,7 +99,7 @@ public class TestMaxMin extends TestBase {
         ds.save(b);
         ds.save(c);
 
-        Assert.assertEquals("last", b.id, ds.find(IndexedEntity.class).order("id")
+        Assert.assertEquals("last", b.id, ds.find(IndexedEntity.class).order(ascending("id"))
                                             .get(new FindOptions()
                                                      .min(new Document("testField", "b"))).id);
     }
@@ -119,7 +122,7 @@ public class TestMaxMin extends TestBase {
         ds.save(c1);
         ds.save(c2);
 
-        final List<IndexedEntity> l = ds.find(IndexedEntity.class).order("testField, id")
+        final List<IndexedEntity> l = ds.find(IndexedEntity.class).order(ascending("testField"), ascending("id"))
                                         .asList(new FindOptions()
                                                     .min(new Document("testField", "b")
                                                              .append("_id", b1.id)));
