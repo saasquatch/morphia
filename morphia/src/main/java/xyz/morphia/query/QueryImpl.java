@@ -13,9 +13,8 @@ import com.mongodb.client.model.FindOptions;
 import org.bson.Document;
 import org.bson.types.CodeWithScope;
 import xyz.morphia.Datastore;
-import xyz.morphia.internal.DatastoreImpl;
-import xyz.morphia.Key;
 import xyz.morphia.annotations.Entity;
+import xyz.morphia.internal.DatastoreImpl;
 import xyz.morphia.logging.Logger;
 import xyz.morphia.logging.MorphiaLoggerFactory;
 import xyz.morphia.mapping.MappedClass;
@@ -25,7 +24,6 @@ import xyz.morphia.mapping.Mapper;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -277,24 +275,6 @@ public class QueryImpl<T> extends CriteriaContainerImpl implements Query<T> {
         return this;
     }
 
-    private void validateProjections(final String field, final boolean include) {
-        if (includeFields != null && include != includeFields) {
-            if (!includeFields || !"_id".equals(field)) {
-                throw new ValidationException("You cannot mix included and excluded fields together");
-            }
-        }
-        if (includeFields == null) {
-            includeFields = include;
-        }
-    }
-
-    private void project(final String fieldName, final Object value) {
-        if (projection == null) {
-            projection = new Document();
-        }
-        projection.put(fieldName, value);
-    }
-
     @Override
     public Query<T> search(final String search) {
         final Document op = new Document("$search", search);
@@ -335,52 +315,14 @@ public class QueryImpl<T> extends CriteriaContainerImpl implements Query<T> {
         return this;
     }
 
-    private void project(final Document value) {
-        if (projection == null) {
-            projection = new Document();
-        }
-        projection.putAll(value);
-    }
-
-    /**
-     * Converts the textual operator (">", "<=", etc) into a FilterOperator. Forgiving about the syntax; != and <> are NOT_EQUAL, = and ==
-     * are EQUAL.
-     */
-    private FilterOperator translate(final String operator) {
-        return FilterOperator.fromString(operator);
+    @Override
+    public MongoCursor<T> find() {
+        return find(new FindOptions());
     }
 
     @Override
-    public List<Key<T>> asKeyList() {
-        return asKeyList(new FindOptions());
-    }
-
-    @Override
-    public List<T> asList() {
-        return asList(new FindOptions());
-    }
-
-    @Override
-    public List<Key<T>> asKeyList(final FindOptions options) {
-        final List<Key<T>> results = new ArrayList<>();
-        try (MorphiaKeyIterator<T> keys = fetchKeys(options)) {
-            while (keys.hasNext()) {
-                results.add(keys.next());
-            }
-        }
-        return results;
-    }
-
-    @Override
-    public List<T> asList(final FindOptions options) {
-        final List<T> results = new ArrayList<>();
-        try (MongoCursor<T> entities = fetch(options)) {
-            while (entities.hasNext()) {
-                results.add(entities.next());
-            }
-        }
-
-        return results;
+    public MongoCursor<T> find(final FindOptions options) {
+        return prepareCursor(options).iterator();
     }
 
     @Override
@@ -394,83 +336,28 @@ public class QueryImpl<T> extends CriteriaContainerImpl implements Query<T> {
     }
 
     @Override
-    public MongoCursor<T> fetch() {
-        return fetch(new FindOptions());
-    }
-
-    @Override
-    public MongoCursor<T> fetch(final FindOptions options) {
-        if (LOG.isTraceEnabled()) {
-            LOG.trace("Getting cursor(" + collection.getNamespace().getCollectionName() + ")  for query:" + getQuery());
-        }
-
-        return prepareCursor(options).iterator();
-    }
-
-    @Override
-    public MongoCursor<T> fetchEmptyEntities() {
-        return fetchEmptyEntities(new FindOptions());
-    }
-
-    @Override
-    public MongoCursor<T> fetchEmptyEntities(final FindOptions options) {
-        QueryImpl<T> cloned = cloneQuery();
-        cloned.includeFields = true;
-        return cloned.fetch(new FindOptions(options)
-                                .projection(new Document(Mapper.ID_KEY, 1)));
-    }
-
-    @Override
-    public MorphiaKeyIterator<T> fetchKeys() {
-        return fetchKeys(new FindOptions());
-    }
-
-    @Override
-    public MorphiaKeyIterator<T> fetchKeys(final FindOptions options) {
-
-        final FindOptions projection = new FindOptions(options)
-                                           .projection(new Document(Mapper.ID_KEY, 1));
-        return new MorphiaKeyIterator<>(
-            prepareCursor(projection).iterator(), ds.getMapper());
-    }
-
-    @Override
     public T get() {
         return get(new FindOptions());
     }
 
     @Override
     public T get(final FindOptions options) {
-        try (MongoCursor<T> it = fetch(new FindOptions(options)
-                                           .limit(1))) {
-            return (it.hasNext()) ? it.next() : null;
+        try (MongoCursor<T> it = find(new FindOptions(options).limit(1))) {
+            return it.tryNext();
         }
     }
 
-    @Override
-    public Key<T> getKey() {
-        return getKey(new FindOptions());
-    }
-
-    @Override
-    public Key<T> getKey(final FindOptions options) {
-        final MorphiaKeyIterator<T> it = fetchKeys(new FindOptions(options)
-                                                       .limit(1));
-        Key<T> key = (it.hasNext()) ? it.next() : null;
-        it.close();
-        return key;
-    }
-
-    protected Document copy(final Document document) {
-        return document == null ? null : new Document(document);
-    }
-
-    private FindIterable<T> prepareCursor(final FindOptions findOptions) {
+    private FindIterable<T> prepareCursor(final FindOptions options) {
         final Document query = getQueryDocument();
+
+        if (options.getProjection() != null || options.getSort() != null) {
+            throw new QueryException("Projections and sorting criteria must be set on the Query directly and not passed on the options "
+                                     + "object.");
+        }
 
         if (LOG.isTraceEnabled()) {
             LOG.trace(
-                String.format("Running query(%s) : %s, options: %s,", collection.getNamespace().getCollectionName(), query, findOptions));
+                String.format("Running query(%s) : %s, options: %s,", collection.getNamespace().getCollectionName(), query, options));
         }
 
         final MongoCollection<T> mongoCollection = collection
@@ -482,8 +369,8 @@ public class QueryImpl<T> extends CriteriaContainerImpl implements Query<T> {
                                          : mongoCollection.find();
         return apply(iterable
                          .projection(getFields())
-                         .sort(getSortDocument()),
-            findOptions);
+                         .sort(sort),
+            options);
     }
 
     private FindIterable<T> apply(final FindIterable<T> iterable, final FindOptions options) {
@@ -509,6 +396,43 @@ public class QueryImpl<T> extends CriteriaContainerImpl implements Query<T> {
         return iterable;
     }
 
+    private void project(final Document value) {
+        if (projection == null) {
+            projection = new Document();
+        }
+        projection.putAll(value);
+    }
+
+    private void validateProjections(final String field, final boolean include) {
+        if (includeFields != null && include != includeFields) {
+            if (!includeFields || !"_id".equals(field)) {
+                throw new ValidationException("You cannot mix included and excluded fields together");
+            }
+        }
+        if (includeFields == null) {
+            includeFields = include;
+        }
+    }
+
+    private void project(final String fieldName, final Object value) {
+        if (projection == null) {
+            projection = new Document();
+        }
+        projection.put(fieldName, value);
+    }
+
+    /**
+     * Converts the textual operator (">", "<=", etc) into a FilterOperator. Forgiving about the syntax; != and <> are NOT_EQUAL, = and ==
+     * are EQUAL.
+     */
+    private FilterOperator translate(final String operator) {
+        return FilterOperator.fromString(operator);
+    }
+
+    protected Document copy(final Document document) {
+        return document == null ? null : new Document(document);
+    }
+
     boolean isValidatingNames() {
         return validateName;
     }
@@ -519,12 +443,14 @@ public class QueryImpl<T> extends CriteriaContainerImpl implements Query<T> {
 
     @Override
     public MongoCursor<T> iterator() {
-        return fetch();
+        return find();
     }
 
     @Override
     public T first() {
-        throw new UnsupportedOperationException();
+        try (MongoCursor<T> tMongoCursor = find(new FindOptions().limit(1))) {
+            return tMongoCursor.tryNext();
+        }
     }
 
     @Override

@@ -4,6 +4,7 @@ package xyz.morphia.mapping;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Test;
+import xyz.morphia.Datastore;
 import xyz.morphia.TestBase;
 import xyz.morphia.annotations.Id;
 
@@ -20,7 +21,10 @@ public class ListOfStringArrayMappingTest extends TestBase {
         ent.string = "raw string";
 
         getDatastore().save(ent);
-        final ContainsListStringArray loaded = getDatastore().get(ent);
+        final Datastore datastore = getDatastore();
+        final ContainsListStringArray loaded = datastore.find(ent.getClass())
+                                                        .filter("_id", datastore.getMapper().getId(ent))
+                                                        .first();
         Assert.assertNotNull(loaded.id);
         Assert.assertArrayEquals(ent.listOfStrings.get(0), loaded.listOfStrings.get(0));
         Assert.assertArrayEquals(ent.arrayOfStrings, loaded.arrayOfStrings);

@@ -4,6 +4,7 @@ package xyz.morphia.mapping;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Test;
+import xyz.morphia.Datastore;
 import xyz.morphia.Key;
 import xyz.morphia.TestBase;
 import xyz.morphia.annotations.Embedded;
@@ -26,7 +27,8 @@ public class AnonymousClassTest extends TestBase {
         e.id = new CId("test");
 
         getDatastore().save(e);
-        e = getDatastore().get(e);
+        final Datastore datastore = getDatastore();
+        e = datastore.find(e.getClass()).filter("_id", datastore.getMapper().getId(e)).first();
         Assert.assertEquals("test", e.id.name);
         Assert.assertNotNull(e.id.id);
     }

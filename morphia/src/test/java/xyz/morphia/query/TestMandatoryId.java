@@ -13,6 +13,6 @@ public class TestMandatoryId extends TestBase {
     public final void testMissingIdNoImplicitMapCall() {
         final Key<MissingId> save = getDatastore().save(new MissingId());
 
-        getDatastore().getByKey(MissingId.class, save);
+        getDatastore().find(MissingId.class).filter("_id", save.getId()).get();
     }
 }

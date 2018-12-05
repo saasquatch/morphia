@@ -4,6 +4,7 @@ package xyz.morphia.mapping.validation.classrules;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+import xyz.morphia.Datastore;
 import xyz.morphia.TestBase;
 import xyz.morphia.annotations.Serialized;
 import xyz.morphia.testutil.TestEntity;
@@ -21,8 +22,9 @@ public class SerializedMapTest extends TestBase {
         map1.shouldBeOk.put(3, new Foo("peter"));
         map1.shouldBeOk.put(27, new Foo("paul"));
 
-        getDatastore().save(map1);
-        map1 = getDatastore().get(map1);
+        final Datastore datastore = getDatastore();
+        datastore.save(map1);
+        map1 = datastore.find(map1.getClass()).filter("_id", datastore.getMapper().getId(map1)).first();
 
         Assert.assertEquals("peter", map1.shouldBeOk.get(3).id);
         Assert.assertEquals("paul", map1.shouldBeOk.get(27).id);
@@ -36,7 +38,8 @@ public class SerializedMapTest extends TestBase {
         map2.shouldBeOk.put(27, new Foo("paul"));
 
         getDatastore().save(map2);
-        map2 = getDatastore().get(map2);
+        final Datastore datastore = getDatastore();
+        map2 = datastore.find(map2.getClass()).filter("_id", datastore.getMapper().getId(map2)).first();
 
         Assert.assertEquals("peter", map2.shouldBeOk.get(3).id);
         Assert.assertEquals("paul", map2.shouldBeOk.get(27).id);

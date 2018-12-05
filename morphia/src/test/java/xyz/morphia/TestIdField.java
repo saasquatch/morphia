@@ -45,7 +45,7 @@ public class TestIdField extends TestBase {
         getDatastore().save(a);
         getDatastore().save(b);
 
-        assertEquals(a.data, getDatastore().get(EmbeddedId.class, id).data);
+        assertEquals(a.data, getDatastore().find(EmbeddedId.class).filter("_id", id).get().data);
 
         final EmbeddedId embeddedId = getDatastore().find(EmbeddedId.class).field("_id").in(singletonList(id)).asList().get(0);
         Assert.assertEquals(a.data, embeddedId.data);
@@ -72,7 +72,7 @@ public class TestIdField extends TestBase {
         //        Key<Rectangle> r2Key = ds.save(r2);
         final KeyAsId kai = new KeyAsId(rKey);
         final Key<KeyAsId> kaiKey = getDatastore().save(kai);
-        final KeyAsId kaiLoaded = getDatastore().get(KeyAsId.class, rKey);
+        final KeyAsId kaiLoaded = getDatastore().find(KeyAsId.class).filter("_id", rKey).get();
         assertNotNull(kaiLoaded);
         assertNotNull(kaiKey);
     }
@@ -84,7 +84,7 @@ public class TestIdField extends TestBase {
         final MapAsId mai = new MapAsId();
         mai.id.put("test", "string");
         final Key<MapAsId> maiKey = getDatastore().save(mai);
-        final MapAsId maiLoaded = getDatastore().get(MapAsId.class, new Document("test", "string"));
+        final MapAsId maiLoaded = getDatastore().find(MapAsId.class).filter("_id", new Document("test", "string")).get();
         assertNotNull(maiLoaded);
         assertNotNull(maiKey);
     }

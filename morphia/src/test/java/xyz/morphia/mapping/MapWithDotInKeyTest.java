@@ -5,6 +5,7 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Test;
+import xyz.morphia.Datastore;
 import xyz.morphia.TestBase;
 import xyz.morphia.annotations.Embedded;
 import xyz.morphia.annotations.Id;
@@ -26,7 +27,8 @@ public class MapWithDotInKeyTest extends TestBase {
         }
 
         fail("Should have got rejection for dot in field names");
-        e = getDatastore().get(e);
+        final Datastore datastore = getDatastore();
+        e = datastore.find(e.getClass()).filter("_id", datastore.getMapper().getId(e)).first();
         Assert.assertEquals("a", e.mymap.get("a.b"));
         Assert.assertEquals("b", e.mymap.get("c.e.g"));
     }

@@ -58,7 +58,7 @@ public class TestMapper extends TestBase {
         holder.a1 = a;
         holder.a2 = a;
         getDatastore().saveMany(asList(a, holder));
-        holder = getDatastore().get(HoldsMultipleA.class, holder.id);
+        holder = getDatastore().find(HoldsMultipleA.class).filter("_id", holder.id).get();
         Assert.assertEquals(holder.a1, holder.a2);
         Assert.assertEquals(1, A.loadCount);
     }

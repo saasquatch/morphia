@@ -47,14 +47,14 @@ public class TestVersionAnnotation extends TestBase {
 
         datastore.save(entity);
 
-        entity = datastore.get(Versioned.class, entity.getId());
+        entity = datastore.find(Versioned.class).filter("_id", entity.getId()).get();
         Assert.assertEquals("Value 1", entity.getName());
         Assert.assertEquals(1, entity.getVersion().longValue());
 
         entity.setName("Value 2");
         datastore.save(entity);
 
-        entity = datastore.get(Versioned.class, entity.getId());
+        entity = datastore.find(Versioned.class).filter("_id", entity.getId()).get();
         Assert.assertEquals("Value 2", entity.getName());
         Assert.assertEquals(2, entity.getVersion().longValue());
 
@@ -64,7 +64,7 @@ public class TestVersionAnnotation extends TestBase {
         ops.set("name", "Value 3");
         datastore.updateMany(query, ops);
 
-        entity = datastore.get(Versioned.class, entity.getId());
+        entity = datastore.find(Versioned.class).filter("_id", entity.getId()).get();
         Assert.assertEquals("Value 3", entity.getName());
         Assert.assertEquals(3, entity.getVersion().longValue());
     }
@@ -107,14 +107,14 @@ public class TestVersionAnnotation extends TestBase {
 
         datastore.save(entity);
 
-        entity = datastore.get(Versioned.class, entity.getId());
+        entity = datastore.find(Versioned.class).filter("_id", entity.getId()).get();
         Assert.assertEquals("Value 1", entity.getName());
         Assert.assertEquals(1, entity.getVersion().longValue());
 
         entity.setName("Value 2");
         datastore.save(entity);
 
-        entity = datastore.get(Versioned.class, entity.getId());
+        entity = datastore.find(Versioned.class).filter("_id", entity.getId()).get();
         Assert.assertEquals("Value 2", entity.getName());
         Assert.assertEquals(2, entity.getVersion().longValue());
 
@@ -123,7 +123,7 @@ public class TestVersionAnnotation extends TestBase {
         Assert.assertEquals(1, datastore.update(entity, ops).getModifiedCount());
         Assert.assertEquals(0, datastore.update(entity, ops).getModifiedCount());
 
-        entity = datastore.get(Versioned.class, entity.getId());
+        entity = datastore.find(Versioned.class).filter("_id", entity.getId()).get();
         Assert.assertEquals("Value 3", entity.getName());
         Assert.assertEquals(3, entity.getVersion().longValue());
 
@@ -131,7 +131,7 @@ public class TestVersionAnnotation extends TestBase {
         ops.set("name", "Value 4");
         datastore.update(getMapper().getKey(entity), ops, new UpdateOptions(), WriteConcern.ACKNOWLEDGED);
 
-        entity = datastore.get(Versioned.class, entity.getId());
+        entity = datastore.find(Versioned.class).filter("_id", entity.getId()).get();
         Assert.assertEquals("Value 4", entity.getName());
         Assert.assertEquals(4, entity.getVersion().longValue());
     }
@@ -151,7 +151,7 @@ public class TestVersionAnnotation extends TestBase {
 
         getDatastore().updateOne(query, up, new UpdateOptions().upsert(true), getDatastore().getDefaultWriteConcern());
 
-        final Versioned version2 = getDatastore().get(Versioned.class, version1.getId());
+        final Versioned version2 = getDatastore().find(Versioned.class).filter("_id", version1.getId()).get();
 
         assertEquals(new Long(2), version2.getVersion());
         assertEquals(1, version2.getCount());
@@ -161,7 +161,7 @@ public class TestVersionAnnotation extends TestBase {
     public void testThrowsExceptionWhenTryingToSaveAnOldVersion() {
         final Versioned version1 = new Versioned();
         getDatastore().save(version1);
-        getDatastore().save(getDatastore().get(Versioned.class, version1.getId()));
+        getDatastore().save(getDatastore().find(Versioned.class).filter("_id", version1.getId()).get());
 
         getDatastore().save(version1);
     }
@@ -173,12 +173,12 @@ public class TestVersionAnnotation extends TestBase {
 
         this.getDatastore().save(version1);
 
-        final Versioned version1Updated = getDatastore().get(Versioned.class, version1.getId());
+        final Versioned version1Updated = getDatastore().find(Versioned.class).filter("_id", version1.getId()).get();
         version1Updated.setName("bar");
 
         this.getDatastore().merge(version1Updated);
 
-        final Versioned versionedEntityFromDs = this.getDatastore().get(Versioned.class, version1.getId());
+        final Versioned versionedEntityFromDs = this.getDatastore().find(Versioned.class).filter("_id", version1.getId()).get();
         assertEquals(version1Updated.getName(), versionedEntityFromDs.getName());
     }
 
@@ -188,7 +188,7 @@ public class TestVersionAnnotation extends TestBase {
         getDatastore().save(version1);
         assertEquals(new Long(1), version1.getVersion());
 
-        final Versioned version2 = getDatastore().get(Versioned.class, version1.getId());
+        final Versioned version2 = getDatastore().find(Versioned.class).filter("_id", version1.getId()).get();
         getDatastore().save(version2);
         assertEquals(new Long(2), version2.getVersion());
     }

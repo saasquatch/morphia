@@ -34,13 +34,13 @@ public class TestSuperDatastore extends TestBase {
         rect.setId(id);
 
         getAds().save(ns, rect);
-        assertEquals(1, getAds().getCount(ns));
+        assertEquals(1, getAds().find(ns, Object.class).count());
 
         // when giving an ID that is not the entity ID.  Note that at the time of writing this will also log a validation warning
         getAds().deleteOne(ns, Rectangle.class, 1);
 
         // then
-        assertEquals(1, getAds().getCount(ns));
+        assertEquals(1, getAds().find(ns, Object.class).count());
     }
 
     @Test
@@ -58,13 +58,13 @@ public class TestSuperDatastore extends TestBase {
         circle.setId(new ObjectId());
         getAds().save(ns, circle);
 
-        assertEquals(2, getAds().getCount(ns));
+        assertEquals(2, getAds().find(ns, Object.class).count());
 
         // when
         getAds().deleteOne(ns, Circle.class, rectangleId);
 
         // then
-        assertEquals(1, getAds().getCount(ns));
+        assertEquals(1, getAds().find(ns, Object.class).count());
     }
 
     @Test
@@ -78,13 +78,13 @@ public class TestSuperDatastore extends TestBase {
         rect.setId(id);
 
         getAds().save(ns, rect);
-        assertEquals(1, getAds().getCount(ns));
+        assertEquals(1, getAds().find(ns, Object.class).count());
 
         // when
         getAds().deleteOne(ns, Rectangle.class, id);
 
         // then
-        assertEquals(0, getAds().getCount(ns));
+        assertEquals(0, getAds().find(ns, Object.class).count());
     }
 
     @Test
@@ -97,22 +97,22 @@ public class TestSuperDatastore extends TestBase {
         getDatabase().getCollection(ns).deleteMany(new Document());
 
         getAds().save(ns, rect);
-        assertEquals(1, getAds().getCount(ns));
+        assertEquals(1, getAds().find(ns, Object.class).count());
         Rectangle rectLoaded = getAds().find(ns, Rectangle.class).get();
         assertEquals(rect.getId(), rectLoaded.getId());
         assertEquals(rect.getArea(), rectLoaded.getArea(), 0);
 
         rect = new Rectangle(2, 1);
         getAds().save(rect);
-        assertEquals(1, getAds().getCount(rect));
+        assertEquals(1, getDatastore().find(rect.getClass()).count());
 
         rect.setId(null);
         getAds().save(rect);
-        assertEquals(2, getAds().getCount(rect));
+        assertEquals(2, getDatastore().find(rect.getClass()).count());
 
         rect = new Rectangle(4, 3);
         getAds().save(ns, rect);
-        assertEquals(2, getAds().getCount(ns));
+        assertEquals(2, getAds().find(ns, Object.class).count());
 
         rectLoaded = getAds().find(ns, Rectangle.class).asList().get(1);
         assertEquals(rect.getId(), rectLoaded.getId());
@@ -134,8 +134,10 @@ public class TestSuperDatastore extends TestBase {
         getDatabase().getCollection(ns).deleteMany(new Document());
 
         getAds().save(ns, rect);
-        assertEquals(1, getAds().getCount(ns));
-        final Rectangle rectLoaded = getAds().get(ns, Rectangle.class, rect.getId());
+        assertEquals(1, getAds().find(ns, Object.class).count());
+        final Rectangle rectLoaded = getAds().find(ns, Rectangle.class)
+                                             .filter("_id", rect.getId())
+                                             .get();
         assertEquals(rect.getId(), rectLoaded.getId());
         assertEquals(rect.getArea(), rectLoaded.getArea(), 0);
     }

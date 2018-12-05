@@ -5,6 +5,7 @@ import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Test;
 import xyz.morphia.AdvancedDatastore;
+import xyz.morphia.Datastore;
 import xyz.morphia.TestBase;
 import xyz.morphia.annotations.Embedded;
 import xyz.morphia.annotations.Entity;
@@ -38,7 +39,8 @@ public class CompoundIdTest extends TestBase {
         entity.id = new CompoundId("test");
 
         getDatastore().save(entity);
-        entity = getDatastore().get(entity);
+        final Datastore datastore = getDatastore();
+        entity = datastore.find(entity.getClass()).filter("_id", datastore.getMapper().getId(entity)).first();
         Assert.assertEquals("test", entity.id.name);
         Assert.assertNotNull(entity.id.id);
     }
@@ -68,7 +70,10 @@ public class CompoundIdTest extends TestBase {
         entity.sibling = sibling;
         getDatastore().save(entity);
 
-        final CompoundIdEntity loaded = getDatastore().get(entity);
+        final Datastore datastore = getDatastore();
+        final CompoundIdEntity loaded = datastore.find(entity.getClass())
+                                                 .filter("_id", datastore.getMapper().getId(entity))
+                                                 .first();
         Assert.assertEquals(entity, loaded);
     }
 

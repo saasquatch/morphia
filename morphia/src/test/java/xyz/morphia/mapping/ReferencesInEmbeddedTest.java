@@ -3,6 +3,7 @@ package xyz.morphia.mapping;
 
 import org.junit.Assert;
 import org.junit.Test;
+import xyz.morphia.Datastore;
 import xyz.morphia.TestBase;
 import xyz.morphia.annotations.Embedded;
 import xyz.morphia.annotations.Entity;
@@ -22,7 +23,10 @@ public class ReferencesInEmbeddedTest extends TestBase {
         container.embed.lazyRef = referencedEntity;
         getDatastore().save(container);
 
-        final Container reloadedContainer = getDatastore().get(container);
+        final Datastore datastore = getDatastore();
+        final Container reloadedContainer = datastore.find(container.getClass())
+                                                     .filter("_id", datastore.getMapper().getId(container))
+                                                     .first();
         Assert.assertNotNull(reloadedContainer);
     }
 
@@ -44,7 +48,10 @@ public class ReferencesInEmbeddedTest extends TestBase {
         container.embed.ref = referencedEntity;
         getDatastore().save(container);
 
-        final Container reloadedContainer = getDatastore().get(container);
+        final Datastore datastore = getDatastore();
+        final Container reloadedContainer = datastore.find(container.getClass())
+                                                     .filter("_id", datastore.getMapper().getId(container))
+                                                     .first();
         Assert.assertNotNull(reloadedContainer);
     }
 

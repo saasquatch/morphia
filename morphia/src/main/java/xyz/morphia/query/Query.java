@@ -5,19 +5,23 @@ import com.mongodb.DBCollection;
 import com.mongodb.ReadConcern;
 import com.mongodb.ReadPreference;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoIterable;
+import com.mongodb.client.model.CountOptions;
 import com.mongodb.client.model.FindOptions;
 import org.bson.Document;
 import org.bson.types.CodeWScope;
 import org.bson.types.CodeWithScope;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 
 /**
  * @param <T> The type to query against
  */
-public interface Query<T> extends QueryResults<T>, Cloneable, MongoIterable<T> {
+public interface Query<T> extends MongoIterable<T> {
     /**
      * Creates a container to hold 'and' clauses
      *
@@ -28,6 +32,7 @@ public interface Query<T> extends QueryResults<T>, Cloneable, MongoIterable<T> {
 
     /**
      * Set the {@code ReadConcern} to use
+     *
      * @param readConcern the ReadConcern to use
      * @return this
      */
@@ -35,6 +40,7 @@ public interface Query<T> extends QueryResults<T>, Cloneable, MongoIterable<T> {
 
     /**
      * Set the {@code ReadPreference} to use
+     *
      * @param readPreference the ReadPreference to use
      * @return this
      */
@@ -163,6 +169,7 @@ public interface Query<T> extends QueryResults<T>, Cloneable, MongoIterable<T> {
     /**
      * Sorts based on a metadata (defines return order). Example:
      * {@code order(Meta.textScore())}  ({textScore : { $meta: "textScore" }})
+     *
      * @param sort the sort order to apply
      * @return this
      */
@@ -181,7 +188,7 @@ public interface Query<T> extends QueryResults<T>, Cloneable, MongoIterable<T> {
      * be inclusions or exclusions.  You can not include and exclude fields at the same time with the exception of the _id field.  The
      * _id field is always included unless explicitly suppressed.
      *
-     * @param field the field to project
+     * @param field   the field to project
      * @param include true to include the field in the results
      * @return this
      * @see <a href="https://docs.mongodb.com/manual/tutorial/project-fields-from-query-results/">Project Fields to Return from Query</a>
@@ -194,8 +201,8 @@ public interface Query<T> extends QueryResults<T>, Cloneable, MongoIterable<T> {
      * @param field the field to project
      * @param slice the options for projecting an array field
      * @return this
-     * @see <a href="https://docs.mongodb.com/manual/tutorial/project-fields-from-query-results/">Project Fields to Return from Query</a>
      * @mongodb.driver.manual /reference/operator/projection/slice/ $slice
+     * @see <a href="https://docs.mongodb.com/manual/tutorial/project-fields-from-query-results/">Project Fields to Return from Query</a>
      */
     Query<T> project(String field, ArraySlice slice);
 
@@ -204,8 +211,8 @@ public interface Query<T> extends QueryResults<T>, Cloneable, MongoIterable<T> {
      *
      * @param meta the metadata option for projecting
      * @return this
-     * @see <a href="https://docs.mongodb.com/manual/tutorial/project-fields-from-query-results/">Project Fields to Return from Query</a>
      * @mongodb.driver.manual reference/operator/projection/meta/ $meta
+     * @see <a href="https://docs.mongodb.com/manual/tutorial/project-fields-from-query-results/">Project Fields to Return from Query</a>
      */
     Query<T> project(Meta meta);
 
@@ -244,14 +251,6 @@ public interface Query<T> extends QueryResults<T>, Cloneable, MongoIterable<T> {
     Query<T> where(String js);
 
     /**
-     * Limit the query using this javascript block; only one per query
-     *
-     * @param js the javascript block to apply
-     * @return this
-     */
-    Query<T> where(CodeWithScope js);
-
-    /**
      * @param js the CodeWScope
      * @return this
      * @see #where(CodeWithScope)
@@ -260,5 +259,86 @@ public interface Query<T> extends QueryResults<T>, Cloneable, MongoIterable<T> {
     @SuppressWarnings("unchecked")
     default Query<T> where(final CodeWScope js) {
         return where(new CodeWithScope(js.getCode(), new Document(js.getScope().toMap())));
+    }
+
+    /**
+     * Limit the query using this javascript block; only one per query
+     *
+     * @param js the javascript block to apply
+     * @return this
+     */
+    Query<T> where(CodeWithScope js);
+
+    /**
+     * Creates a cursor to iterate over the results of this query.
+     *
+     * @return the cursor
+     */
+    MongoCursor<T> find();
+
+    /**
+     * Creates a cursor to iterate over the results of this query.
+     *
+     * @param options the options to apply to the cursor
+     * @return the cursor
+     */
+    MongoCursor<T> find(FindOptions options);
+
+    /**
+     * Count the total number of values in the result, ignoring limit and offset
+     *
+     * @return the count
+     * @since 1.3
+     */
+    long count();
+
+    /**
+     * Count the total number of values in the result, ignoring limit and offset
+     *
+     * @param options the options to apply to the count operation
+     * @return the count
+     * @since 1.3
+     */
+    long count(CountOptions options);
+
+    /**
+     * Gets the first entity in the result set.  Obeys the {@link Query} offset value.
+     *
+     * @return the only instance in the result, or null if the result set is empty.
+     */
+    T get();
+
+    /**
+     * Gets the first entity in the result set.  Obeys the {@link Query} offset value.
+     *
+     * @param options the options to apply to the find operation
+     * @return the only instance in the result, or null if the result set is empty.
+     * @since 1.3
+     */
+    T get(FindOptions options);
+
+    /**
+     * Execute the query and get the results.
+     *
+     * @return returns a List of the documents returned by a query
+     */
+    default List<T> asList() {
+        return asList(new FindOptions());
+    }
+
+    /**
+     * Execute the query and get the results.
+     *
+     * @param options the options to apply to the find operation
+     * @return returns a List of the documents returned by a query
+     * @since 1.3
+     */
+    default List<T> asList(FindOptions options) {
+        final List<T> results = new ArrayList<>();
+        try (MongoCursor<T> cursor = find(options)) {
+            cursor.forEachRemaining(results::add);
+        }
+        return results;
+
     }
 }

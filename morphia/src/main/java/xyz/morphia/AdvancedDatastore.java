@@ -1,6 +1,5 @@
 package xyz.morphia;
 
-import com.mongodb.ReadPreference;
 import com.mongodb.WriteConcern;
 import com.mongodb.client.model.DeleteOptions;
 import com.mongodb.client.model.InsertManyOptions;
@@ -131,17 +130,6 @@ public interface AdvancedDatastore extends Datastore {
     <T> void ensureIndexes(String collection, Class<T> clazz, boolean background);
 
     /**
-     * Checks that an entity exists for the given key or entity
-     *
-     * @param keyOrEntity    the value to check for
-     * @param readPreference Uses the supplied ReadPreference for the check.  If readPreference is null the preference is taken from the
-     *                       annotation or uses the default preference.
-     * @return the key if the entity exists
-     * @see #exists(Object)
-     */
-    Key<?> exists(Object keyOrEntity, ReadPreference readPreference);
-
-    /**
      * Find all instances by type in a different collection than what is mapped on the class given.
      *
      * @param collection the collection to query against
@@ -150,26 +138,6 @@ public interface AdvancedDatastore extends Datastore {
      * @return the query
      */
     <T> Query<T> find(String collection, Class<T> clazz);
-
-    /**
-     * Finds an entity in the named collection whose id matches the value given.
-     *
-     * @param collection the collection to query
-     * @param clazz      the class to use for mapping
-     * @param id         the ID to query
-     * @param <T>        the type to fetch
-     * @param <V>        the type of the ID
-     * @return the entity with the id.  May be null.
-     */
-    <T, V> T get(String collection, Class<T> clazz, V id);
-
-    /**
-     * Gets the count this collection
-     *
-     * @param collection the collection to count
-     * @return the collection size
-     */
-    long getCount(String collection);
 
     /**
      * Inserts an entity in to the mapped collection.
@@ -292,4 +260,19 @@ public interface AdvancedDatastore extends Datastore {
      */
     <T> Key<T> save(String collection, T entity, InsertOneOptions options, WriteConcern writeConcern);
 
+    //
+    // Migration helpers for deprecated methods
+    //
+
+    /**
+     * Gets the count this collection
+     *
+     * @param collection the collection to count
+     * @return the collection size
+     * @deprecated Inline this method to update to the new usage
+     */
+    @Deprecated
+    default long getCount(String collection) {
+        return find(collection, Object.class).count();
+    }
 }

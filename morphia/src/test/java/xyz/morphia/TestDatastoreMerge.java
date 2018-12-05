@@ -31,7 +31,7 @@ public class TestDatastoreMerge extends TestBase {
         te.position = 1;
         getDatastore().save(te);
 
-        assertEquals(1, getDatastore().getCount(te));
+        assertEquals(1, getDatastore().find(te.getClass()).count());
 
         //only update the position field with merge, normally save would override the whole object.
         final Merger te2 = new Merger();
@@ -39,7 +39,8 @@ public class TestDatastoreMerge extends TestBase {
         te2.position = 5;
         getDatastore().merge(te2);
 
-        final Merger teLoaded = getDatastore().get(te);
+        final Datastore datastore = getDatastore();
+        final Merger teLoaded = datastore.find(te.getClass()).filter("_id", datastore.getMapper().getId(te)).first();
         assertEquals(te.name, teLoaded.name);
         assertEquals(te.foo, teLoaded.foo);
         assertEquals(te2.position, teLoaded.position);

@@ -2,16 +2,13 @@ package xyz.morphia.internal;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoCommandException;
-import com.mongodb.ReadPreference;
 import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.CountOptions;
 import com.mongodb.client.model.CreateCollectionOptions;
 import com.mongodb.client.model.DeleteOptions;
 import com.mongodb.client.model.FindOneAndDeleteOptions;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
-import com.mongodb.client.model.FindOptions;
 import com.mongodb.client.model.InsertManyOptions;
 import com.mongodb.client.model.InsertOneOptions;
 import com.mongodb.client.model.ReturnDocument;
@@ -52,7 +49,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -63,7 +59,6 @@ import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
 import static org.bson.Document.parse;
 
 /**
@@ -295,18 +290,8 @@ public class DatastoreImpl implements AdvancedDatastore {
     }
 
     @Override
-    public Key<?> exists(final Object entityOrKey) {
-        final Query<?> query = buildExistsQuery(entityOrKey);
-        return query.getKey();
-    }
-
-    @Override
     public <T> Query<T> find(final Class<T> clazz) {
         return createQuery(clazz);
-    }
-
-    private <T, V> Query<T> find(final String collection, final Class<T> clazz, final V value) {
-        return find(collection, clazz).filter(Mapper.ID_KEY, value).enableValidation();
     }
 
     @Override
@@ -364,101 +349,6 @@ public class DatastoreImpl implements AdvancedDatastore {
             operations.inc(field.getNameToStore());
         }
 
-    }
-
-    @Override
-    public <T, V> Query<T> get(final Class<T> clazz, final List<V> ids) {
-        return find(clazz).disableValidation().filter(Mapper.ID_KEY + " in", ids).enableValidation();
-    }
-
-    @Override
-    public <T, V> T get(final Class<T> clazz, final V id) {
-        return find(getCollection(clazz).getNamespace().getCollectionName(), clazz, id).get();
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T> T get(final T entity) {
-        final Object id = mapper.getId(entity);
-        if (id == null) {
-            throw new MappingException("Could not get id for " + entity.getClass().getName());
-        }
-        return (T) get(entity.getClass(), id);
-    }
-
-    @Override
-    public <T> T getByKey(final Class<T> clazz, final Key<T> key) {
-        final String collectionName = mapper.getCollectionName(clazz);
-        final String keyCollection = key.getCollection();
-
-        Object id = key.getId();
-        if (id instanceof Document) {
-            ((Document) id).remove(Mapper.CLASS_NAME_FIELDNAME);
-        }
-        return get(keyCollection != null ? keyCollection : collectionName, clazz, id);
-    }
-
-    @Override
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public <T> List<T> getByKeys(final Class<T> clazz, final List<Key<T>> keys) {
-
-        final Map<String, List<Key>> collections = new HashMap<>();
-        final List<T> entities = new ArrayList<>();
-        // String clazzKind = (clazz==null) ? null :
-        // getMapper().getCollectionName(clazz);
-        for (final Key<?> key : keys) {
-            mapper.coerceCollection(key);
-
-            // if (clazzKind != null && !key.getKind().equals(clazzKind))
-            // throw new IllegalArgumentException("Types are not equal (" +
-            // clazz + "!=" + key.getKindClass() +
-            // ") for key and method parameter clazz");
-            //
-            if (collections.containsKey(key.getCollection())) {
-                collections.get(key.getCollection()).add(key);
-            } else {
-                collections.put(key.getCollection(), new ArrayList<>(singletonList((Key) key)));
-            }
-        }
-        for (final Map.Entry<String, List<Key>> entry : collections.entrySet()) {
-            final List<Object> objIds = entry.getValue().stream()
-                 .map(Key::getId)
-                 .collect(toList());
-
-            final List results = find(entry.getKey(), entry.getValue().get(0).getType())
-                                     .disableValidation()
-                                     .filter("_id in", objIds)
-                                     .asList();
-            entities.addAll(results);
-        }
-
-        // TODO: order them based on the incoming Keys.
-        return entities;
-    }
-
-    @Override
-    public <T> List<T> getByKeys(final List<Key<T>> keys) {
-        return getByKeys(null, keys);
-    }
-
-    @Override
-    public <T> long getCount(final T entity) {
-        return getCollection(entity.getClass()).countDocuments();
-    }
-
-    @Override
-    public <T> long getCount(final Class<T> clazz) {
-        return getCollection(clazz).countDocuments();
-    }
-
-    @Override
-    public <T> long getCount(final Query<T> query) {
-        return query.count();
-    }
-
-    @Override
-    public <T> long getCount(final Query<T> query, final CountOptions options) {
-        return query.count(options);
     }
 
     @Override
@@ -578,7 +468,6 @@ public class DatastoreImpl implements AdvancedDatastore {
         return postSaveOperations(entities, /*involvedObjects, */true);
     }
 
-    @SuppressWarnings("unchecked")
     private <T> List<Key<T>> postSaveOperations(final List<T> entities, /*final Map<Object, Document> involvedObjects, */
                                                 final boolean fetchKeys) {
         List<Key<T>> keys = new ArrayList<>();
@@ -610,7 +499,7 @@ public class DatastoreImpl implements AdvancedDatastore {
         WriteConcern wc = defaultWriteConcern;
         if (clazzOrEntity != null) {
             final Entity entityAnn = getMapper().getMappedClass(clazzOrEntity).getEntityAnnotation();
-            if (entityAnn != null && entityAnn.concern().length() != 0) {
+            if (entityAnn != null && !entityAnn.concern().isEmpty()) {
                 wc = WriteConcern.valueOf(entityAnn.concern());
             }
         }
@@ -632,16 +521,6 @@ public class DatastoreImpl implements AdvancedDatastore {
         this.mapper = mapper;
     }
 
-    private Query<?> buildExistsQuery(final Object entityOrKey) {
-        final Key<?> key = mapper.getKey(entityOrKey);
-        final Object id = key.getId();
-        if (id == null) {
-            throw new MappingException("Could not get id for " + entityOrKey.getClass().getName());
-        }
-
-        return find(key.getCollection(), key.getType()).filter(Mapper.ID_KEY, key.getId());
-    }
-
     /**
      * Creates and returns a {@link Query} using the underlying {@link QueryFactory}.
      *
@@ -651,7 +530,6 @@ public class DatastoreImpl implements AdvancedDatastore {
         return getQueryFactory().createQuery(this, collection, type);
     }
 
-    @SuppressWarnings("unchecked")
     private Collection<ClassModel<?>> getClassModels() {
         return getMapper().getMappedClasses().stream().map(MappedClass::getClassModel)
                           .collect(Collectors.toList());
@@ -686,29 +564,8 @@ public class DatastoreImpl implements AdvancedDatastore {
     }
 
     @Override
-    public Key<?> exists(final Object entityOrKey, final ReadPreference readPreference) {
-        Query<?> query = buildExistsQuery(entityOrKey);
-        if (readPreference != null) {
-            query = query.cloneQuery().setReadPreference(readPreference);
-        }
-        return query.getKey(new FindOptions());
-    }
-
-    @Override
     public <T> Query<T> find(final String collection, final Class<T> clazz) {
         return createQuery(collection, clazz);
-    }
-
-    @Override
-    public <T, V> T get(final String collection, final Class<T> clazz, final V id) {
-        return find(collection, clazz)
-                   .filter(Mapper.ID_KEY, id)
-                   .get();
-    }
-
-    @Override
-    public long getCount(final String collection) {
-        return getCollection(collection, Document.class).countDocuments();
     }
 
     @Override
@@ -841,11 +698,9 @@ public class DatastoreImpl implements AdvancedDatastore {
                                                                  return getCollection(aClass).getNamespace().getCollectionName();
                                                              }));
 
-        map.forEach((key, value) -> {
-            ((MongoCollection) getCollection(key, value.get(0).getClass()))
-                .withWriteConcern(wc)
-                .insertMany(value, options);
-        });
+        map.forEach((key, value) -> ((MongoCollection) getCollection(key, value.get(0).getClass()))
+            .withWriteConcern(wc)
+            .insertMany(value, options));
 
         return entities.stream().map(mapper::getKey)
                        .collect(Collectors.toList());

@@ -20,7 +20,8 @@ public class NameValuePairTest extends TestBase {
         container.pair = new NameValuePair<>(SimpleEnum.FOO, 1.2d);
         getDatastore().save(container);
 
-        getDatastore().get(container);
+        getDatastore().find(container.getClass()).filter("_id", getDatastore().getMapper().getId(
+            container)).first();
     }
 
     @Entity

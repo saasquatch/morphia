@@ -13,7 +13,6 @@
 
 package xyz.morphia;
 
-import com.mongodb.WriteConcern;
 import com.mongodb.client.model.PushOptions;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.UpdateResult;
@@ -54,7 +53,6 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -100,32 +98,40 @@ public class TestUpdateOps extends TestBase {
         Datastore ds = getDatastore();
         ds.save(cIntArray);
 
-        assertThat(ds.get(cIntArray).values, is((new ContainsIntArray()).values));
+        assertThat(((ContainsIntArray) ds.find(cIntArray.getClass())
+                                         .filter("_id", ds.getMapper().getId(cIntArray))
+                                         .get()).values, is((new ContainsIntArray()).values));
 
         //add 4 to array
         assertUpdated(ds.updateOne(ds.createQuery(ContainsIntArray.class),
             ds.createUpdateOperations(ContainsIntArray.class)
               .addToSet("values", 4)), 1);
 
-        assertThat(ds.get(cIntArray).values, is(new Integer[]{1, 2, 3, 4}));
+        assertThat(((ContainsIntArray) ds.find(cIntArray.getClass())
+                                         .filter("_id", ds.getMapper().getId(cIntArray))
+                                         .get()).values, is(new Integer[]{1, 2, 3, 4}));
 
         //add unique (4) -- noop
         assertUpdated(ds.updateOne(ds.createQuery(ContainsIntArray.class),
             ds.createUpdateOperations(ContainsIntArray.class)
               .addToSet("values", 4)),
             0);
-        assertThat(ds.get(cIntArray).values, is(new Integer[]{1, 2, 3, 4}));
+        assertThat(((ContainsIntArray) ds.find(cIntArray.getClass())
+                                         .filter("_id", ds.getMapper().getId(cIntArray))
+                                         .get()).values, is(new Integer[]{1, 2, 3, 4}));
 
         //add dup 4
         assertUpdated(ds.updateOne(ds.createQuery(ContainsIntArray.class),
             ds.createUpdateOperations(ContainsIntArray.class)
               .push("values", 4)),
             1);
-        assertThat(ds.get(cIntArray).values, is(new Integer[]{1, 2, 3, 4, 4}));
+        assertThat(((ContainsIntArray) ds.find(cIntArray.getClass())
+                                         .filter("_id", ds.getMapper().getId(cIntArray))
+                                         .get()).values, is(new Integer[]{1, 2, 3, 4, 4}));
 
         //cleanup for next tests
         ds.deleteMany(ds.find(ContainsIntArray.class));
-        cIntArray = ds.getByKey(ContainsIntArray.class, ds.save(new ContainsIntArray()));
+        cIntArray = ds.find(ContainsIntArray.class).filter("_id", ds.save(new ContainsIntArray()).getId()).get();
 
         //add [4,5]
         final List<Integer> newValues = new ArrayList<>();
@@ -135,21 +141,27 @@ public class TestUpdateOps extends TestBase {
             ds.createUpdateOperations(ContainsIntArray.class)
               .addToSet("values", newValues)),
             1);
-        assertThat(ds.get(cIntArray).values, is(new Integer[]{1, 2, 3, 4, 5}));
+        assertThat(((ContainsIntArray) ds.find(cIntArray.getClass())
+                                         .filter("_id", ds.getMapper().getId(cIntArray))
+                                         .get()).values, is(new Integer[]{1, 2, 3, 4, 5}));
 
         //add them again... noop
         assertUpdated(ds.updateOne(ds.createQuery(ContainsIntArray.class),
             ds.createUpdateOperations(ContainsIntArray.class)
               .addToSet("values", newValues)),
             0);
-        assertThat(ds.get(cIntArray).values, is(new Integer[]{1, 2, 3, 4, 5}));
+        assertThat(((ContainsIntArray) ds.find(cIntArray.getClass())
+                                         .filter("_id", ds.getMapper().getId(cIntArray))
+                                         .get()).values, is(new Integer[]{1, 2, 3, 4, 5}));
 
         //add dups [4,5]
         assertUpdated(ds.updateOne(ds.createQuery(ContainsIntArray.class),
             ds.createUpdateOperations(ContainsIntArray.class)
               .push("values", newValues)),
             1);
-        assertThat(ds.get(cIntArray).values, is(new Integer[]{1, 2, 3, 4, 5, 4, 5}));
+        assertThat(((ContainsIntArray) ds.find(cIntArray.getClass())
+                                         .filter("_id", ds.getMapper().getId(cIntArray))
+                                         .get()).values, is(new Integer[]{1, 2, 3, 4, 5, 4, 5}));
     }
 
     private void assertUpdated(final UpdateResult res, final long count) {
@@ -158,7 +170,6 @@ public class TestUpdateOps extends TestBase {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testAddAll() {
         getMapper().map(EntityLogs.class, EntityLog.class);
         String uuid = "4ec6ada9-081a-424f-bee0-934c0bc4fab7";
@@ -207,31 +218,40 @@ public class TestUpdateOps extends TestBase {
         ContainsIntArray cIntArray = new ContainsIntArray();
         getDatastore().save(cIntArray);
 
-        assertThat(getDatastore().get(cIntArray).values, is((new ContainsIntArray()).values));
+        final Datastore datastore = getDatastore();
+        assertThat(((ContainsIntArray) datastore.find(cIntArray.getClass()).filter("_id", datastore.getMapper().getId(cIntArray)).get()).values, is((new ContainsIntArray()).values));
 
         assertUpdated(getDatastore().updateOne(getDatastore().find(ContainsIntArray.class),
             getDatastore().createUpdateOperations(ContainsIntArray.class)
                           .addToSet("values", 5)),
             1);
-        assertThat(getDatastore().get(cIntArray).values, is(new Integer[]{1, 2, 3, 5}));
+        final Datastore datastore4 = getDatastore();
+        assertThat(
+            ((ContainsIntArray) datastore4.find(cIntArray.getClass()).filter("_id", datastore4.getMapper().getId(cIntArray)).get()).values, is(new Integer[]{1, 2, 3, 5}));
 
         assertUpdated(getDatastore().updateOne(getDatastore().find(ContainsIntArray.class),
             getDatastore().createUpdateOperations(ContainsIntArray.class)
                           .addToSet("values", 4)),
             1);
-        assertThat(getDatastore().get(cIntArray).values, is(new Integer[]{1, 2, 3, 5, 4}));
+        final Datastore datastore3 = getDatastore();
+        assertThat(
+            ((ContainsIntArray) datastore3.find(cIntArray.getClass()).filter("_id", datastore3.getMapper().getId(cIntArray)).get()).values, is(new Integer[]{1, 2, 3, 5, 4}));
 
         assertUpdated(getDatastore().updateOne(getDatastore().find(ContainsIntArray.class),
             getDatastore().createUpdateOperations(ContainsIntArray.class)
                           .addToSet("values", asList(8, 9))),
             1);
-        assertThat(getDatastore().get(cIntArray).values, is(new Integer[]{1, 2, 3, 5, 4, 8, 9}));
+        final Datastore datastore2 = getDatastore();
+        assertThat(
+            ((ContainsIntArray) datastore2.find(cIntArray.getClass()).filter("_id", datastore2.getMapper().getId(cIntArray)).get()).values, is(new Integer[]{1, 2, 3, 5, 4, 8, 9}));
 
         assertUpdated(getDatastore().updateOne(getDatastore().find(ContainsIntArray.class),
             getDatastore().createUpdateOperations(ContainsIntArray.class)
                           .addToSet("values", asList(4, 5))),
             0);
-        assertThat(getDatastore().get(cIntArray).values, is(new Integer[]{1, 2, 3, 5, 4, 8, 9}));
+        final Datastore datastore1 = getDatastore();
+        assertThat(
+            ((ContainsIntArray) datastore1.find(cIntArray.getClass()).filter("_id", datastore1.getMapper().getId(cIntArray)).get()).values, is(new Integer[]{1, 2, 3, 5, 4, 8, 9}));
     }
 
     @Test
@@ -243,7 +263,9 @@ public class TestUpdateOps extends TestBase {
         getMongoClient().dropDatabase("ContainsIntArray");
         ds.saveMany(asList(cIntArray, control));
 
-        assertThat(ds.get(cIntArray).values, is((new ContainsIntArray()).values));
+        assertThat(((ContainsIntArray) ds.find(cIntArray.getClass())
+                                         .filter("_id", ds.getMapper().getId(cIntArray))
+                                         .get()).values, is((new ContainsIntArray()).values));
         Query<ContainsIntArray> query = ds.find(ContainsIntArray.class)
                                           .filter("_id = ", cIntArray.id);
 
@@ -271,12 +293,12 @@ public class TestUpdateOps extends TestBase {
                            final Query<ContainsIntArray> query, final UpdateOperations<ContainsIntArray> operations,
                            final Integer[] target) {
         assertUpdated(getDatastore().updateOne(query, operations), 1);
-        assertThat(getDatastore().get(ContainsIntArray.class, updated).values, is(target));
-        assertThat(getDatastore().get(ContainsIntArray.class, control).values, is(new Integer[]{1, 2, 3}));
+        assertThat(getDatastore().find(ContainsIntArray.class).filter("_id", updated).get().values, is(target));
+        assertThat(getDatastore().find(ContainsIntArray.class).filter("_id", control).get().values, is(new Integer[]{1, 2, 3}));
 
         assertUpdated(getDatastore().updateOne(query, operations, new UpdateOptions(), getDatastore().getDefaultWriteConcern()), 0);
-        assertThat(getDatastore().get(ContainsIntArray.class, updated).values, is(target));
-        assertThat(getDatastore().get(ContainsIntArray.class, control).values, is(new Integer[]{1, 2, 3}));
+        assertThat(getDatastore().find(ContainsIntArray.class).filter("_id", updated).get().values, is(target));
+        assertThat(getDatastore().find(ContainsIntArray.class).filter("_id", control).get().values, is(new Integer[]{1, 2, 3}));
     }
 
     private void assertInserted(final UpdateResult res) {
@@ -321,34 +343,34 @@ public class TestUpdateOps extends TestBase {
         final Query<Rectangle> query2 = getDatastore().find(Rectangle.class).filter("height", 2D);
         final Query<Rectangle> query35 = getDatastore().find(Rectangle.class).filter("height", 3.5D);
 
-        assertThat(getDatastore().getCount(query1), is(3L));
-        assertThat(getDatastore().getCount(query2), is(0L));
+        assertThat(query1.count(), is(3L));
+        assertThat(query2.count(), is(0L));
 
         final UpdateResult results = getDatastore().updateMany(query1, getDatastore().createUpdateOperations(Rectangle.class)
                                                                                      .inc("height"));
         assertUpdated(results, 3);
 
-        assertThat(getDatastore().getCount(query1), is(0L));
-        assertThat(getDatastore().getCount(query2), is(3L));
+        assertThat(query1.count(), is(0L));
+        assertThat(query2.count(), is(3L));
 
         getDatastore().updateMany(query2, getDatastore().createUpdateOperations(Rectangle.class).dec("height"));
-        assertThat(getDatastore().getCount(query1), is(3L));
-        assertThat(getDatastore().getCount(query2), is(0L));
+        assertThat(query1.count(), is(3L));
+        assertThat(query2.count(), is(0L));
 
         getDatastore().updateMany(query1, getDatastore().createUpdateOperations(Rectangle.class).inc("height", 2.5D));
-        assertThat(getDatastore().getCount(query1), is(0L));
-        assertThat(getDatastore().getCount(query35), is(3L));
+        assertThat(query1.count(), is(0L));
+        assertThat(query35.count(), is(3L));
 
         getDatastore().updateMany(query35, getDatastore().createUpdateOperations(Rectangle.class).dec("height", 2.5D));
-        assertThat(getDatastore().getCount(query1), is(3L));
-        assertThat(getDatastore().getCount(query35), is(0L));
+        assertThat(query1.count(), is(3L));
+        assertThat(query35.count(), is(0L));
 
         getDatastore().updateMany(getDatastore().find(Rectangle.class).filter("height", 1D),
             getDatastore().createUpdateOperations(Rectangle.class)
                           .set("height", 1D)
                           .inc("width", 20D));
 
-        assertThat(getDatastore().getCount(Rectangle.class), is(5L));
+        assertThat(getDatastore().find(Rectangle.class).count(), is(5L));
         assertThat(getDatastore().find(Rectangle.class).filter("height", 1D).get(), is(notNullValue()));
         assertThat(getDatastore().find(Rectangle.class).filter("width", 30D).get(), is(notNullValue()));
 
@@ -444,7 +466,7 @@ public class TestUpdateOps extends TestBase {
             0);
 
 
-        assertThat(ds.get(Circle.class, id).getRadius(), is(originalValue));
+        assertThat(ds.find(Circle.class).filter("_id", id).get().getRadius(), is(originalValue));
     }
 
     @Test
@@ -460,7 +482,7 @@ public class TestUpdateOps extends TestBase {
         assertUpdated(getDatastore().updateOne(getDatastore().find(Circle.class).field("id").equal(id),
             getDatastore().createUpdateOperations(Circle.class).min("radius", 5D)), 0);
 
-        final Circle updatedCircle = getDatastore().get(Circle.class, id);
+        final Circle updatedCircle = getDatastore().find(Circle.class).filter("_id", id).get();
         assertThat(updatedCircle, is(notNullValue()));
         assertThat(updatedCircle.getRadius(), is(originalValue));
     }
@@ -485,7 +507,7 @@ public class TestUpdateOps extends TestBase {
             options,
             getDatastore().getDefaultWriteConcern()), 1);
 
-        final Circle updatedCircle = getDatastore().get(Circle.class, id);
+        final Circle updatedCircle = getDatastore().find(Circle.class).filter("_id", id).get();
         assertThat(updatedCircle, is(notNullValue()));
         assertThat(updatedCircle.getRadius(), is(newLowerValue));
     }
@@ -494,7 +516,9 @@ public class TestUpdateOps extends TestBase {
     public void testPush() {
         ContainsIntArray cIntArray = new ContainsIntArray();
         getDatastore().save(cIntArray);
-        assertThat(getDatastore().get(cIntArray).values, is((new ContainsIntArray()).values));
+        final Datastore datastore5 = getDatastore();
+        assertThat(
+            ((ContainsIntArray) datastore5.find(cIntArray.getClass()).filter("_id", datastore5.getMapper().getId(cIntArray)).get()).values, is((new ContainsIntArray()).values));
 
         getDatastore().updateOne(getDatastore().find(ContainsIntArray.class),
             getDatastore().createUpdateOperations(ContainsIntArray.class)
@@ -502,7 +526,9 @@ public class TestUpdateOps extends TestBase {
             new UpdateOptions(),
             getDatastore().getDefaultWriteConcern());
 
-        assertThat(getDatastore().get(cIntArray).values, is(new Integer[]{1, 2, 3, 4}));
+        final Datastore datastore4 = getDatastore();
+        assertThat(
+            ((ContainsIntArray) datastore4.find(cIntArray.getClass()).filter("_id", datastore4.getMapper().getId(cIntArray)).get()).values, is(new Integer[]{1, 2, 3, 4}));
 
         getDatastore().updateOne(getDatastore().find(ContainsIntArray.class),
             getDatastore().createUpdateOperations(ContainsIntArray.class)
@@ -510,7 +536,9 @@ public class TestUpdateOps extends TestBase {
             new UpdateOptions(),
             getDatastore().getDefaultWriteConcern());
 
-        assertThat(getDatastore().get(cIntArray).values, is(new Integer[]{1, 2, 3, 4, 4}));
+        final Datastore datastore3 = getDatastore();
+        assertThat(
+            ((ContainsIntArray) datastore3.find(cIntArray.getClass()).filter("_id", datastore3.getMapper().getId(cIntArray)).get()).values, is(new Integer[]{1, 2, 3, 4, 4}));
 
         getDatastore().updateOne(getDatastore().find(ContainsIntArray.class),
             getDatastore().createUpdateOperations(ContainsIntArray.class)
@@ -518,7 +546,9 @@ public class TestUpdateOps extends TestBase {
             new UpdateOptions(),
             getDatastore().getDefaultWriteConcern());
 
-        assertThat(getDatastore().get(cIntArray).values, is(new Integer[]{1, 2, 3, 4, 4, 5, 6}));
+        final Datastore datastore2 = getDatastore();
+        assertThat(
+            ((ContainsIntArray) datastore2.find(cIntArray.getClass()).filter("_id", datastore2.getMapper().getId(cIntArray)).get()).values, is(new Integer[]{1, 2, 3, 4, 4, 5, 6}));
 
         getDatastore().updateOne(getDatastore().find(ContainsIntArray.class),
             getDatastore().createUpdateOperations(ContainsIntArray.class)
@@ -526,7 +556,9 @@ public class TestUpdateOps extends TestBase {
             new UpdateOptions(),
             getDatastore().getDefaultWriteConcern());
 
-        assertThat(getDatastore().get(cIntArray).values, is(new Integer[]{1, 2, 12, 3, 4, 4, 5, 6}));
+        final Datastore datastore1 = getDatastore();
+        assertThat(
+            ((ContainsIntArray) datastore1.find(cIntArray.getClass()).filter("_id", datastore1.getMapper().getId(cIntArray)).get()).values, is(new Integer[]{1, 2, 12, 3, 4, 4, 5, 6}));
 
 
         getDatastore().updateOne(getDatastore().find(ContainsIntArray.class),
@@ -535,7 +567,8 @@ public class TestUpdateOps extends TestBase {
             new UpdateOptions(),
             getDatastore().getDefaultWriteConcern());
 
-        assertThat(getDatastore().get(cIntArray).values, is(new Integer[]{1, 2, 12, 3, 99, 98, 97, 4, 4, 5, 6}));
+        final Datastore datastore = getDatastore();
+        assertThat(((ContainsIntArray) datastore.find(cIntArray.getClass()).filter("_id", datastore.getMapper().getId(cIntArray)).get()).values, is(new Integer[]{1, 2, 12, 3, 99, 98, 97, 4, 4, 5, 6}));
     }
 
     @Test
@@ -615,7 +648,7 @@ public class TestUpdateOps extends TestBase {
     public void testElemMatchUpdate() {
         // setUp
         Object id = getDatastore().save(new ContainsIntArray()).getId();
-        assertThat(getDatastore().get(ContainsIntArray.class, id).values, arrayContaining(1, 2, 3));
+        assertThat(getDatastore().find(ContainsIntArray.class).filter("_id", id).get().values, arrayContaining(1, 2, 3));
 
         // do patch
         Query<ContainsIntArray> q = getDatastore().createQuery(ContainsIntArray.class)
@@ -627,14 +660,17 @@ public class TestUpdateOps extends TestBase {
         getDatastore().updateMany(q, ops);
 
         // expected
-        assertThat(getDatastore().get(ContainsIntArray.class, id).values, arrayContaining(1, 5, 3));
+        assertThat(getDatastore().find(ContainsIntArray.class).filter("_id", id).get().values, arrayContaining(1, 5, 3));
     }
 
     @Test
     public void testRemoveFirst() {
         final ContainsIntArray cIntArray = new ContainsIntArray();
         getDatastore().save(cIntArray);
-        ContainsIntArray cIALoaded = getDatastore().get(cIntArray);
+        final Datastore datastore2 = getDatastore();
+        ContainsIntArray cIALoaded = (ContainsIntArray) datastore2.find(cIntArray.getClass())
+                                                                  .filter("_id", datastore2.getMapper().getId(cIntArray))
+                                                                  .get();
         assertThat(cIALoaded.values.length, is(3));
         assertThat(cIALoaded.values, is((new ContainsIntArray()).values));
 
@@ -644,7 +680,9 @@ public class TestUpdateOps extends TestBase {
             new UpdateOptions(),
             getDatastore().getDefaultWriteConcern()),
             1);
-        assertThat(getDatastore().get(cIntArray).values, is(new Integer[]{2, 3}));
+        final Datastore datastore1 = getDatastore();
+        assertThat(
+            ((ContainsIntArray) datastore1.find(cIntArray.getClass()).filter("_id", datastore1.getMapper().getId(cIntArray)).get()).values, is(new Integer[]{2, 3}));
 
         assertUpdated(getDatastore().updateOne(getDatastore().find(ContainsIntArray.class),
             getDatastore().createUpdateOperations(ContainsIntArray.class)
@@ -652,7 +690,8 @@ public class TestUpdateOps extends TestBase {
             new UpdateOptions(),
             getDatastore().getDefaultWriteConcern()),
             1);
-        assertThat(getDatastore().get(cIntArray).values, is(new Integer[]{2}));
+        final Datastore datastore = getDatastore();
+        assertThat(((ContainsIntArray) datastore.find(cIntArray.getClass()).filter("_id", datastore.getMapper().getId(cIntArray)).get()).values, is(new Integer[]{2}));
     }
 
     @Test
@@ -664,7 +703,7 @@ public class TestUpdateOps extends TestBase {
             new UpdateOptions().upsert(true),
             getDatastore().getDefaultWriteConcern()));
 
-        final Circle updatedCircle = getDatastore().get(Circle.class, id);
+        final Circle updatedCircle = getDatastore().find(Circle.class).filter("_id", id).get();
 
         assertThat(updatedCircle, is(notNullValue()));
         assertThat(updatedCircle.getRadius(), is(2D));
@@ -688,7 +727,7 @@ public class TestUpdateOps extends TestBase {
             getDatastore().getDefaultWriteConcern()),
             1);
 
-        final Circle updatedCircle = getDatastore().get(Circle.class, id);
+        final Circle updatedCircle = getDatastore().find(Circle.class).filter("_id", id).get();
 
         assertThat(updatedCircle, is(notNullValue()));
         assertThat(updatedCircle.getRadius(), is(31D));
@@ -705,7 +744,10 @@ public class TestUpdateOps extends TestBase {
             getDatastore().getDefaultWriteConcern()),
             1);
 
-        assertThat(ds.getByKey(Circle.class, key).getRadius(), is(2D));
+        assertThat(ds.find(Circle.class)
+                     .filter("_id", key.getId())
+                     .get()
+                     .getRadius(), is(2D));
 
 
         assertUpdated(ds.updateOne(ds.find(Circle.class).filter("radius", 2D),
@@ -714,7 +756,7 @@ public class TestUpdateOps extends TestBase {
             getDatastore().getDefaultWriteConcern()),
             1);
 
-        assertThat(ds.getByKey(Circle.class, key).getRadius(), is(0D));
+        assertThat(ds.find(Circle.class).filter("_id", key.getId()).get().getRadius(), is(0D));
 
         Article article = new Article();
 

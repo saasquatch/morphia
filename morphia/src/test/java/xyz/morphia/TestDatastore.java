@@ -72,7 +72,7 @@ public class TestDatastore extends TestBase {
             assertEquals(id++, key.getId());
         }
         assertEquals(5, id);
-        assertEquals(4, getDatastore().getCount(FacebookUser.class));
+        assertEquals(4, getDatastore().find(FacebookUser.class).count());
 
     }
 
@@ -95,15 +95,6 @@ public class TestDatastore extends TestBase {
     }
 
     @Test
-    public void testDoesNotExistAfterDelete() {
-        final Key<FacebookUser> key = getDatastore().save(new FacebookUser(currentTimeMillis(), "user 1"));
-
-        getDatastore().deleteMany(getDatastore().find(FacebookUser.class));
-
-        assertNull("Shouldn't exist after delete", getDatastore().exists(key));
-    }
-
-    @Test
     public void testEmbedded() {
         getDatastore().deleteMany(getDatastore().find(Hotel.class));
         final Hotel borg = new Hotel();
@@ -119,52 +110,12 @@ public class TestDatastore extends TestBase {
 
 
         getDatastore().save(borg);
-        assertEquals(1, getDatastore().getCount(Hotel.class));
+        assertEquals(1, getDatastore().find(Hotel.class).count());
         assertNotNull(borg.getId());
 
-        final Hotel hotelLoaded = getDatastore().get(Hotel.class, borg.getId());
+        final Hotel hotelLoaded = getDatastore().find(Hotel.class).filter("_id", borg.getId()).get();
         assertEquals(borg.getName(), hotelLoaded.getName());
         assertEquals(borg.getAddress().getPostCode(), hotelLoaded.getAddress().getPostCode());
-    }
-
-    @Test
-    public void testExistsWhenItemSaved() {
-        // given
-        long id = currentTimeMillis();
-        final Key<FacebookUser> key = getDatastore().save(new FacebookUser(id, "user 1"));
-
-        // expect
-        assertNotNull(getDatastore().get(FacebookUser.class, id));
-        assertNotNull(getDatastore().exists(key));
-    }
-
-    @Test
-    public void testExistsWhenSecondaryPreferred() {
-        if (isReplicaSet()) {
-            final Datastore datastore = getDatastore();
-            final WriteConcern defaultWriteConcern = datastore.getDefaultWriteConcern();
-            try {
-                datastore.setDefaultWriteConcern(W2);
-                final Key<FacebookUser> key = datastore.save(new FacebookUser(currentTimeMillis(), "user 1"),
-                    new InsertOneOptions(), getDatastore().getDefaultWriteConcern());
-                assertNotNull("Should exist when using secondaryPreferred", getAds().exists(key, secondaryPreferred()));
-            } finally {
-                datastore.setDefaultWriteConcern(defaultWriteConcern);
-            }
-        }
-    }
-
-
-    @Test
-    public void testExistsWithEntity() {
-        final FacebookUser facebookUser = new FacebookUser(1, "user one");
-        getDatastore().save(facebookUser);
-        assertEquals(1, getDatastore().getCount(FacebookUser.class));
-        assertNotNull(getDatastore().get(FacebookUser.class, 1));
-        assertNotNull(getDatastore().exists(facebookUser));
-        getDatastore().deleteMany(getDatastore().find(FacebookUser.class));
-        assertEquals(0, getDatastore().getCount(FacebookUser.class));
-        assertNull(getDatastore().exists(facebookUser));
     }
 
     @Test
@@ -177,9 +128,9 @@ public class TestDatastore extends TestBase {
         fbUsers.add(new FacebookUser(4, "user 4"));
 
         getDatastore().saveMany(fbUsers);
-        assertEquals(4, getDatastore().getCount(FacebookUser.class));
-        assertNotNull(getDatastore().get(FacebookUser.class, 1));
-        List<FacebookUser> res = getDatastore().get(FacebookUser.class, asList(1L, 2L)).asList();
+        assertEquals(4, getDatastore().find(FacebookUser.class).count());
+        assertNotNull(getDatastore().find(FacebookUser.class).filter("_id", 1).get());
+        List<FacebookUser> res = getDatastore().find(FacebookUser.class).filter(Mapper.ID_KEY + " in", asList(1L, 2L)).asList();
         assertEquals(2, res.size());
         assertNotNull(res.get(0));
         assertNotEquals(0, res.get(0).id);
@@ -188,9 +139,9 @@ public class TestDatastore extends TestBase {
 
         getDatastore().getCollection(FacebookUser.class).deleteMany(new Document());
         getAds().insertMany(fbUsers);
-        assertEquals(4, getDatastore().getCount(FacebookUser.class));
-        assertNotNull(getDatastore().get(FacebookUser.class, 1));
-        res = getDatastore().get(FacebookUser.class, asList(1L, 2L)).asList();
+        assertEquals(4, getDatastore().find(FacebookUser.class).count());
+        assertNotNull(getDatastore().find(FacebookUser.class).filter("_id", 1).get());
+        res = getDatastore().find(FacebookUser.class).filter(Mapper.ID_KEY + " in", asList(1L, 2L)).asList();
         assertEquals(2, res.size());
         assertNotNull(res.get(0));
         assertNotEquals(0, res.get(0).id);
@@ -215,7 +166,10 @@ public class TestDatastore extends TestBase {
         assertTrue(life1.postPersist);
         assertTrue(life1.postPersistWithParam);
 
-        final LifecycleTestObj loaded = getDatastore().get(life1);
+        final Datastore datastore = getDatastore();
+        final LifecycleTestObj loaded = datastore.find(life1.getClass())
+                                                 .filter("_id", datastore.getMapper().getId(life1))
+                                                 .first();
         assertTrue(loaded.preLoad);
         assertTrue(loaded.preLoadWithParam);
         assertTrue(loaded.postLoad);
@@ -282,52 +236,52 @@ public class TestDatastore extends TestBase {
 
         //test delete(entity)
         getDatastore().save(rect);
-        assertEquals(1, getDatastore().getCount(rect));
+        assertEquals(1, getDatastore().find(rect.getClass()).count());
         getDatastore().deleteOne(rect);
-        assertEquals(0, getDatastore().getCount(rect));
+        assertEquals(0, getDatastore().find(rect.getClass()).count());
 
         //test delete(entity, id)
         getDatastore().save(rect);
-        assertEquals(1, getDatastore().getCount(rect));
+        assertEquals(1, getDatastore().find(rect.getClass()).count());
         getDatastore().deleteOne(rect.getClass(), 1);
-        assertEquals(1, getDatastore().getCount(rect));
+        assertEquals(1, getDatastore().find(rect.getClass()).count());
         getDatastore().deleteOne(rect.getClass(), id);
-        assertEquals(0, getDatastore().getCount(rect));
+        assertEquals(0, getDatastore().find(rect.getClass()).count());
 
         //test delete(entity, {id})
         getDatastore().save(rect);
-        assertEquals(1, getDatastore().getCount(rect));
+        assertEquals(1, getDatastore().find(rect.getClass()).count());
         getDatastore().deleteMany(rect.getClass(), singletonList(rect.getId()));
-        assertEquals(0, getDatastore().getCount(rect));
+        assertEquals(0, getDatastore().find(rect.getClass()).count());
 
         //test delete(entity, {id,id})
         ObjectId id1 = (ObjectId) getDatastore().save(new Rectangle(10, 10)).getId();
         ObjectId id2 = (ObjectId) getDatastore().save(new Rectangle(10, 10)).getId();
-        assertEquals(2, getDatastore().getCount(rect));
+        assertEquals(2, getDatastore().find(rect.getClass()).count());
         getDatastore().deleteMany(rect.getClass(), asList(id1, id2));
-        assertEquals(0, getDatastore().getCount(rect));
+        assertEquals(0, getDatastore().find(rect.getClass()).count());
 
         //test delete(Class, {id,id})
         id1 = (ObjectId) getDatastore().save(new Rectangle(20, 20)).getId();
         id2 = (ObjectId) getDatastore().save(new Rectangle(20, 20)).getId();
-        assertEquals("datastore should have saved two entities with autogenerated ids", 2, getDatastore().getCount(rect));
+        assertEquals("datastore should have saved two entities with autogenerated ids", 2, getDatastore().find(rect.getClass()).count());
         getDatastore().deleteMany(rect.getClass(), asList(id1, id2));
-        assertEquals("datastore should have deleted two entities with autogenerated ids", 0, getDatastore().getCount(rect));
+        assertEquals("datastore should have deleted two entities with autogenerated ids", 0, getDatastore().find(rect.getClass()).count());
 
         //test delete(entity, {id}) with one left
         id1 = (ObjectId) getDatastore().save(new Rectangle(20, 20)).getId();
         getDatastore().save(new Rectangle(20, 20));
-        assertEquals(2, getDatastore().getCount(rect));
+        assertEquals(2, getDatastore().find(rect.getClass()).count());
         getDatastore().deleteMany(rect.getClass(), singletonList(id1));
-        assertEquals(1, getDatastore().getCount(rect));
+        assertEquals(1, getDatastore().find(rect.getClass()).count());
         getDatastore().getCollection(Rectangle.class).drop();
 
         //test delete(Class, {id}) with one left
         id1 = (ObjectId) getDatastore().save(new Rectangle(20, 20)).getId();
         getDatastore().save(new Rectangle(20, 20));
-        assertEquals(2, getDatastore().getCount(rect));
+        assertEquals(2, getDatastore().find(rect.getClass()).count());
         getDatastore().deleteMany(Rectangle.class, singletonList(id1));
-        assertEquals(1, getDatastore().getCount(rect));
+        assertEquals(1, getDatastore().find(rect.getClass()).count());
     }
 
     @Test

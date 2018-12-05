@@ -28,7 +28,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import static java.lang.String.format;
-import static java.util.Collections.singletonList;
 import static java.util.Collections.sort;
 import static java.util.Comparator.comparingInt;
 

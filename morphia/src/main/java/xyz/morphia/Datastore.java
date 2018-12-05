@@ -70,12 +70,12 @@ public interface Datastore {
     /**
      * Deletes the given entity (by id)
      *
-     * @param clazz the type to delete
-     * @param id    the ID of the entity to delete
-     * @param options the options to use when deleting
+     * @param clazz        the type to delete
+     * @param id           the ID of the entity to delete
+     * @param options      the options to use when deleting
      * @param writeConcern the WriteConcern to apply
-     * @param <T>   the type to delete
-     * @param <V>   the type of the id
+     * @param <T>          the type to delete
+     * @param <V>          the type of the id
      * @return results of the delete
      * @since 1.3
      */
@@ -95,12 +95,12 @@ public interface Datastore {
     /**
      * Deletes the given entities (by id)
      *
-     * @param clazz the type to delete
-     * @param ids   the IDs of the entity to delete
-     * @param options the options to use when deleting
+     * @param clazz        the type to delete
+     * @param ids          the IDs of the entity to delete
+     * @param options      the options to use when deleting
      * @param writeConcern the WriteConcern to apply
-     * @param <T>   the type to delete
-     * @param <V>   the type of the id
+     * @param <T>          the type to delete
+     * @param <V>          the type of the id
      * @return results of the delete
      * @since 1.3
      */
@@ -118,10 +118,10 @@ public interface Datastore {
     /**
      * Deletes entities based on the query
      *
-     * @param query   the query to use when finding documents to delete
-     * @param options the options to apply to the delete
+     * @param query        the query to use when finding documents to delete
+     * @param options      the options to apply to the delete
      * @param writeConcern the WriteConcern to apply
-     * @param <T>     the type to delete
+     * @param <T>          the type to delete
      * @return results of the delete
      * @since 1.3
      */
@@ -139,10 +139,10 @@ public interface Datastore {
     /**
      * Deletes the given entity (by @Id), with the WriteConcern
      *
-     * @param entity  the entity to delete
-     * @param options the options to use when deleting
+     * @param entity       the entity to delete
+     * @param options      the options to use when deleting
      * @param writeConcern the WriteConcern to apply
-     * @param <T>     the type to delete
+     * @param <T>          the type to delete
      * @return results of the delete
      * @since 1.3
      */
@@ -156,8 +156,8 @@ public interface Datastore {
     /**
      * Process any {@link Validation} annotations for document validation.
      *
-     * @since 1.3
      * @mongodb.driver.manual core/document-validation/
+     * @since 1.3
      */
     void enableDocumentValidation();
 
@@ -176,7 +176,6 @@ public interface Datastore {
      *
      * @param background if true, the index will be built in the background.  If false, background indexing is deferred to the annotation
      *                   definition
-     *
      * @see Indexes
      * @see Indexed
      * @see Text
@@ -188,7 +187,6 @@ public interface Datastore {
      *
      * @param clazz the class from which to get the index definitions
      * @param <T>   the type to index
-     *
      * @see Indexes
      * @see Indexed
      * @see Text
@@ -202,20 +200,11 @@ public interface Datastore {
      * @param background if true, the index will be built in the background.  If false, background indexing is deferred to the annotation
      *                   definition
      * @param <T>        the type to index
-     *
      * @see Indexes
      * @see Indexed
      * @see Text
      */
     <T> void ensureIndexes(Class<T> clazz, boolean background);
-
-    /**
-     * Does a query to check if the keyOrEntity exists in mongodb
-     *
-     * @param keyOrEntity the value to check for
-     * @return the key if the entity exists
-     */
-    Key<?> exists(Object keyOrEntity);
 
     /**
      * Find all instances by type
@@ -238,10 +227,10 @@ public interface Datastore {
     /**
      * Deletes the given entities based on the query (first item only).
      *
-     * @param query the query to use when finding entities to delete
-     * @param options the options to apply to the delete
+     * @param query        the query to use when finding entities to delete
+     * @param options      the options to apply to the delete
      * @param writeConcern the WriteConcern to apply
-     * @param <T>   the type to query
+     * @param <T>          the type to query
      * @return the deleted Entity
      * @since 1.3
      */
@@ -260,120 +249,22 @@ public interface Datastore {
     /**
      * Find the first Entity from the Query, and modify it.
      *
-     * @param query      the query to use when finding entities to update
-     * @param operations the updates to apply to the matched documents
-     * @param options    the options to apply to the update
+     * @param query        the query to use when finding entities to update
+     * @param operations   the updates to apply to the matched documents
+     * @param options      the options to apply to the update
      * @param writeConcern the WriteConcern to apply
-     * @param <T>        the type to query
+     * @param <T>          the type to query
      * @return The modified Entity (the result of the update)
      * @since 1.3
      */
     <T> T findAndModify(Query<T> query, UpdateOperations<T> operations, FindOneAndUpdateOptions options, WriteConcern writeConcern);
 
     /**
-     * Find the given entity (by collectionName/id); think of this as refresh
-     *
-     * @param entity The entity to search for
-     * @param <T>    the type to fetch
-     * @return the matched entity.  may be null.
-     */
-    <T> T get(T entity);
-
-    /**
-     * Find the given entity (by id); shorthand for {@code find("_id ", id)}
-     *
      * @param clazz the class to use for mapping
-     * @param id    the ID to query
-     * @param <T>   the type to fetch
-     * @param <V>   the type of the ID
-     * @return the matched entity.  may be null.
-     */
-    <T, V> T get(Class<T> clazz, V id);
-
-    /**
-     * Find the given entities (by id); shorthand for {@code find("_id in", ids)}
-     *
-     * @param clazz the class to use for mapping
-     * @param ids   the IDs to query
-     * @param <T>   the type to fetch
-     * @param <V>   the type of the ID
-     * @return the query to find the entities
-     */
-    <T, V> Query<T> get(Class<T> clazz, List<V> ids);
-
-    /**
-     * Find the given entity (by collectionName/id);
-     *
-     * @param clazz the class to use for mapping
-     * @param key   the key search with
-     * @param <T>   the type to fetch
-     * @return the matched entity.  may be null.
-     */
-    <T> T getByKey(Class<T> clazz, Key<T> key);
-
-    /**
-     * Find the given entities (by id), verifying they are of the correct type; shorthand for {@code find("_id in", ids)}
-     *
-     * @param clazz the class to use for mapping
-     * @param keys  the keys to search with
-     * @param <T>   the type to fetch
-     * @return the matched entities.  may be null.
-     */
-    <T> List<T> getByKeys(Class<T> clazz, List<Key<T>> keys);
-
-    /**
-     * Find the given entities (by id); shorthand for {@code find("_id in", ids)}
-     *
-     * @param keys the keys to search with
-     * @param <T>  the type to fetch
-     * @return the matched entities.  may be null.
-     */
-    <T> List<T> getByKeys(List<Key<T>> keys);
-
-    /**
-     * @param clazz the class to use for mapping
-     * @param <T>  the type to lookup
+     * @param <T>   the type to lookup
      * @return the mapped collection for the collection
      */
     <T> MongoCollection<T> getCollection(Class<T> clazz);
-
-    /**
-     * Gets the count this kind ({@link MongoCollection})
-     *
-     * @param entity The entity whose type to count
-     * @param <T>    the type to count
-     * @return the count
-     */
-    <T> long getCount(T entity);
-
-    /**
-     * Gets the count this kind ({@link MongoCollection})
-     *
-     * @param clazz The clazz type to count
-     * @param <T>   the type to count
-     * @return the count
-     */
-    <T> long getCount(Class<T> clazz);
-
-    /**
-     * Gets the count of items returned by this query; same as {@code query.countAll()}
-     *
-     * @param query the query to filter the documents to count
-     * @param <T>   the type to count
-     * @return the count
-     */
-    <T> long getCount(Query<T> query);
-
-    /**
-     * Gets the count of items returned by this query; same as {@code query.countAll()}
-     *
-     * @param query   the query to filter the documents to count
-     * @param <T>     the type to count
-     * @param options the options to apply to the count
-     * @return the count
-     * @since 1.3
-     */
-    <T> long getCount(Query<T> query, CountOptions options);
 
     /**
      * @return the database this Datastore uses
@@ -417,10 +308,10 @@ public interface Datastore {
     /**
      * Work as if you did an update with each field in the entity doing a $set; Only at the top level of the entity.
      *
-     * @param entity the entity to merge back in to the database
+     * @param entity  the entity to merge back in to the database
      * @param options the options to apply
-     * @param wc     the WriteConcern to use
-     * @param <T>    the type of the entity
+     * @param wc      the WriteConcern to use
+     * @param <T>     the type of the entity
      */
     <T> void merge(T entity, InsertOneOptions options, WriteConcern wc);
 
@@ -450,9 +341,9 @@ public interface Datastore {
     /**
      * Saves the entities (Objects) and updates the @Id field, with the WriteConcern
      *
-     * @param entities the entities to save
-     * @param <T>      the type of the entity
-     * @param options  the options to apply to the save operation
+     * @param entities     the entities to save
+     * @param <T>          the type of the entity
+     * @param options      the options to apply to the save operation
      * @param writeConcern the WriteConcern to apply
      * @return the keys of the entities
      */
@@ -472,7 +363,7 @@ public interface Datastore {
      *
      * @param entity       the entity to save
      * @param <T>          the type of the entity
-     * @param options the options to apply to the save operation
+     * @param options      the options to apply to the save operation
      * @param writeConcern the WriteConcern to use for this operation
      * @return the keys of the entity
      */
@@ -492,11 +383,11 @@ public interface Datastore {
     /**
      * Updates an entity with the operations; this is an atomic operation
      *
-     * @param key        the key of entity to update
-     * @param operations the update operations to perform
-     * @param options the options to apply
+     * @param key          the key of entity to update
+     * @param operations   the update operations to perform
+     * @param options      the options to apply
      * @param writeConcern the WriteConcern to apply
-     * @param <T>        the type of the entity
+     * @param <T>          the type of the entity
      * @return the update results
      * @see UpdateResult
      */
@@ -535,16 +426,81 @@ public interface Datastore {
      * @since 1.3
      */
     <T> UpdateResult updateMany(Query<T> query, UpdateOperations<T> operations);
+
     /**
      * Updates all entities found with the operations; this is an atomic operation per entity
      *
-     * @param query      the query used to match the documents to update
-     * @param operations the update operations to perform
-     * @param options    the options to apply to the update
+     * @param query        the query used to match the documents to update
+     * @param operations   the update operations to perform
+     * @param options      the options to apply to the update
      * @param writeConcern the WriteConcern to apply
-     * @param <T>        the type of the entity
+     * @param <T>          the type of the entity
      * @return the results of the updates
      * @since 1.3
      */
     <T> UpdateResult updateMany(Query<T> query, UpdateOperations<T> operations, UpdateOptions options, WriteConcern writeConcern);
+
+    //
+    // Migration helpers for deprecated methods
+    //
+
+    // CHECKSTYLE:OFF
+    /**
+     * @deprecated Inline this method to update to the new usage
+     */
+    @Deprecated
+    @SuppressWarnings("CheckStyle:JavadocMethod")
+    default <T, V> Query<T> get(final Class<T> clazz, final List<V> ids) {
+        return find(clazz).filter(Mapper.ID_KEY + " in", ids);
+    }
+
+    /**
+     * @deprecated Inline this method to update to the new usage
+     */
+    @Deprecated
+    @SuppressWarnings("unchecked")
+    default <T> T get(final T entity) {
+        return (T) find(entity.getClass()).filter("_id", getMapper().getId(entity)).first();
+    }
+
+    /**
+     * @deprecated Inline this method to update to the new usage
+     */
+    @Deprecated
+    default <T> T getByKey(final Class<T> clazz, final Key<T> key) {
+        return find(clazz).filter("_id", key.getId()).get();
+    }
+
+    /**
+     * @deprecated Inline this method to update to the new usage
+     */
+    @Deprecated
+    default <T> long getCount(final T entity) {
+        return find(entity.getClass()).count();
+    }
+
+    /**
+     * @deprecated Inline this method to update to the new usage
+     */
+    @Deprecated
+    default <T> long getCount(final Class<T> clazz) {
+        return find(clazz).count();
+    }
+
+    /**
+     * @deprecated Inline this method to update to the new usage
+     */
+    @Deprecated
+    default <T> long getCount(final Query<T> query) {
+        return query.count();
+    }
+
+    /**
+     * @deprecated Inline this method to update to the new usage
+     */
+    @Deprecated
+    default <T> long getCount(final Query<T> query, final CountOptions options) {
+        return query.count(options);
+    }
+
 }

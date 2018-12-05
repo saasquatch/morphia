@@ -29,7 +29,8 @@ public class VersionTest extends TestBase {
         Assert.assertEquals(0, a.version);
         getDatastore().save(a);
 
-        final ALongPrimitive a2 = getDatastore().get(a);
+        final Datastore datastore = getDatastore();
+        final ALongPrimitive a2 = datastore.find(a.getClass()).filter("_id", datastore.getMapper().getId(a)).first();
         getDatastore().save(a2);
 
         getDatastore().save(a);
@@ -41,7 +42,8 @@ public class VersionTest extends TestBase {
         Assert.assertEquals(null, a.v);
         getDatastore().save(a);
 
-        getDatastore().save(getDatastore().get(a));
+        final Datastore datastore = getDatastore();
+        getDatastore().save((ALong) datastore.find(a.getClass()).filter("_id", datastore.getMapper().getId(a)).first());
 
         getDatastore().save(a);
     }
@@ -53,7 +55,8 @@ public class VersionTest extends TestBase {
         getDatastore().save(a);
 
         a.text = " foosdfds ";
-        final ALong a2 = getDatastore().get(a);
+        final Datastore datastore = getDatastore();
+        final ALong a2 = datastore.find(a.getClass()).filter("_id", datastore.getMapper().getId(a)).first();
         getDatastore().save(a2);
 
         getDatastore().merge(a);
@@ -122,7 +125,7 @@ public class VersionTest extends TestBase {
                                                     .set("text", "some new value");
         UpdateResult results = ds.updateOne(query, update);
         Assert.assertEquals(1, results.getModifiedCount());
-        ALongPrimitive postUpdate = ds.get(ALongPrimitive.class, initial.getId());
+        ALongPrimitive postUpdate = ds.find(ALongPrimitive.class).filter("_id", initial.getId()).get();
 
         Assert.assertEquals(initial.version + 1, postUpdate.version);
     }

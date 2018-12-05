@@ -3,6 +3,7 @@ package xyz.morphia.mapping;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Test;
+import xyz.morphia.Datastore;
 import xyz.morphia.TestBase;
 import xyz.morphia.annotations.Embedded;
 import xyz.morphia.annotations.Entity;
@@ -35,7 +36,8 @@ public class EnumMappingTest extends TestBase {
         customer.add(WebTemplateType.CrewContractHeader, new WebTemplate("template #2"));
 
         getDatastore().save(customer);
-        Customer loaded = getDatastore().get(customer);
+        final Datastore datastore = getDatastore();
+        Customer loaded = datastore.find(customer.getClass()).filter("_id", datastore.getMapper().getId(customer)).first();
         Assert.assertEquals(customer.map, loaded.map);
     }
 
@@ -58,7 +60,10 @@ public class EnumMappingTest extends TestBase {
         customer.add(WebTemplateType.CrewContractHeader, templates2);
 
         getDatastore().save(customer);
-        CustomerWithArrayList loaded = getDatastore().get(customer);
+        final Datastore datastore = getDatastore();
+        CustomerWithArrayList loaded = datastore.find(customer.getClass())
+                                                .filter("_id", datastore.getMapper().getId(customer))
+                                                .first();
 
         Assert.assertEquals(customer.mapWithArrayList, loaded.mapWithArrayList);
     }
@@ -81,7 +86,10 @@ public class EnumMappingTest extends TestBase {
         customer.add(WebTemplateType.CrewContractHeader, templates2);
 
         getDatastore().save(customer);
-        CustomerWithList loaded = getDatastore().get(customer);
+        final Datastore datastore = getDatastore();
+        CustomerWithList loaded = datastore.find(customer.getClass())
+                                           .filter("_id", datastore.getMapper().getId(customer))
+                                           .first();
 
         Assert.assertEquals(customer.mapWithList, loaded.mapWithList);
     }

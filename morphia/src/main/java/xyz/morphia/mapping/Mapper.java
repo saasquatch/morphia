@@ -388,20 +388,6 @@ public class Mapper {
     }
 
     /**
-     * Updates the collection value on a Key with the mapped value on the Key's type Class
-     *
-     * @param key the Key to update
-     */
-    public void coerceCollection(final Key key) {
-        if (key.getCollection() == null && key.getType() == null) {
-            throw new IllegalStateException("Key is invalid! " + toString());
-        } else if (key.getCollection() == null) {
-            key.setCollection(getMappedClass(key.getType()).getCollectionName());
-        }
-
-    }
-
-    /**
      * Maps a set of classes
      *
      * @param entityClasses the classes to map

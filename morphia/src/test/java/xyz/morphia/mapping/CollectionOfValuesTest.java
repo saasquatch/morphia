@@ -4,6 +4,7 @@ package xyz.morphia.mapping;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Test;
+import xyz.morphia.Datastore;
 import xyz.morphia.TestBase;
 import xyz.morphia.annotations.Entity;
 import xyz.morphia.annotations.Id;
@@ -31,7 +32,8 @@ public class CollectionOfValuesTest extends TestBase {
         }
 
         getDatastore().save(city);
-        City loaded = getDatastore().get(city);
+        final Datastore datastore = getDatastore();
+        City loaded = datastore.find(city.getClass()).filter("_id", datastore.getMapper().getId(city)).first();
         Assert.assertEquals(city.name, loaded.name);
         assertArrayEquals(city.array, loaded.array);
         for (int i = 0; i < city.cells.length; i++) {
@@ -53,7 +55,10 @@ public class CollectionOfValuesTest extends TestBase {
         entity.integers.add(Collections.singletonList(3));
         getDatastore().save(entity);
 
-        final ContainsListOfList loaded = getDatastore().get(entity);
+        final Datastore datastore = getDatastore();
+        final ContainsListOfList loaded = datastore.find(entity.getClass())
+                                                   .filter("_id", datastore.getMapper().getId(entity))
+                                                   .first();
 
         Assert.assertNotNull(loaded.strings);
         Assert.assertEquals(entity.strings, loaded.strings);
@@ -75,7 +80,7 @@ public class CollectionOfValuesTest extends TestBase {
         entity.oneDimArray = "Joseph".getBytes();
         entity.twoDimArray = new byte[][]{"Joseph".getBytes(), "uwe".getBytes()};
         getDatastore().save(entity);
-        final ContainsTwoDimensionalArray loaded = getDatastore().get(ContainsTwoDimensionalArray.class, entity.id);
+        final ContainsTwoDimensionalArray loaded = getDatastore().find(ContainsTwoDimensionalArray.class).filter("_id", entity.id).get();
         Assert.assertNotNull(loaded.id);
         Assert.assertNotNull(loaded.oneDimArray);
         Assert.assertNotNull(loaded.twoDimArray);

@@ -4,6 +4,7 @@ package xyz.morphia.mapping;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Test;
+import xyz.morphia.Datastore;
 import xyz.morphia.TestBase;
 import xyz.morphia.annotations.Entity;
 import xyz.morphia.annotations.Id;
@@ -24,7 +25,8 @@ public class ReferencesWIgnoreMissingTest extends TestBase {
         Assert.assertNotNull(reloadedContainer.refs);
         Assert.assertEquals(1, reloadedContainer.refs.length);
 
-        reloadedContainer = getDatastore().get(c);
+        final Datastore datastore = getDatastore();
+        reloadedContainer = datastore.find(c.getClass()).filter("_id", datastore.getMapper().getId(c)).first();
         Assert.assertNotNull(reloadedContainer);
         Assert.assertNotNull(reloadedContainer.refs);
         Assert.assertEquals(1, reloadedContainer.refs.length);

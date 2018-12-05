@@ -19,7 +19,6 @@ import com.jayway.awaitility.Awaitility;
 import com.mongodb.CursorType;
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.CollationStrength;
 import com.mongodb.client.model.CountOptions;
 import com.mongodb.client.model.FindOptions;
@@ -30,6 +29,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+import xyz.morphia.Datastore;
 import xyz.morphia.Key;
 import xyz.morphia.TestBase;
 import xyz.morphia.TestDatastore.FacebookUser;
@@ -53,11 +53,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -141,39 +139,31 @@ public class TestQuery extends TestBase {
 
         assertEquals(0, getDatastore().find(Pic.class)
                                       .field("name").contains("PIC")
-                                      .asList()
-                                      .size());
+                                      .count());
         assertEquals(4, getDatastore().find(Pic.class)
                                       .field("name").containsIgnoreCase("PIC")
-                                      .asList()
-                                      .size());
+                                      .count());
 
         assertEquals(0, getDatastore().find(Pic.class)
                                       .field("name").equal("PIC1")
-                                      .asList()
-                                      .size());
+                                      .count());
         assertEquals(1, getDatastore().find(Pic.class)
                                       .field("name").equalIgnoreCase("PIC1")
-                                      .asList()
-                                      .size());
+                                      .count());
 
         assertEquals(0, getDatastore().find(Pic.class)
                                       .field("name").endsWith("C1")
-                                      .asList()
-                                      .size());
+                                      .count());
         assertEquals(1, getDatastore().find(Pic.class)
                                       .field("name").endsWithIgnoreCase("C1")
-                                      .asList()
-                                      .size());
+                                      .count());
 
         assertEquals(0, getDatastore().find(Pic.class)
                                       .field("name").startsWith("PIC")
-                                      .asList()
-                                      .size());
+                                      .count());
         assertEquals(4, getDatastore().find(Pic.class)
                                       .field("name").startsWithIgnoreCase("PIC")
-                                      .asList()
-                                      .size());
+                                      .count());
     }
 
     @Test
@@ -186,13 +176,12 @@ public class TestQuery extends TestBase {
 
         Query query = getDatastore().find(ContainsRenamedFields.class)
                                     .field("last_name").equal("last");
-        assertEquals(1, query.asList().size());
-        assertEquals(2, query.asList(new FindOptions()
+        assertEquals(1, query.count());
+        assertEquals(2, query.count(new CountOptions()
                                          .collation(builder()
                                                         .locale("en")
                                                         .collationStrength(CollationStrength.SECONDARY)
-                                                        .build()))
-                             .size());
+                                                        .build())));
         assertEquals(1, query.count());
         assertEquals(2, query.count(new CountOptions()
                                         .collation(builder()
@@ -211,15 +200,15 @@ public class TestQuery extends TestBase {
 
         Query<Rectangle> q = getDatastore().find(Rectangle.class);
         q.and(q.criteria("width").equal(10), q.criteria("height").equal(1));
-        assertEquals(1, getDatastore().getCount(q));
+        assertEquals(1, q.count());
 
         q = getDatastore().find(Rectangle.class);
         q.or(q.criteria("width").equal(10), q.criteria("height").equal(10));
-        assertEquals(3, getDatastore().getCount(q));
+        assertEquals(3, q.count());
 
         q = getDatastore().find(Rectangle.class);
         q.or(q.criteria("width").equal(10), q.and(q.criteria("width").equal(5), q.criteria("height").equal(8)));
-        assertEquals(3, getDatastore().getCount(q));
+        assertEquals(3, q.count());
     }
 
     @Test
@@ -323,13 +312,15 @@ public class TestQuery extends TestBase {
             new Rectangle(8, 5),
             new Rectangle(10, 4)));
 
-        assertEquals(2, getDatastore().getCount(getDatastore().find(Rectangle.class)
-                                                              .filter("height >", 3)
-                                                              .filter("height <", 8)));
-        assertEquals(1, getDatastore().getCount(getDatastore().find(Rectangle.class)
-                                                              .filter("height >", 3)
-                                                              .filter("height <", 8)
-                                                              .filter("width", 10)));
+        assertEquals(2, getDatastore().find(Rectangle.class)
+                                      .filter("height >", 3)
+                                      .filter("height <", 8)
+                                      .count());
+        assertEquals(1, getDatastore().find(Rectangle.class)
+                                      .filter("height >", 3)
+                                      .filter("height <", 8)
+                                      .filter("width", 10)
+                                      .count());
     }
 
     @Test
@@ -382,7 +373,6 @@ public class TestQuery extends TestBase {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testCorrectQueryForNotWithSizeEqIssue514() {
         Query<PhotoWithKeywords> query = getAds()
                                              .find(PhotoWithKeywords.class)
@@ -437,9 +427,9 @@ public class TestQuery extends TestBase {
             new Rectangle(10, 10),
             new Rectangle(10, 10)));
 
-        assertEquals(5, getDatastore().getCount(Rectangle.class));
+        assertEquals(5, getDatastore().find(Rectangle.class).count());
         getDatastore().deleteMany(getDatastore().find(Rectangle.class).filter("height", 1D));
-        assertEquals(2, getDatastore().getCount(Rectangle.class));
+        assertEquals(2, getDatastore().find(Rectangle.class).count());
     }
 
     @Test
@@ -454,7 +444,6 @@ public class TestQuery extends TestBase {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testElemMatchVariants() {
         final PhotoWithKeywords pwk1 = new PhotoWithKeywords();
         final PhotoWithKeywords pwk2 = new PhotoWithKeywords("Kevin");
@@ -462,50 +451,46 @@ public class TestQuery extends TestBase {
         final PhotoWithKeywords pwk4 = new PhotoWithKeywords(new Keyword("Scott", 14));
 
         Iterator<Key<PhotoWithKeywords>> iterator = getDatastore().saveMany(asList(pwk1, pwk2, pwk3, pwk4)).iterator();
-        Key<PhotoWithKeywords> key1 = iterator.next();
-        Key<PhotoWithKeywords> key2 = iterator.next();
-        Key<PhotoWithKeywords> key3 = iterator.next();
-        Key<PhotoWithKeywords> key4 = iterator.next();
 
-        assertEquals(asList(key3, key4), getDatastore().find(PhotoWithKeywords.class)
+        assertEquals(asList(pwk3, pwk4), getDatastore().find(PhotoWithKeywords.class)
                                                        .field("keywords")
                                                        .elemMatch(getDatastore().find(Keyword.class)
                                                                                 .filter("keyword = ", "Scott"))
-                                                       .asKeyList());
+                                                       .asList());
 
-        assertEquals(asList(key3, key4), getDatastore().find(PhotoWithKeywords.class)
+        assertEquals(asList(pwk3, pwk4), getDatastore().find(PhotoWithKeywords.class)
                                                        .field("keywords")
                                                        .elemMatch(getDatastore()
                                                                       .find(Keyword.class)
                                                                       .field("keyword").equal("Scott"))
-                                                       .asKeyList());
+                                                       .asList());
 
-        assertEquals(singletonList(key4), getDatastore().find(PhotoWithKeywords.class)
+        assertEquals(singletonList(pwk4), getDatastore().find(PhotoWithKeywords.class)
                                                         .field("keywords")
                                                         .elemMatch(getDatastore().find(Keyword.class)
                                                                                  .filter("score = ", 14))
-                                                        .asKeyList());
+                                                        .asList());
 
-        assertEquals(singletonList(key4), getDatastore().find(PhotoWithKeywords.class)
+        assertEquals(singletonList(pwk4), getDatastore().find(PhotoWithKeywords.class)
                                                         .field("keywords")
                                                         .elemMatch(getDatastore()
                                                                        .find(Keyword.class)
                                                                        .field("score").equal(14))
-                                                        .asKeyList());
+                                                        .asList());
 
-        assertEquals(asList(key1, key2), getDatastore().find(PhotoWithKeywords.class)
+        assertEquals(asList(pwk1, pwk2), getDatastore().find(PhotoWithKeywords.class)
                                                        .field("keywords")
                                                        .not()
                                                        .elemMatch(getDatastore().find(Keyword.class)
                                                                                 .filter("keyword = ", "Scott"))
-                                                       .asKeyList());
+                                                       .asList());
 
-        assertEquals(asList(key1, key2), getDatastore().find(PhotoWithKeywords.class)
+        assertEquals(asList(pwk1, pwk2), getDatastore().find(PhotoWithKeywords.class)
                                                        .field("keywords").not()
                                                        .elemMatch(getDatastore()
                                                                       .find(Keyword.class)
                                                                       .field("keyword").equal("Scott"))
-                                                       .asKeyList());
+                                                       .asList());
     }
 
     @Test
@@ -516,39 +501,6 @@ public class TestQuery extends TestBase {
     }
 
     @Test
-    public void testFetchEmptyEntities() {
-        PhotoWithKeywords pwk1 = new PhotoWithKeywords("california", "nevada", "arizona");
-        PhotoWithKeywords pwk2 = new PhotoWithKeywords("Joe", "Sarah");
-        PhotoWithKeywords pwk3 = new PhotoWithKeywords("MongoDB", "World");
-        getDatastore().saveMany(asList(pwk1, pwk2, pwk3));
-
-        MongoCursor<PhotoWithKeywords> keys = getDatastore().find(PhotoWithKeywords.class).fetchEmptyEntities();
-        assertTrue(keys.hasNext());
-        Set<ObjectId> set = new HashSet<>();
-        while (keys.hasNext()) {
-            set.add(keys.next().id);
-        }
-        assertEquals(set.toString(), new HashSet<>(asList(pwk1.id, pwk2.id, pwk3.id)), set);
-    }
-
-    @Test
-    public void testFetchKeys() {
-        PhotoWithKeywords pwk1 = new PhotoWithKeywords("california", "nevada", "arizona");
-        PhotoWithKeywords pwk2 = new PhotoWithKeywords("Joe", "Sarah");
-        PhotoWithKeywords pwk3 = new PhotoWithKeywords("MongoDB", "World");
-        getDatastore().saveMany(asList(pwk1, pwk2, pwk3));
-
-        MorphiaKeyIterator<PhotoWithKeywords> keys = getDatastore().find(PhotoWithKeywords.class).fetchKeys();
-        assertTrue(keys.hasNext());
-        Set<ObjectId> set = new HashSet<>();
-        while (keys.hasNext()) {
-            set.add((ObjectId) ((MorphiaKeyIterator<?>) keys).next().getId());
-        }
-        assertEquals(set.toString(), new HashSet<>(asList(pwk1.id, pwk2.id, pwk3.id)), set);
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
     public void testFluentAndOrQuery() {
         getDatastore().save(new PhotoWithKeywords("scott", "hernandez"));
 
@@ -562,7 +514,6 @@ public class TestQuery extends TestBase {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testFluentAndQuery1() {
         getDatastore().save(new PhotoWithKeywords("scott", "hernandez"));
 
@@ -597,26 +548,6 @@ public class TestQuery extends TestBase {
             q.criteria("keywords.keyword").equal("ralph"));
 
         assertEquals(1, q.count());
-    }
-
-    @Test
-    public void testGetByKeysHetero() {
-        final List<Key<Object>> keys = getDatastore().saveMany(
-            asList(new FacebookUser(1, "scott"), new Rectangle(1, 1)));
-        final List<Object> entities = getDatastore().getByKeys(keys);
-        assertNotNull(entities);
-        assertEquals(2, entities.size());
-        int userCount = 0;
-        int rectCount = 0;
-        for (final Object o : entities) {
-            if (o instanceof Rectangle) {
-                rectCount++;
-            } else if (o instanceof FacebookUser) {
-                userCount++;
-            }
-        }
-        assertEquals(1, rectCount);
-        assertEquals(1, userCount);
     }
 
     @Test
@@ -681,7 +612,8 @@ public class TestQuery extends TestBase {
         final Key<KeysKeysKeys> k1Key = getDatastore().save(k1);
         assertEquals(k1.getId(), k1Key.getId());
 
-        final KeysKeysKeys k1Loaded = getDatastore().get(k1);
+        final Datastore datastore = getDatastore();
+        final KeysKeysKeys k1Loaded = datastore.find(k1.getClass()).filter("_id", datastore.getMapper().getId(k1)).first();
         for (final Key<FacebookUser> key : k1Loaded.getUsers()) {
             assertNotNull(key.getId());
         }
@@ -712,8 +644,9 @@ public class TestQuery extends TestBase {
         final Key<KeysKeysKeys> k1Key = getDatastore().save(k1);
         assertEquals(k1.getId(), k1Key.getId());
 
-        final KeysKeysKeys k1Reloaded = getDatastore().get(k1);
-        final KeysKeysKeys k1Loaded = getDatastore().getByKey(KeysKeysKeys.class, k1Key);
+        final Datastore datastore = getDatastore();
+        final KeysKeysKeys k1Reloaded = datastore.find(k1.getClass()).filter("_id", datastore.getMapper().getId(k1)).first();
+        final KeysKeysKeys k1Loaded = getDatastore().find(KeysKeysKeys.class).filter("_id", k1Key.getId()).get();
         assertNotNull(k1Reloaded);
         assertNotNull(k1Loaded);
         for (final Key<FacebookUser> key : k1Loaded.getUsers()) {
@@ -721,13 +654,6 @@ public class TestQuery extends TestBase {
         }
 
         assertEquals(4, k1Loaded.getUsers().size());
-
-        final List<FacebookUser> fbUsers = getDatastore().getByKeys(FacebookUser.class, k1Loaded.getUsers());
-        assertEquals(4, fbUsers.size());
-        for (final FacebookUser fbUser : fbUsers) {
-            assertNotNull(fbUser);
-            assertNotNull(fbUser.getUsername());
-        }
     }
 
     @Test
@@ -865,11 +791,10 @@ public class TestQuery extends TestBase {
 
     @Test
     public void testNonexistentGet() {
-        assertNull(getDatastore().get(Hotel.class, -1));
+        assertNull(getDatastore().find(Hotel.class).filter("_id", -1).get());
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testNotGeneratesCorrectQueryForGreaterThan() {
         final Query<Keyword> query = getDatastore().find(Keyword.class);
         query.criteria("score").not().greaterThan(7);
@@ -877,7 +802,6 @@ public class TestQuery extends TestBase {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testProject() {
         getDatastore().save(new ContainsRenamedFields("Frank", "Zappa"));
 
@@ -967,9 +891,9 @@ public class TestQuery extends TestBase {
             new Rectangle(10, 10),
             new Rectangle(10, 10)));
 
-        assertEquals(3, getDatastore().getCount(getDatastore().find(Rectangle.class).filter("height", 1D)));
-        assertEquals(2, getDatastore().getCount(getDatastore().find(Rectangle.class).filter("height", 10D)));
-        assertEquals(5, getDatastore().getCount(getDatastore().find(Rectangle.class).filter("width", 10D)));
+        assertEquals(3, getDatastore().find(Rectangle.class).filter("height", 1D).count());
+        assertEquals(2, getDatastore().find(Rectangle.class).filter("height", 10D).count());
+        assertEquals(5, getDatastore().find(Rectangle.class).filter("width", 10D).count());
 
     }
 
@@ -1018,12 +942,12 @@ public class TestQuery extends TestBase {
             new Rectangle(8, 5),
             new Rectangle(10, 4)));
 
-        assertEquals(4, getDatastore().getCount(getDatastore().find(Rectangle.class).filter("height >", 3)));
-        assertEquals(3, getDatastore().getCount(getDatastore().find(Rectangle.class).filter("height >", 3)
-                                                              .filter("height <", 10)));
-        assertEquals(1, getDatastore().getCount(getDatastore().find(Rectangle.class).filter("height >", 9)
-                                                              .filter("width <", 5)));
-        assertEquals(3, getDatastore().getCount(getDatastore().find(Rectangle.class).filter("height <", 7)));
+        assertEquals(4, getDatastore().find(Rectangle.class).filter("height >", 3).count());
+        assertEquals(3, getDatastore().find(Rectangle.class).filter("height >", 3)
+                                      .filter("height <", 10).count());
+        assertEquals(1, getDatastore().find(Rectangle.class).filter("height >", 9)
+                                      .filter("width <", 5).count());
+        assertEquals(3, getDatastore().find(Rectangle.class).filter("height <", 7).count());
     }
 
     @Test(expected = ValidationException.class)
@@ -1104,7 +1028,6 @@ public class TestQuery extends TestBase {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testSizeEqQuery() {
         assertEquals(new Document("keywords", new Document("$size", 3)), getDatastore().find(PhotoWithKeywords.class)
                                                                                        .field("keywords")
@@ -1136,9 +1059,7 @@ public class TestQuery extends TestBase {
             () -> getDatastore().save(new CappedPic(System.currentTimeMillis() + "")), 0, 500,
             TimeUnit.MILLISECONDS);
 
-        final Iterator<CappedPic> tail = query
-                                             .fetch(new FindOptions()
-                                                        .cursorType(CursorType.Tailable));
+        final Iterator<CappedPic> tail = query.find(new FindOptions().cursorType(CursorType.Tailable));
         Awaitility
             .await()
             .pollDelay(500, TimeUnit.MILLISECONDS)
@@ -1154,7 +1075,6 @@ public class TestQuery extends TestBase {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testThatElemMatchQueriesOnlyChecksRequiredFields() {
         final PhotoWithKeywords pwk1 = new PhotoWithKeywords(new Keyword("california"),
             new Keyword("nevada"),
@@ -1280,6 +1200,30 @@ public class TestQuery extends TestBase {
 
         PhotoWithKeywords(final Keyword... keyword) {
             keywords.addAll(asList(keyword));
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            final PhotoWithKeywords that = (PhotoWithKeywords) o;
+
+            if (id != null ? !id.equals(that.id) : that.id != null) {
+                return false;
+            }
+            return keywords != null ? keywords.equals(that.keywords) : that.keywords == null;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = id != null ? id.hashCode() : 0;
+            result = 31 * result + (keywords != null ? keywords.hashCode() : 0);
+            return result;
         }
     }
 
