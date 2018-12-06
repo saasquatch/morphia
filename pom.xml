@@ -119,7 +119,7 @@
                 <version>3.0.1</version>
                 <configuration>
                     <failOnError>false</failOnError>
-                    <excludePackageNames>**/relocated/**, **/internal/**, xyz/morphia/utils, org/bson/codecs/**</excludePackageNames>
+                    <excludePackageNames>**/relocated/**, **/internal/**, xyz/morphia/utils, org/bson/**</excludePackageNames>
                     <doclint>none</doclint>
                     <doctitle>Morphia</doctitle>
                     <windowtitle>Morphia</windowtitle>
