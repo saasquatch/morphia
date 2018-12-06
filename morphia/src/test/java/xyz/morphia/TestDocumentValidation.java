@@ -211,13 +211,13 @@ public class TestDocumentValidation extends TestBase {
             new DocumentValidation("Harold", 8, new Date()),
             new DocumentValidation("Harold", 8, new Date()));
         try {
-            getDatastore().saveMany(list);
+            getDatastore().save(list);
             fail("Document validation should have complained");
         } catch (MongoException e) {
             // expected
         }
 
-        getDatastore().saveMany(list, new InsertManyOptions()
+        getDatastore().save(list, new InsertManyOptions()
                                       .bypassDocumentValidation(true),
             getDatastore().getDefaultWriteConcern());
 
@@ -253,13 +253,13 @@ public class TestDocumentValidation extends TestBase {
         getDatastore().enableDocumentValidation();
 
         try {
-            getAds().insertOne(new DocumentValidation("Harold", 8, new Date()));
+            getAds().insert(new DocumentValidation("Harold", 8, new Date()));
             fail("Document validation should have complained");
         } catch (MongoWriteException e) {
             // expected
         }
 
-        getAds().insertOne(new DocumentValidation("Harold", 8, new Date()), new InsertOneOptions()
+        getAds().insert(new DocumentValidation("Harold", 8, new Date()), new InsertOneOptions()
                                                                              .bypassDocumentValidation(true),
             getDatastore().getDefaultWriteConcern());
 
@@ -273,13 +273,13 @@ public class TestDocumentValidation extends TestBase {
             new DocumentValidation("Amy", 8, new Date()),
             new DocumentValidation("James", 8, new Date()));
         try {
-            getAds().insertMany(list);
+            getAds().insert(list);
             fail("Document validation should have complained");
         } catch (MongoException e) {
             // expected
         }
 
-        getAds().insertMany(list, new InsertManyOptions()
+        getAds().insert(list, new InsertManyOptions()
                                   .bypassDocumentValidation(true), getDatastore().getDefaultWriteConcern());
 
         Assert.assertFalse(query.field("number").equal(8).asList().isEmpty());

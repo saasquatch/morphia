@@ -33,44 +33,44 @@ public class TestAdvancedDatastore extends TestBase {
     public void testInsert() {
         String name = "some_collection";
         MongoCollection<Document> collection = getMongoClient().getDatabase(TEST_DB_NAME).getCollection(name);
-        this.getAds().insertOne(name, new TestEntity());
+        this.getAds().insert(name, new TestEntity());
         Assert.assertEquals(1, collection.countDocuments());
-        this.getAds().insertOne(name, new TestEntity(), new InsertOneOptions(), WriteConcern.ACKNOWLEDGED);
+        this.getAds().insert(name, new TestEntity(), new InsertOneOptions(), WriteConcern.ACKNOWLEDGED);
         Assert.assertEquals(2, collection.countDocuments());
     }
 
     @Test
     public void testBulkInsert() {
-        this.getAds().insertMany(asList(new TestEntity(), new TestEntity(), new TestEntity(), new TestEntity(), new TestEntity()),
+        this.getAds().insert(asList(new TestEntity(), new TestEntity(), new TestEntity(), new TestEntity(), new TestEntity()),
             new InsertManyOptions(), WriteConcern.ACKNOWLEDGED);
         Assert.assertEquals(5, getDatastore().getCollection(TestEntity.class).countDocuments());
         String name = "some_collection";
         MongoCollection<Document> collection = getMongoClient().getDatabase(TEST_DB_NAME).getCollection(name);
-        this.getAds().insertMany(name, asList(new TestEntity(), new TestEntity(), new TestEntity(), new TestEntity(), new TestEntity()),
+        this.getAds().insert(name, asList(new TestEntity(), new TestEntity(), new TestEntity(), new TestEntity(), new TestEntity()),
             new InsertManyOptions(), WriteConcern.ACKNOWLEDGED);
         Assert.assertEquals(5, collection.countDocuments());
         collection.drop();
-        this.getAds().insertMany(name, asList(new TestEntity(), new TestEntity(), new TestEntity(), new TestEntity(), new TestEntity()),
+        this.getAds().insert(name, asList(new TestEntity(), new TestEntity(), new TestEntity(), new TestEntity(), new TestEntity()),
             new InsertManyOptions(), WriteConcern.ACKNOWLEDGED);
         Assert.assertEquals(5, collection.countDocuments());
     }
 
     @Test
     public void testBulkInsertWithNullWC() {
-        this.getAds().insertMany(asList(new TestEntity(), new TestEntity(), new TestEntity(), new TestEntity(), new TestEntity()),
+        this.getAds().insert(asList(new TestEntity(), new TestEntity(), new TestEntity(), new TestEntity(), new TestEntity()),
             new InsertManyOptions(), WriteConcern.ACKNOWLEDGED);
         Assert.assertEquals(5, getDatastore().getCollection(TestEntity.class).countDocuments());
 
         String name = "some_collection";
-        this.getAds().insertMany(name, asList(new TestEntity(), new TestEntity(), new TestEntity(), new TestEntity(), new TestEntity()),
+        this.getAds().insert(name, asList(new TestEntity(), new TestEntity(), new TestEntity(), new TestEntity(), new TestEntity()),
             new InsertManyOptions(), WriteConcern.ACKNOWLEDGED);
         Assert.assertEquals(5, getMongoClient().getDatabase(TEST_DB_NAME).getCollection(name).countDocuments());
     }
 
     @Test
     public void testInsertEmpty() {
-        this.getAds().insertMany(emptyList());
-        this.getAds().insertMany(emptyList(), new InsertManyOptions(), WriteConcern.ACKNOWLEDGED);
-        this.getAds().insertMany("some_collection", emptyList(), new InsertManyOptions(), WriteConcern.ACKNOWLEDGED);
+        this.getAds().insert(emptyList());
+        this.getAds().insert(emptyList(), new InsertManyOptions(), WriteConcern.ACKNOWLEDGED);
+        this.getAds().insert("some_collection", emptyList(), new InsertManyOptions(), WriteConcern.ACKNOWLEDGED);
     }
 }

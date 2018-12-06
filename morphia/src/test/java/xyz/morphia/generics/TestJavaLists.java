@@ -54,7 +54,7 @@ public class TestJavaLists extends TestBase {
                 getMapper().getOptions().setStoreNulls(nulls);
                 getMapper().getOptions().setStoreEmpties(empties);
                 Datastore ds = getDatastore();
-                ds.deleteMany(ds.find(Employee.class));
+                ds.delete(ds.find(Employee.class));
                 Employee employee = new Employee();
                 employee.byteList = asList((byte) 1, (byte) 2);
                 ds.save(employee);

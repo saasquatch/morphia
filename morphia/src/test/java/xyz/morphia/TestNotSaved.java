@@ -30,12 +30,12 @@ public class TestNotSaved extends TestBase {
         Normal n = getDatastore().find(Normal.class).first();
         Assert.assertNotNull(n);
         Assert.assertNotNull(n.name);
-        getDatastore().deleteOne(n);
+        getDatastore().delete(n);
         getDatastore().save(new NormalWithNotSaved());
         n = getDatastore().find(Normal.class).first();
         Assert.assertNotNull(n);
         Assert.assertNull(n.name);
-        getDatastore().deleteOne(n);
+        getDatastore().delete(n);
         getDatastore().save(new Normal("value21"));
         final NormalWithNotSaved notSaved = getDatastore().find(NormalWithNotSaved.class).first();
         Assert.assertNotNull(notSaved);

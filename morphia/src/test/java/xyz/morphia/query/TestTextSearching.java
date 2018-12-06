@@ -70,7 +70,7 @@ public class TestTextSearching extends TestBase {
         getMapper().map(Book.class);
         getDatastore().ensureIndexes();
 
-        getDatastore().saveMany(asList(new Book("The Banquet", "Dante"),
+        getDatastore().save(asList(new Book("The Banquet", "Dante"),
                             new Book("Divine Comedy", "Dante"),
                             new Book("Eclogues", "Dante"),
                             new Book("The Odyssey", "Homer"),
@@ -89,7 +89,7 @@ public class TestTextSearching extends TestBase {
         getMapper().map(Book.class);
         getDatastore().ensureIndexes();
 
-        getDatastore().saveMany(asList(new Book("The Banquet", "Dante"),
+        getDatastore().save(asList(new Book("The Banquet", "Dante"),
                             new Book("Divine Comedy", "Dante"),
                             new Book("Eclogues", "Dante"),
                             new Book("The Odyssey", "Homer"),
@@ -108,7 +108,7 @@ public class TestTextSearching extends TestBase {
         getMapper().map(Book.class);
         getDatastore().ensureIndexes();
 
-        getDatastore().saveMany(asList(new Book("The Banquet", "Dante"),
+        getDatastore().save(asList(new Book("The Banquet", "Dante"),
                             new Book("Divine Comedy", "Dante"),
                             new Book("Eclogues", "Dante"),
                             new Book("The Odyssey", "Homer"),

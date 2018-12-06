@@ -37,7 +37,7 @@ public class TestSuperDatastore extends TestBase {
         assertEquals(1, getAds().find(ns, Object.class).count());
 
         // when giving an ID that is not the entity ID.  Note that at the time of writing this will also log a validation warning
-        getAds().deleteOne(ns, Rectangle.class, 1);
+        getAds().delete(ns, Rectangle.class, 1);
 
         // then
         assertEquals(1, getAds().find(ns, Object.class).count());
@@ -61,7 +61,7 @@ public class TestSuperDatastore extends TestBase {
         assertEquals(2, getAds().find(ns, Object.class).count());
 
         // when
-        getAds().deleteOne(ns, Circle.class, rectangleId);
+        getAds().delete(ns, Circle.class, rectangleId);
 
         // then
         assertEquals(1, getAds().find(ns, Object.class).count());
@@ -81,7 +81,7 @@ public class TestSuperDatastore extends TestBase {
         assertEquals(1, getAds().find(ns, Object.class).count());
 
         // when
-        getAds().deleteOne(ns, Rectangle.class, id);
+        getAds().delete(ns, Rectangle.class, id);
 
         // then
         assertEquals(0, getAds().find(ns, Object.class).count());

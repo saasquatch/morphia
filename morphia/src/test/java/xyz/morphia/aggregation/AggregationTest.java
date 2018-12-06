@@ -66,7 +66,7 @@ public class AggregationTest extends TestBase {
     @Test
     public void testCollation() {
         checkMinServerVersion(3.4);
-        getDatastore().saveMany(asList(new User("john doe", new Date()), new User("John Doe", new Date())));
+        getDatastore().save(asList(new User("john doe", new Date()), new User("John Doe", new Date())));
 
         Query query = getDatastore().find(User.class).field("name").equal("john doe");
         AggregationPipeline pipeline = getDatastore()
@@ -86,7 +86,7 @@ public class AggregationTest extends TestBase {
     @Test
     public void testBypassDocumentValidation() {
         checkMinServerVersion(3.2);
-        getDatastore().saveMany(asList(new User("john doe", new Date()), new User("John Doe", new Date())));
+        getDatastore().save(asList(new User("john doe", new Date()), new User("John Doe", new Date())));
 
         MongoDatabase database = getMongoClient().getDatabase(TEST_DB_NAME);
         database.getCollection("out_users").drop();
@@ -158,7 +158,7 @@ public class AggregationTest extends TestBase {
 
     @Test
     public void testGenericAccumulatorUsage() {
-        getDatastore().saveMany(asList(new Book("The Banquet", "Dante", 2),
+        getDatastore().save(asList(new Book("The Banquet", "Dante", 2),
                             new Book("Divine Comedy", "Dante", 1),
                             new Book("Eclogues", "Dante", 2),
                             new Book("The Odyssey", "Homer", 10),
@@ -240,7 +240,7 @@ public class AggregationTest extends TestBase {
 
     @Test
     public void testLimit() {
-        getDatastore().saveMany(asList(new Book("The Banquet", "Dante", 2),
+        getDatastore().save(asList(new Book("The Banquet", "Dante", 2),
                             new Book("Divine Comedy", "Dante", 1),
                             new Book("Eclogues", "Dante", 2),
                             new Book("The Odyssey", "Homer", 10),
@@ -258,7 +258,7 @@ public class AggregationTest extends TestBase {
     @Test
     public void testLookup() {
         checkMinServerVersion(3.2);
-        getDatastore().saveMany(asList(new Order(1, "abc", 12, 2),
+        getDatastore().save(asList(new Order(1, "abc", 12, 2),
                             new Order(2, "jkl", 20, 1),
                             new Order(3)));
         List<Inventory> inventories = asList(new Inventory(1, "abc", "product 1", 120),
@@ -267,7 +267,7 @@ public class AggregationTest extends TestBase {
                                              new Inventory(4, "jkl", "product 4", 70),
                                              new Inventory(5, null, "Incomplete"),
                                              new Inventory(6));
-        getDatastore().saveMany(inventories);
+        getDatastore().save(inventories);
 
         getDatastore().createAggregation(Order.class)
                       .lookup("inventory", "item", "sku", "inventoryDocs")
@@ -283,7 +283,7 @@ public class AggregationTest extends TestBase {
 
     @Test
     public void testOut() {
-        getDatastore().saveMany(asList(new Book("The Banquet", "Dante", 2),
+        getDatastore().save(asList(new Book("The Banquet", "Dante", 2),
                             new Book("Divine Comedy", "Dante", 1),
                             new Book("Eclogues", "Dante", 2),
                             new Book("The Odyssey", "Homer", 10),
@@ -306,7 +306,7 @@ public class AggregationTest extends TestBase {
 
     @Test
     public void testOutNamedCollection() {
-        getDatastore().saveMany(asList(new Book("The Banquet", "Dante", 2, "Italian", "Sophomore Slump"),
+        getDatastore().save(asList(new Book("The Banquet", "Dante", 2, "Italian", "Sophomore Slump"),
                             new Book("Divine Comedy", "Dante", 1, "Not Very Funny", "I mean for a 'comedy'", "Ironic"),
                             new Book("Eclogues", "Dante", 2, "Italian", ""),
                             new Book("The Odyssey", "Homer", 10, "Classic", "Mythology", "Sequel"),
@@ -328,7 +328,7 @@ public class AggregationTest extends TestBase {
 
     @Test
     public void testProjection() {
-        getDatastore().saveMany(asList(new Book("The Banquet", "Dante", 2),
+        getDatastore().save(asList(new Book("The Banquet", "Dante", 2),
                             new Book("Divine Comedy", "Dante", 1),
                             new Book("Eclogues", "Dante", 2),
                             new Book("The Odyssey", "Homer", 10),
@@ -353,7 +353,7 @@ public class AggregationTest extends TestBase {
 
     @Test
     public void testSkip() {
-        getDatastore().saveMany(asList(new Book("The Banquet", "Dante", 2),
+        getDatastore().save(asList(new Book("The Banquet", "Dante", 2),
                             new Book("Divine Comedy", "Dante", 1),
                             new Book("Eclogues", "Dante", 2),
                             new Book("The Odyssey", "Homer", 10),
@@ -372,7 +372,7 @@ public class AggregationTest extends TestBase {
     @Test
     public void testUnwind() throws ParseException {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        getDatastore().saveMany(asList(new User("jane", format.parse("2011-03-02"), "golf", "racquetball"),
+        getDatastore().save(asList(new User("jane", format.parse("2011-03-02"), "golf", "racquetball"),
                             new User("joe", format.parse("2012-07-02"), "tennis", "golf", "swimming")));
 
         AggregateIterable<User> aggregate = getDatastore().createAggregation(User.class)

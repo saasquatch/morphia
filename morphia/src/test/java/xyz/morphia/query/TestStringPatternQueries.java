@@ -14,7 +14,7 @@ public class TestStringPatternQueries extends TestBase {
     @Test
     public void testContains() {
 
-        getDatastore().saveMany(asList(new E("xBA"), new E("xa"), new E("xAb"), new E("xab"), new E("xcB"), new E("aba")));
+        getDatastore().save(asList(new E("xBA"), new E("xa"), new E("xAb"), new E("xab"), new E("xcB"), new E("aba")));
 
         Assert.assertEquals(3, getDatastore().find(E.class).field("name").contains("b").count());
         Assert.assertEquals(5, getDatastore().find(E.class).field("name").containsIgnoreCase("b").count());
@@ -23,7 +23,7 @@ public class TestStringPatternQueries extends TestBase {
     @Test
     public void testEndsWith() {
 
-        getDatastore().saveMany(asList(new E("bxA"), new E("xba"), new E("xAb"), new E("xab"), new E("xcB"), new E("aba")));
+        getDatastore().save(asList(new E("bxA"), new E("xba"), new E("xAb"), new E("xab"), new E("xcB"), new E("aba")));
 
         Assert.assertEquals(2, getDatastore().find(E.class).field("name").endsWith("b").count());
         Assert.assertEquals(3, getDatastore().find(E.class).field("name").endsWithIgnoreCase("b").count());
@@ -32,7 +32,7 @@ public class TestStringPatternQueries extends TestBase {
     @Test
     public void testStartsWith() {
 
-        getDatastore().saveMany(asList(new E("A"), new E("a"), new E("Ab"), new E("ab"), new E("c")));
+        getDatastore().save(asList(new E("A"), new E("a"), new E("Ab"), new E("ab"), new E("c")));
 
         Assert.assertEquals(2, getDatastore().find(E.class).field("name").startsWith("a").count());
         Assert.assertEquals(4, getDatastore().find(E.class).field("name").startsWithIgnoreCase("a").count());

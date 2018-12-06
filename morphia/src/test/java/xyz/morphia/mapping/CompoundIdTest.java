@@ -22,7 +22,7 @@ public class CompoundIdTest extends TestBase {
         entity.id = new CompoundId("test");
 
         getDatastore().save(entity);
-        getDatastore().deleteOne(CompoundIdEntity.class, entity.id);
+        getDatastore().delete(CompoundIdEntity.class, entity.id);
     }
 
     @Test
@@ -52,7 +52,7 @@ public class CompoundIdTest extends TestBase {
 
         getDatastore().save(entity);
         final String collectionName = getDatastore().getCollection(CompoundIdEntity.class).getNamespace().getCollectionName();
-        ((AdvancedDatastore) getDatastore()).deleteOne(collectionName, CompoundIdEntity.class, entity.id);
+        ((AdvancedDatastore) getDatastore()).delete(collectionName, CompoundIdEntity.class, entity.id);
     }
 
     @Test

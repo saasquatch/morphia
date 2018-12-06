@@ -65,7 +65,7 @@ public interface Datastore {
      * @param <V>   the type of the id
      * @return results of the delete
      */
-    <T, V> DeleteResult deleteOne(Class<T> clazz, V id);
+    <T, V> DeleteResult delete(Class<T> clazz, V id);
 
     /**
      * Deletes the given entity (by id)
@@ -79,7 +79,7 @@ public interface Datastore {
      * @return results of the delete
      * @since 1.3
      */
-    <T, V> DeleteResult deleteOne(Class<T> clazz, V id, DeleteOptions options, WriteConcern writeConcern);
+    <T, V> DeleteResult delete(Class<T> clazz, V id, DeleteOptions options, WriteConcern writeConcern);
 
     /**
      * Deletes the given entities (by id)
@@ -90,7 +90,7 @@ public interface Datastore {
      * @param <V>   the type of the id
      * @return results of the delete
      */
-    <T, V> DeleteResult deleteMany(Class<T> clazz, List<V> ids);
+    <T, V> DeleteResult delete(Class<T> clazz, List<V> ids);
 
     /**
      * Deletes the given entities (by id)
@@ -104,7 +104,7 @@ public interface Datastore {
      * @return results of the delete
      * @since 1.3
      */
-    <T, V> DeleteResult deleteMany(Class<T> clazz, List<V> ids, DeleteOptions options, WriteConcern writeConcern);
+    <T, V> DeleteResult delete(Class<T> clazz, List<V> ids, DeleteOptions options, WriteConcern writeConcern);
 
     /**
      * Deletes entities based on the query
@@ -113,7 +113,7 @@ public interface Datastore {
      * @param <T>   the type to delete
      * @return results of the delete
      */
-    <T> DeleteResult deleteMany(Query<T> query);
+    <T> DeleteResult delete(Query<T> query);
 
     /**
      * Deletes entities based on the query
@@ -125,7 +125,7 @@ public interface Datastore {
      * @return results of the delete
      * @since 1.3
      */
-    <T> DeleteResult deleteMany(Query<T> query, DeleteOptions options, WriteConcern writeConcern);
+    <T> DeleteResult delete(Query<T> query, DeleteOptions options, WriteConcern writeConcern);
 
     /**
      * Deletes the given entity (by @Id)
@@ -134,7 +134,7 @@ public interface Datastore {
      * @param <T>    the type to delete
      * @return results of the delete
      */
-    <T> DeleteResult deleteOne(T entity);
+    <T> DeleteResult delete(T entity);
 
     /**
      * Deletes the given entity (by @Id), with the WriteConcern
@@ -146,7 +146,7 @@ public interface Datastore {
      * @return results of the delete
      * @since 1.3
      */
-    <T> DeleteResult deleteOne(T entity, DeleteOptions options, WriteConcern writeConcern);
+    <T> DeleteResult delete(T entity, DeleteOptions options, WriteConcern writeConcern);
 
     /**
      * ensure capped collections for {@code Entity}(s)
@@ -336,7 +336,7 @@ public interface Datastore {
      * @param <T>      the type of the entity
      * @return the keys of the entities
      */
-    <T> List<Key<T>> saveMany(List<T> entities);
+    <T> List<Key<T>> save(List<T> entities);
 
     /**
      * Saves the entities (Objects) and updates the @Id field, with the WriteConcern
@@ -347,7 +347,7 @@ public interface Datastore {
      * @param writeConcern the WriteConcern to apply
      * @return the keys of the entities
      */
-    <T> List<Key<T>> saveMany(List<T> entities, InsertManyOptions options, WriteConcern writeConcern);
+    <T> List<Key<T>> save(List<T> entities, InsertManyOptions options, WriteConcern writeConcern);
 
     /**
      * Saves an entity (Object) and updates the @Id field

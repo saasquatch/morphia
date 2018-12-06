@@ -77,7 +77,7 @@ public final class QuickTour {
 
         final Query<Employee> overPaidQuery = datastore.find(Employee.class)
                                                        .filter("salary >", 100000);
-        datastore.deleteMany(overPaidQuery);
+        datastore.delete(overPaidQuery);
     }
 }
 

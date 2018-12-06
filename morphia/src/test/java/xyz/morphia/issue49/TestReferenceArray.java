@@ -2,7 +2,6 @@ package xyz.morphia.issue49;
 
 
 import org.junit.Test;
-import xyz.morphia.Datastore;
 import xyz.morphia.TestBase;
 import xyz.morphia.annotations.Reference;
 import xyz.morphia.testutil.TestEntity;
@@ -20,7 +19,7 @@ public class TestReferenceArray extends TestBase {
         a.bs[0] = b1;
         a.bs[1] = b2;
 
-        getDatastore().saveMany(asList(b2, b1, a));
+        getDatastore().save(asList(b2, b1, a));
 
         getDatastore().find(a.getClass()).filter("_id", getDatastore().getMapper().getId(a)).first();
     }

@@ -73,7 +73,7 @@ public interface AdvancedDatastore extends Datastore {
      *
      * @return the results of the delete operation
      */
-    <T, V> DeleteResult deleteOne(String collectionName, Class<T> clazz, V id);
+    <T, V> DeleteResult delete(String collectionName, Class<T> clazz, V id);
 
     /**
      * Delete one document
@@ -88,7 +88,7 @@ public interface AdvancedDatastore extends Datastore {
      *
      * @return the results of the delete operation
      */
-    <T, V> DeleteResult deleteOne(String collectionName, Class<T> clazz, V id, DeleteOptions options, WriteConcern writeConcern);
+    <T, V> DeleteResult delete(String collectionName, Class<T> clazz, V id, DeleteOptions options, WriteConcern writeConcern);
 
     /**
      * Delete multiple documents
@@ -101,7 +101,7 @@ public interface AdvancedDatastore extends Datastore {
      *
      * @return the results of the delete operation
      */
-    <T, V> DeleteResult deleteMany(String collectionName, Class<T> clazz, List<V> ids);
+    <T, V> DeleteResult delete(String collectionName, Class<T> clazz, List<V> ids);
 
     /**
      * Delete many documents
@@ -116,7 +116,7 @@ public interface AdvancedDatastore extends Datastore {
      *
      * @return the results of the delete operation
      */
-    <T, V> DeleteResult deleteMany(String collectionName, Class<T> clazz, List<V> ids, DeleteOptions options, WriteConcern writeConcern);
+    <T, V> DeleteResult delete(String collectionName, Class<T> clazz, List<V> ids, DeleteOptions options, WriteConcern writeConcern);
 
     /**
      * Ensures (creating if necessary) the indexes found during class mapping (using {@code @Indexed, @Indexes)} on the given collection
@@ -146,7 +146,7 @@ public interface AdvancedDatastore extends Datastore {
      * @param <T>    the type of the entity
      * @return the new key of the inserted entity
      */
-    <T> Key<T> insertOne(T entity);
+    <T> Key<T> insert(T entity);
 
     /**
      * Inserts an entity in to the mapped collection.
@@ -158,7 +158,7 @@ public interface AdvancedDatastore extends Datastore {
      * @return the new key of the inserted entity
      * @since 1.3
      */
-    <T> Key<T> insertOne(T entity, InsertOneOptions options, WriteConcern writeConcern);
+    <T> Key<T> insert(T entity, InsertOneOptions options, WriteConcern writeConcern);
 
     /**
      * Inserts an entity in to the named collection.
@@ -168,7 +168,7 @@ public interface AdvancedDatastore extends Datastore {
      * @param <T>        the type of the entity
      * @return the new key of the inserted entity
      */
-    <T> Key<T> insertOne(String collection, T entity);
+    <T> Key<T> insert(String collection, T entity);
 
     /**
      * Inserts an entity in to the named collection.
@@ -181,7 +181,7 @@ public interface AdvancedDatastore extends Datastore {
      * @return the new key of the inserted entity
      * @since 1.3
      */
-    <T> Key<T> insertOne(String collection, T entity, InsertOneOptions options, WriteConcern writeConcern);
+    <T> Key<T> insert(String collection, T entity, InsertOneOptions options, WriteConcern writeConcern);
 
     /**
      * Inserts entities in to the mapped collection.
@@ -190,7 +190,7 @@ public interface AdvancedDatastore extends Datastore {
      * @param <T>      the type of the entities
      * @return the new keys of the inserted entities
      */
-    <T> List<Key<T>> insertMany(List<T> entities);
+    <T> List<Key<T>> insert(List<T> entities);
 
     /**
      * Inserts entities in to the mapped collection.
@@ -202,7 +202,7 @@ public interface AdvancedDatastore extends Datastore {
      * @return the new keys of the inserted entities
      * @since 1.3
      */
-    <T> List<Key<T>> insertMany(List<T> entities, InsertManyOptions options, WriteConcern writeConcern);
+    <T> List<Key<T>> insert(List<T> entities, InsertManyOptions options, WriteConcern writeConcern);
 
     /**
      * Inserts an entity in to the named collection.
@@ -213,7 +213,7 @@ public interface AdvancedDatastore extends Datastore {
      * @return the new keys of the inserted entities
      * @see WriteConcern
      */
-    <T> List<Key<T>> insertMany(String collection, List<T> entities);
+    <T> List<Key<T>> insert(String collection, List<T> entities);
 
     /**
      * Inserts entities in to the named collection.
@@ -226,7 +226,7 @@ public interface AdvancedDatastore extends Datastore {
      * @return the new keys of the inserted entities
      * @since 1.3
      */
-    <T> List<Key<T>> insertMany(String collection, List<T> entities, InsertManyOptions options, WriteConcern writeConcern);
+    <T> List<Key<T>> insert(String collection, List<T> entities, InsertManyOptions options, WriteConcern writeConcern);
 
     /**
      * Returns a new query based on the example object

@@ -196,7 +196,7 @@ public class TestVersionAnnotation extends TestBase {
     @Test
     public void testVersionedInserts() {
         List<Versioned> list = asList(new Versioned(), new Versioned(), new Versioned(), new Versioned(), new Versioned());
-        getAds().insertMany(list);
+        getAds().insert(list);
         for (Versioned versioned : list) {
             assertNotNull(versioned.getVersion());
         }

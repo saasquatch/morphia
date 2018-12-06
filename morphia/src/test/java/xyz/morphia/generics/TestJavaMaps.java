@@ -33,7 +33,7 @@ public class TestJavaMaps extends TestBase {
 
     private void empties() {
         Datastore ds = getDatastore();
-        ds.deleteMany(ds.find(Employee.class));
+        ds.delete(ds.find(Employee.class));
         Employee employee = new Employee();
         HashMap<String, Byte> byteMap = new HashMap<>();
         byteMap.put("b", (byte) 1);

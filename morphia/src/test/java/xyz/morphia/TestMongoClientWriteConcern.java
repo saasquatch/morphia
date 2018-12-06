@@ -34,8 +34,8 @@ public class TestMongoClientWriteConcern extends TestBase {
     @Test
     public void defaultWriteConcern() {
         assertEquals(UNACKNOWLEDGED, getDatastore().getDefaultWriteConcern());
-        getAds().insertOne(new SimpleEntity(1));
-        getAds().insertOne(new SimpleEntity(1));
+        getAds().insert(new SimpleEntity(1));
+        getAds().insert(new SimpleEntity(1));
         assertEquals(1, getDatastore().find(SimpleEntity.class).count());
     }
 

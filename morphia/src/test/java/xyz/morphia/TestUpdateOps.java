@@ -128,7 +128,7 @@ public class TestUpdateOps extends TestBase {
                                          .filter("_id", ds.getMapper().getId(cIntArray)).first()).values, is(new Integer[]{1, 2, 3, 4, 4}));
 
         //cleanup for next tests
-        ds.deleteMany(ds.find(ContainsIntArray.class));
+        ds.delete(ds.find(ContainsIntArray.class));
         cIntArray = ds.find(ContainsIntArray.class).filter("_id", ds.save(new ContainsIntArray()).getId()).first();
 
         //add [4,5]
@@ -256,7 +256,7 @@ public class TestUpdateOps extends TestBase {
         ContainsIntArray control = new ContainsIntArray();
         Datastore ds = getDatastore();
         getMongoClient().dropDatabase("ContainsIntArray");
-        ds.saveMany(asList(cIntArray, control));
+        ds.save(asList(cIntArray, control));
 
         assertThat(((ContainsIntArray) ds.find(cIntArray.getClass())
                                          .filter("_id", ds.getMapper().getId(cIntArray))
@@ -332,7 +332,7 @@ public class TestUpdateOps extends TestBase {
             new Rectangle(1, 10),
             new Rectangle(10, 10),
             new Rectangle(10, 10));
-        getDatastore().saveMany(list);
+        getDatastore().save(list);
 
         final Query<Rectangle> query1 = getDatastore().find(Rectangle.class).filter("height", 1D);
         final Query<Rectangle> query2 = getDatastore().find(Rectangle.class).filter("height", 2D);
@@ -417,7 +417,7 @@ public class TestUpdateOps extends TestBase {
             new UpdateOptions().upsert(true), getDatastore().getDefaultWriteConcern()));
 
         assertThat(getDatastore().find(ContainsPic.class).count(), is(1L));
-        getDatastore().deleteMany(getDatastore().find(ContainsPic.class));
+        getDatastore().delete(getDatastore().find(ContainsPic.class));
 
         assertInserted(getDatastore().updateMany(getDatastore().find(ContainsPic.class)
                                                                .filter("name", "first")
@@ -626,7 +626,7 @@ public class TestUpdateOps extends TestBase {
         dumbColl.fromArray = singletonList(new DumbArrayElement("something"));
         DumbColl dumbColl2 = new DumbColl("ID2");
         dumbColl2.fromArray = singletonList(new DumbArrayElement("something"));
-        getDatastore().saveMany(asList(dumbColl, dumbColl2));
+        getDatastore().save(asList(dumbColl, dumbColl2));
 
         UpdateResult deleteResults = getDatastore().updateOne(
             getDatastore().find(DumbColl.class).field("opaqueId").equalIgnoreCase("ID"),
@@ -766,7 +766,7 @@ public class TestUpdateOps extends TestBase {
 
     @Test
     public void testUpdateFirstNoCreate() {
-        getDatastore().deleteMany(getDatastore().find(EntityLogs.class));
+        getDatastore().delete(getDatastore().find(EntityLogs.class));
         List<EntityLogs> logs = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             logs.add(createEntryLogs("logs" + i));

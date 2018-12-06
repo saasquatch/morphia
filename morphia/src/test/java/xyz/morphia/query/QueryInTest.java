@@ -83,7 +83,7 @@ public class QueryInTest extends TestBase {
             final ReferencedEntity re = new ReferencedEntity("" + x);
             hr.refs.add(re);
         }
-        getDatastore().saveMany(hr.refs);
+        getDatastore().save(hr.refs);
         getDatastore().save(hr);
 
         Query<HasRefs> query = getDatastore().find(HasRefs.class).field("refs").in(hr.refs.subList(1, 3));

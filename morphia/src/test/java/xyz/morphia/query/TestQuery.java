@@ -112,7 +112,7 @@ public class TestQuery extends TestBase {
 
     @Test
     public void testAliasedFieldSort() {
-        getDatastore().saveMany(asList(new Rectangle(1, 10),
+        getDatastore().save(asList(new Rectangle(1, 10),
             new Rectangle(3, 8),
             new Rectangle(6, 10),
             new Rectangle(10, 10),
@@ -133,7 +133,7 @@ public class TestQuery extends TestBase {
 
     @Test
     public void testCaseVariants() {
-        getDatastore().saveMany(asList(new Pic("pic1"), new Pic("pic2"), new Pic("pic3"), new Pic("pic4")));
+        getDatastore().save(asList(new Pic("pic1"), new Pic("pic2"), new Pic("pic3"), new Pic("pic4")));
 
         assertEquals(0, getDatastore().find(Pic.class)
                                       .field("name").contains("PIC")
@@ -169,7 +169,7 @@ public class TestQuery extends TestBase {
         checkMinServerVersion(3.4);
 
         getMapper().map(ContainsRenamedFields.class);
-        getDatastore().saveMany(asList(new ContainsRenamedFields("first", "last"),
+        getDatastore().save(asList(new ContainsRenamedFields("first", "last"),
             new ContainsRenamedFields("First", "Last")));
 
         Query query = getDatastore().find(ContainsRenamedFields.class)
@@ -190,7 +190,7 @@ public class TestQuery extends TestBase {
 
     @Test
     public void testCombinationQuery() {
-        getDatastore().saveMany(asList(new Rectangle(1, 10),
+        getDatastore().save(asList(new Rectangle(1, 10),
             new Rectangle(4, 2),
             new Rectangle(6, 10),
             new Rectangle(8, 5),
@@ -211,7 +211,7 @@ public class TestQuery extends TestBase {
 
     @Test
     public void testCommentsShowUpInLogs() {
-        getDatastore().saveMany(asList(new Pic("pic1"), new Pic("pic2"), new Pic("pic3"), new Pic("pic4")));
+        getDatastore().save(asList(new Pic("pic1"), new Pic("pic2"), new Pic("pic3"), new Pic("pic4")));
 
         getDatabase().runCommand(new Document("profile", 2));
         String expectedComment = "test comment";
@@ -303,7 +303,7 @@ public class TestQuery extends TestBase {
 
     @Test
     public void testComplexRangeQuery() {
-        getDatastore().saveMany(asList(new Rectangle(1, 10),
+        getDatastore().save(asList(new Rectangle(1, 10),
             new Rectangle(4, 2),
             new Rectangle(6, 10),
             new Rectangle(8, 5),
@@ -322,7 +322,7 @@ public class TestQuery extends TestBase {
 
     @Test
     public void testCompoundSort() {
-        getDatastore().saveMany(asList(new Rectangle(1, 10),
+        getDatastore().save(asList(new Rectangle(1, 10),
             new Rectangle(3, 8),
             new Rectangle(6, 10),
             new Rectangle(10, 10),
@@ -348,7 +348,7 @@ public class TestQuery extends TestBase {
                 new Rectangle(10, 10),
                 new Rectangle(10, 1));
         Collections.shuffle(list);
-        getDatastore().saveMany(list);
+        getDatastore().save(list);
 
         compareLists(list,
             getDatastore().find(Rectangle.class).order(ascending("width"), descending("height")),
@@ -418,20 +418,20 @@ public class TestQuery extends TestBase {
 
     @Test
     public void testDeleteQuery() {
-        getDatastore().saveMany(asList(new Rectangle(1, 10),
+        getDatastore().save(asList(new Rectangle(1, 10),
             new Rectangle(1, 10),
             new Rectangle(1, 10),
             new Rectangle(10, 10),
             new Rectangle(10, 10)));
 
         assertEquals(5, getDatastore().find(Rectangle.class).count());
-        getDatastore().deleteMany(getDatastore().find(Rectangle.class).filter("height", 1D));
+        getDatastore().delete(getDatastore().find(Rectangle.class).filter("height", 1D));
         assertEquals(2, getDatastore().find(Rectangle.class).count());
     }
 
     @Test
     public void testElemMatchQuery() {
-        getDatastore().saveMany(asList(new PhotoWithKeywords(), new PhotoWithKeywords("Scott", "Joe", "Sarah")));
+        getDatastore().save(asList(new PhotoWithKeywords(), new PhotoWithKeywords("Scott", "Joe", "Sarah")));
         assertNotNull(getDatastore().find(PhotoWithKeywords.class)
                                     .field("keywords").elemMatch(getDatastore().find(Keyword.class).filter("keyword", "Scott")).first());
         assertNull(getDatastore().find(PhotoWithKeywords.class)
@@ -445,7 +445,7 @@ public class TestQuery extends TestBase {
         final PhotoWithKeywords pwk3 = new PhotoWithKeywords("Scott", "Joe", "Sarah");
         final PhotoWithKeywords pwk4 = new PhotoWithKeywords(new Keyword("Scott", 14));
 
-        Iterator<Key<PhotoWithKeywords>> iterator = getDatastore().saveMany(asList(pwk1, pwk2, pwk3, pwk4)).iterator();
+        Iterator<Key<PhotoWithKeywords>> iterator = getDatastore().save(asList(pwk1, pwk2, pwk3, pwk4)).iterator();
 
         assertEquals(asList(pwk3, pwk4), getDatastore().find(PhotoWithKeywords.class)
                                                        .field("keywords")
@@ -490,7 +490,7 @@ public class TestQuery extends TestBase {
 
     @Test
     public void testExplainPlan() {
-        getDatastore().saveMany(asList(new Pic("pic1"), new Pic("pic2"), new Pic("pic3"), new Pic("pic4")));
+        getDatastore().save(asList(new Pic("pic1"), new Pic("pic2"), new Pic("pic3"), new Pic("pic4")));
         Map<String, Object> explainResult = getDatastore().find(Pic.class).explain();
         assertEquals(explainResult.toString(), 4, ((Map) explainResult.get("executionStats")).get("nReturned"));
     }
@@ -554,7 +554,7 @@ public class TestQuery extends TestBase {
 
     @Test
     public void testIdRangeQuery() {
-        getDatastore().saveMany(asList(new HasIntId(1), new HasIntId(11), new HasIntId(12)));
+        getDatastore().save(asList(new HasIntId(1), new HasIntId(11), new HasIntId(12)));
         assertEquals(2, getDatastore().find(HasIntId.class).filter("_id >", 5).filter("_id <", 20).count());
         assertEquals(1, getDatastore().find(HasIntId.class).field("_id").greaterThan(0).field("_id").lessThan(11).count());
     }
@@ -570,7 +570,7 @@ public class TestQuery extends TestBase {
 
     @Test
     public void testInQueryWithObjects() {
-        getDatastore().saveMany(asList(new PhotoWithKeywords(), new PhotoWithKeywords("Scott", "Joe", "Sarah")));
+        getDatastore().save(asList(new PhotoWithKeywords(), new PhotoWithKeywords("Scott", "Joe", "Sarah")));
 
         final Query<PhotoWithKeywords> query = getDatastore()
                                                    .find(PhotoWithKeywords.class)
@@ -589,7 +589,7 @@ public class TestQuery extends TestBase {
         final FacebookUser fbUser2 = new FacebookUser(2, "tom");
         final FacebookUser fbUser3 = new FacebookUser(3, "oli");
         final FacebookUser fbUser4 = new FacebookUser(4, "frank");
-        final Iterable<Key<FacebookUser>> fbKeys = getDatastore().saveMany(asList(fbUser1, fbUser2, fbUser3, fbUser4));
+        final Iterable<Key<FacebookUser>> fbKeys = getDatastore().save(asList(fbUser1, fbUser2, fbUser3, fbUser4));
         assertEquals(1, fbUser1.getId());
 
         final List<Key<FacebookUser>> fbUserKeys = new ArrayList<>();
@@ -621,7 +621,7 @@ public class TestQuery extends TestBase {
         final FacebookUser fbUser2 = new FacebookUser(2, "tom");
         final FacebookUser fbUser3 = new FacebookUser(3, "oli");
         final FacebookUser fbUser4 = new FacebookUser(4, "frank");
-        final Iterable<Key<FacebookUser>> fbKeys = getDatastore().saveMany(asList(fbUser1, fbUser2, fbUser3, fbUser4));
+        final Iterable<Key<FacebookUser>> fbKeys = getDatastore().save(asList(fbUser1, fbUser2, fbUser3, fbUser4));
         assertEquals(1, fbUser1.getId());
 
         final List<Key<FacebookUser>> fbUserKeys = new ArrayList<>();
@@ -710,7 +710,7 @@ public class TestQuery extends TestBase {
 
     @Test
     public void testNaturalSortAscending() {
-        getDatastore().saveMany(asList(new Rectangle(6, 10), new Rectangle(3, 8), new Rectangle(10, 10), new Rectangle(10, 1)));
+        getDatastore().save(asList(new Rectangle(6, 10), new Rectangle(3, 8), new Rectangle(10, 10), new Rectangle(10, 1)));
 
         List<Rectangle> results = getDatastore()
                                       .find(Rectangle.class)
@@ -739,7 +739,7 @@ public class TestQuery extends TestBase {
 
     @Test
     public void testNaturalSortDescending() {
-        getDatastore().saveMany(asList(new Rectangle(6, 10), new Rectangle(3, 8), new Rectangle(10, 10), new Rectangle(10, 1)));
+        getDatastore().save(asList(new Rectangle(6, 10), new Rectangle(3, 8), new Rectangle(10, 10), new Rectangle(10, 1)));
 
         List<Rectangle> results = getDatastore().find(Rectangle.class).order(naturalDescending()).asList();
 
@@ -765,8 +765,8 @@ public class TestQuery extends TestBase {
 
     @Test
     public void testNegativeBatchSize() {
-        getDatastore().deleteMany(getDatastore().find(PhotoWithKeywords.class));
-        getDatastore().saveMany(asList(new PhotoWithKeywords("scott", "hernandez"),
+        getDatastore().delete(getDatastore().find(PhotoWithKeywords.class));
+        getDatastore().save(asList(new PhotoWithKeywords("scott", "hernandez"),
             new PhotoWithKeywords("scott", "hernandez"),
             new PhotoWithKeywords("scott", "hernandez"),
             new PhotoWithKeywords("1", "2"),
@@ -872,7 +872,7 @@ public class TestQuery extends TestBase {
 
     @Test
     public void testQueryCount() {
-        getDatastore().saveMany(asList(new Rectangle(1, 10),
+        getDatastore().save(asList(new Rectangle(1, 10),
             new Rectangle(1, 10),
             new Rectangle(1, 10),
             new Rectangle(10, 10),
@@ -923,7 +923,7 @@ public class TestQuery extends TestBase {
 
     @Test
     public void testRangeQuery() {
-        getDatastore().saveMany(asList(new Rectangle(1, 10),
+        getDatastore().save(asList(new Rectangle(1, 10),
             new Rectangle(4, 2),
             new Rectangle(6, 10),
             new Rectangle(8, 5),
@@ -979,7 +979,7 @@ public class TestQuery extends TestBase {
     @Test
     @SuppressWarnings("deprecation")
     public void testReturnOnlyIndexedFields() {
-        getDatastore().saveMany(asList(new Pic("pic1"), new Pic("pic2"), new Pic("pic3"), new Pic("pic4")));
+        getDatastore().save(asList(new Pic("pic1"), new Pic("pic2"), new Pic("pic3"), new Pic("pic4")));
         getDatastore().ensureIndexes();
 
         Pic foundItem = getDatastore().find(Pic.class)
@@ -993,7 +993,7 @@ public class TestQuery extends TestBase {
 
     @Test
     public void testSimpleSort() {
-        getDatastore().saveMany(asList(new Rectangle(1, 10),
+        getDatastore().save(asList(new Rectangle(1, 10),
             new Rectangle(3, 8),
             new Rectangle(6, 10),
             new Rectangle(10, 10),
@@ -1065,7 +1065,7 @@ public class TestQuery extends TestBase {
         final PhotoWithKeywords pwk2 = new PhotoWithKeywords("Joe", "Sarah");
         pwk2.keywords.add(new Keyword("Scott", 14));
 
-        getDatastore().saveMany(asList(pwk1, pwk2));
+        getDatastore().save(asList(pwk1, pwk2));
 
         // In this case, we only want to match on the keyword field, not the
         // score field, which shouldn't be included in the elemMatch query.

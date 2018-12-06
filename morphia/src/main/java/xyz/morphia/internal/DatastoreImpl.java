@@ -115,58 +115,58 @@ public class DatastoreImpl implements AdvancedDatastore {
     }
 
     @Override
-    public <T, V> DeleteResult deleteOne(final Class<T> clazz, final V id) {
-        return deleteOne(clazz, id, new DeleteOptions(), enforceWriteConcern(clazz));
+    public <T, V> DeleteResult delete(final Class<T> clazz, final V id) {
+        return delete(clazz, id, new DeleteOptions(), enforceWriteConcern(clazz));
     }
 
     @Override
-    public <T, V> DeleteResult deleteOne(final String collectionName, final Class<T> clazz, final V id) {
-        return deleteOne(collectionName, clazz, id, new DeleteOptions(), enforceWriteConcern(clazz));
+    public <T, V> DeleteResult delete(final String collectionName, final Class<T> clazz, final V id) {
+        return delete(collectionName, clazz, id, new DeleteOptions(), enforceWriteConcern(clazz));
     }
 
     @Override
-    public <T, V> DeleteResult deleteOne(final Class<T> clazz, final V id, final DeleteOptions options, final WriteConcern writeConcern) {
-        return deleteMany(createQuery(clazz).filter(Mapper.ID_KEY, id), options, writeConcern);
+    public <T, V> DeleteResult delete(final Class<T> clazz, final V id, final DeleteOptions options, final WriteConcern writeConcern) {
+        return delete(createQuery(clazz).filter(Mapper.ID_KEY, id), options, writeConcern);
     }
 
     @Override
-    public <T, V> DeleteResult deleteOne(final String collectionName, final Class<T> clazz, final V id, final DeleteOptions options,
+    public <T, V> DeleteResult delete(final String collectionName, final Class<T> clazz, final V id, final DeleteOptions options,
                                       final WriteConcern writeConcern) {
-        return deleteMany(createQuery(collectionName, clazz).filter(Mapper.ID_KEY, id), options, writeConcern);
+        return delete(createQuery(collectionName, clazz).filter(Mapper.ID_KEY, id), options, writeConcern);
     }
 
     @Override
-    public <T, V> DeleteResult deleteMany(final Class<T> clazz, final List<V> ids) {
-        return deleteMany(find(clazz).filter(Mapper.ID_KEY + " in", ids));
+    public <T, V> DeleteResult delete(final Class<T> clazz, final List<V> ids) {
+        return delete(find(clazz).filter(Mapper.ID_KEY + " in", ids));
     }
 
     @Override
-    public <T, V> DeleteResult deleteMany(final String collectionName, final Class<T> clazz, final List<V> ids) {
-        return deleteMany(find(collectionName, clazz).filter(Mapper.ID_KEY + " in", ids));
+    public <T, V> DeleteResult delete(final String collectionName, final Class<T> clazz, final List<V> ids) {
+        return delete(find(collectionName, clazz).filter(Mapper.ID_KEY + " in", ids));
     }
 
     @Override
-    public <T, V> DeleteResult deleteMany(final Class<T> clazz, final List<V> ids, final DeleteOptions options,
-                                          final WriteConcern writeConcern) {
-        return deleteMany(find(clazz).filter(Mapper.ID_KEY + " in", ids), options, writeConcern);
+    public <T, V> DeleteResult delete(final Class<T> clazz, final List<V> ids, final DeleteOptions options,
+                                      final WriteConcern writeConcern) {
+        return delete(find(clazz).filter(Mapper.ID_KEY + " in", ids), options, writeConcern);
     }
 
     @Override
-    public <T, V> DeleteResult deleteMany(final String collectionName,
+    public <T, V> DeleteResult delete(final String collectionName,
                                       final Class<T> clazz,
                                       final List<V> ids,
                                       final DeleteOptions options,
                                       final WriteConcern writeConcern) {
-        return deleteMany(find(collectionName, clazz).filter(Mapper.ID_KEY + " in", ids), options, writeConcern);
+        return delete(find(collectionName, clazz).filter(Mapper.ID_KEY + " in", ids), options, writeConcern);
     }
 
     @Override
-    public <T> DeleteResult deleteMany(final Query<T> query) {
-        return deleteMany(query, new DeleteOptions(), enforceWriteConcern(query.getEntityClass()));
+    public <T> DeleteResult delete(final Query<T> query) {
+        return delete(query, new DeleteOptions(), enforceWriteConcern(query.getEntityClass()));
     }
 
     @Override
-    public <T> DeleteResult deleteMany(final Query<T> query, final DeleteOptions options, final WriteConcern writeConcern) {
+    public <T> DeleteResult delete(final Query<T> query, final DeleteOptions options, final WriteConcern writeConcern) {
 
         MongoCollection<T> collection = query.getCollection();
         // TODO remove this after testing.
@@ -179,8 +179,8 @@ public class DatastoreImpl implements AdvancedDatastore {
     }
 
     @Override
-    public <T> DeleteResult deleteOne(final T entity) {
-        return deleteOne(entity, new DeleteOptions(), enforceWriteConcern(entity.getClass()));
+    public <T> DeleteResult delete(final T entity) {
+        return delete(entity, new DeleteOptions(), enforceWriteConcern(entity.getClass()));
     }
 
     /**
@@ -191,8 +191,8 @@ public class DatastoreImpl implements AdvancedDatastore {
      * @return results of the delete
      */
     @Override
-    public <T> DeleteResult deleteOne(final T entity, final DeleteOptions options, final WriteConcern writeConcern) {
-        return deleteOne(entity.getClass(), mapper.getId(entity), options, writeConcern);
+    public <T> DeleteResult delete(final T entity, final DeleteOptions options, final WriteConcern writeConcern) {
+        return delete(entity.getClass(), mapper.getId(entity), options, writeConcern);
     }
 
     @Override
@@ -569,24 +569,24 @@ public class DatastoreImpl implements AdvancedDatastore {
     }
 
     @Override
-    public <T> Key<T> insertOne(final T entity) {
-        return insertOne(entity, new InsertOneOptions(), enforceWriteConcern(entity.getClass()));
+    public <T> Key<T> insert(final T entity) {
+        return insert(entity, new InsertOneOptions(), enforceWriteConcern(entity.getClass()));
     }
 
     @Override
-    public <T> Key<T> insertOne(final T entity, final InsertOneOptions options, final WriteConcern writeConcern) {
-        return insertOne(getCollection((Class<T>) entity.getClass()), entity, options, writeConcern);
+    public <T> Key<T> insert(final T entity, final InsertOneOptions options, final WriteConcern writeConcern) {
+        return insert(getCollection((Class<T>) entity.getClass()), entity, options, writeConcern);
     }
 
     @Override
-    public <T> Key<T> insertOne(final String collection, final T entity) {
-        return insertOne(getCollection(collection, (Class<T>) entity.getClass()), entity,
+    public <T> Key<T> insert(final String collection, final T entity) {
+        return insert(getCollection(collection, (Class<T>) entity.getClass()), entity,
             new InsertOneOptions(), enforceWriteConcern(entity.getClass()));
     }
 
     @Override
-    public <T> Key<T> insertOne(final String collection, final T entity, final InsertOneOptions options, final WriteConcern writeConcern) {
-        return insertOne(this.getCollection(collection, (Class<T>) entity.getClass()), entity, options,
+    public <T> Key<T> insert(final String collection, final T entity, final InsertOneOptions options, final WriteConcern writeConcern) {
+        return insert(this.getCollection(collection, (Class<T>) entity.getClass()), entity, options,
             writeConcern);
     }
 
@@ -598,43 +598,43 @@ public class DatastoreImpl implements AdvancedDatastore {
      * @return the keys of entities
      */
     @Override
-    public <T> List<Key<T>> insertMany(final List<T> entities) {
+    public <T> List<Key<T>> insert(final List<T> entities) {
         if (entities.isEmpty()) {
             return emptyList();
         }
-        return insertMany(entities, new InsertManyOptions(), enforceWriteConcern(entities.get(0).getClass()));
+        return insert(entities, new InsertManyOptions(), enforceWriteConcern(entities.get(0).getClass()));
     }
 
     @Override
-    public <T> List<Key<T>> insertMany(final List<T> entities, final InsertManyOptions options, final WriteConcern writeConcern) {
+    public <T> List<Key<T>> insert(final List<T> entities, final InsertManyOptions options, final WriteConcern writeConcern) {
         if (entities.isEmpty()) {
             return emptyList();
         }
         final Class<T> first = (Class<T>) entities.get(0).getClass();
-        return insertMany(getCollection(first), entities, options, writeConcern);
+        return insert(getCollection(first), entities, options, writeConcern);
     }
 
     @Override
-    public <T> List<Key<T>> insertMany(final String collection, final List<T> entities) {
+    public <T> List<Key<T>> insert(final String collection, final List<T> entities) {
         if (entities.isEmpty()) {
             return emptyList();
         }
-        return insertMany(collection, entities, new InsertManyOptions(), enforceWriteConcern(entities.get(0).getClass()));
+        return insert(collection, entities, new InsertManyOptions(), enforceWriteConcern(entities.get(0).getClass()));
     }
 
     @Override
-    public <T> List<Key<T>> insertMany(final String collection, final List<T> entities, final InsertManyOptions options,
-                                       final WriteConcern writeConcern) {
+    public <T> List<Key<T>> insert(final String collection, final List<T> entities, final InsertManyOptions options,
+                                   final WriteConcern writeConcern) {
         if (entities.isEmpty()) {
             return emptyList();
         }
         final Class<?> entityClass = entities.get(0).getClass();
-        return insertMany(getDatabase().getCollection(collection, (Class<T>) entityClass), entities, options,
+        return insert(getDatabase().getCollection(collection, (Class<T>) entityClass), entities, options,
             enforceWriteConcern(entityClass));
     }
 
-    private <T> List<Key<T>> insertMany(final MongoCollection<T> collection, final List<T> entities, final InsertManyOptions options,
-                                        final WriteConcern wc) {
+    private <T> List<Key<T>> insert(final MongoCollection<T> collection, final List<T> entities, final InsertManyOptions options,
+                                    final WriteConcern wc) {
 
         final Map<Boolean, List<T>> grouped = entities.stream()
                                                       .collect(groupingBy(
@@ -654,8 +654,8 @@ public class DatastoreImpl implements AdvancedDatastore {
         return postSaveOperations(entities);
     }
 
-    private <T> Key<T> insertOne(final MongoCollection<T> collection, final T entity, final InsertOneOptions options,
-                                 final WriteConcern wc) {
+    private <T> Key<T> insert(final MongoCollection<T> collection, final T entity, final InsertOneOptions options,
+                              final WriteConcern wc) {
         collection
             .withWriteConcern(wc)
             .insertOne(entity, options);
@@ -679,15 +679,15 @@ public class DatastoreImpl implements AdvancedDatastore {
     }
 
     @Override
-    public <T> List<Key<T>> saveMany(final List<T> entities) {
+    public <T> List<Key<T>> save(final List<T> entities) {
         if (entities.isEmpty()) {
             return emptyList();
         }
-        return saveMany(entities, new InsertManyOptions(), enforceWriteConcern(entities.get(0).getClass()));
+        return save(entities, new InsertManyOptions(), enforceWriteConcern(entities.get(0).getClass()));
     }
 
     @Override
-    public <T> List<Key<T>> saveMany(final List<T> entities, final InsertManyOptions options, final WriteConcern wc) {
+    public <T> List<Key<T>> save(final List<T> entities, final InsertManyOptions options, final WriteConcern wc) {
         if (entities.isEmpty()) {
             return emptyList();
         }
