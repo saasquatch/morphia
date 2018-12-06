@@ -302,27 +302,12 @@ public interface Query<T> extends MongoIterable<T> {
     long count(CountOptions options);
 
     /**
-     * Gets the first entity in the result set.  Obeys the {@link Query} offset value.
-     *
-     * @return the only instance in the result, or null if the result set is empty.
-     */
-    T get();
-
-    /**
-     * Gets the first entity in the result set.  Obeys the {@link Query} offset value.
-     *
-     * @param options the options to apply to the find operation
-     * @return the only instance in the result, or null if the result set is empty.
-     * @since 1.3
-     */
-    T get(FindOptions options);
-
-    /**
      * Execute the query and get the results.
      *
      * @return returns a List of the documents returned by a query
+     * @since 2.0
      */
-    default List<T> asList() {
+    default List<T> list() {
         return asList(new FindOptions());
     }
 
@@ -331,14 +316,70 @@ public interface Query<T> extends MongoIterable<T> {
      *
      * @param options the options to apply to the find operation
      * @return returns a List of the documents returned by a query
-     * @since 1.3
+     * @since 2.0
      */
-    default List<T> asList(FindOptions options) {
+    default List<T> list(FindOptions options) {
         final List<T> results = new ArrayList<>();
         try (MongoCursor<T> cursor = find(options)) {
             cursor.forEachRemaining(results::add);
         }
         return results;
+    }
 
+    /**
+     * Gets the first entity in the result set.  Obeys the {@link Query} offset value.
+     *
+     * @param options the options to apply to the find operation
+     * @return the only instance in the result, or null if the result set is empty.
+     * @since 2.0
+     */
+    T first(FindOptions options);
+
+    /**
+     * Gets the first entity in the result set.  Obeys the {@link Query} offset value.
+     *
+     * @return the only instance in the result, or null if the result set is empty.
+     * @deprecated This method is being renamed to make more consistent, symmetric API.  Use {@link #first()} instead.
+     */
+    @Deprecated
+    default T get() {
+        return first();
+    }
+
+    /**
+     * Gets the first entity in the result set.  Obeys the {@link Query} offset value.
+     *
+     * @param options the options to apply to the find operation
+     * @return the only instance in the result, or null if the result set is empty.
+     * @since 1.3
+     * @deprecated This method is being renamed to make more consistent, symmetric API.  Use {@link #first(FindOptions)} instead.
+     */
+    @Deprecated
+    default T get(FindOptions options) {
+        return first(options);
+    }
+
+    /**
+     * Execute the query and get the results.
+     *
+     * @return returns a List of the documents returned by a query
+     * @deprecated This method is being renamed to make more consistent, symmetric API.  Use {@link #list()} instead.
+     */
+    @Deprecated
+    default List<T> asList() {
+        return list(new FindOptions());
+    }
+
+    /**
+     * Execute the query and get the results.
+     *
+     * @param options the options to apply to the find operation
+     * @return returns a List of the documents returned by a query
+     * @deprecated This method is being renamed to make more consistent, symmetric API.  Use {@link #list(FindOptions)} instead.
+     * @since 1.3
+     */
+    @Deprecated
+    default List<T> asList(FindOptions options) {
+        return list(options);
     }
 }

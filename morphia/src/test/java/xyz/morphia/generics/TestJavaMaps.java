@@ -40,7 +40,7 @@ public class TestJavaMaps extends TestBase {
         employee.byteMap = byteMap;
         ds.save(employee);
 
-        Employee loaded = ds.find(Employee.class).get();
+        Employee loaded = ds.find(Employee.class).first();
 
         assertEquals(Byte.valueOf((byte) 1), loaded.byteMap.get("b"));
         assertNull(loaded.floatMap);
@@ -56,7 +56,7 @@ public class TestJavaMaps extends TestBase {
         model.wrapped = new TestEmptyModel.Wrapped();
         model.wrapped.text = "textWrapper";
         getDatastore().save(model);
-        TestEmptyModel model2 = getDatastore().find(TestEmptyModel.class).filter("id", model.id).get();
+        TestEmptyModel model2 = getDatastore().find(TestEmptyModel.class).filter("id", model.id).first();
         Assert.assertNull(model.wrapped.others);
         Assert.assertNull(model2.wrapped.others);
     }
@@ -69,7 +69,7 @@ public class TestJavaMaps extends TestBase {
             expectedEntity.getLinkedHashMap().put(i, "a" + i);
         }
         getDatastore().save(expectedEntity);
-        LinkedHashMapTestEntity storedEntity = getDatastore().find(LinkedHashMapTestEntity.class).get();
+        LinkedHashMapTestEntity storedEntity = getDatastore().find(LinkedHashMapTestEntity.class).first();
         Assert.assertNotNull(storedEntity);
         Assert.assertEquals(expectedEntity.getLinkedHashMap(), storedEntity.getLinkedHashMap());
     }

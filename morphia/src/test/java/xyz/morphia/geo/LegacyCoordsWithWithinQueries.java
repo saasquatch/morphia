@@ -31,8 +31,7 @@ public class LegacyCoordsWithWithinQueries extends TestBase {
 
         final PlaceWithLegacyCoords found = getDatastore().find(PlaceWithLegacyCoords.class)
                                                           .field("location")
-                                                          .within(Shape.center(point(2, 2), 0.5))
-                                                          .get();
+                                                          .within(Shape.center(point(2, 2), 0.5)).first();
         assertThat(found, is(nullValue()));
     }
 
@@ -44,8 +43,7 @@ public class LegacyCoordsWithWithinQueries extends TestBase {
 
         final PlaceWithLegacyCoords found = getDatastore().find(PlaceWithLegacyCoords.class)
                                                           .field("location")
-                                                          .within(Shape.box(point(0, 0), point(0.5, 0.5)))
-                                                          .get();
+                                                          .within(Shape.box(point(0, 0), point(0.5, 0.5))).first();
         assertThat(found, is(nullValue()));
     }
 
@@ -58,10 +56,9 @@ public class LegacyCoordsWithWithinQueries extends TestBase {
         final PlaceWithLegacyCoords found = getDatastore().find(PlaceWithLegacyCoords.class)
                                                           .field("location")
                                                           .within(Shape.polygon(point(0, 0),
-                                                                         point(0, 5),
-                                                                         point(2, 3),
-                                                                         point(1, 0)))
-                                                          .get();
+                                                              point(0, 5),
+                                                              point(2, 3),
+                                                              point(1, 0))).first();
         assertThat(found, is(nullValue()));
     }
 
@@ -74,10 +71,9 @@ public class LegacyCoordsWithWithinQueries extends TestBase {
         final PlaceWithLegacyCoords found = getDatastore().find(PlaceWithLegacyCoords.class)
                                                           .field("location")
                                                           .within(Shape.polygon(point(0, 0),
-                                                                         point(0, 5),
-                                                                         point(2, 3),
-                                                                         point(1, 0)))
-                                                          .get();
+                                                              point(0, 5),
+                                                              point(2, 3),
+                                                              point(1, 0))).first();
         assertThat(found, is(expectedPoint));
     }
 
@@ -106,8 +102,7 @@ public class LegacyCoordsWithWithinQueries extends TestBase {
 
         final PlaceWithLegacyCoords found = getDatastore().find(PlaceWithLegacyCoords.class)
                                                           .field("location")
-                                                          .within(Shape.center(point(0, 1), 1))
-                                                          .get();
+                                                          .within(Shape.center(point(0, 1), 1)).first();
         assertThat(found, is(expectedPoint));
     }
 
@@ -119,8 +114,7 @@ public class LegacyCoordsWithWithinQueries extends TestBase {
 
         final PlaceWithLegacyCoords found = getDatastore().find(PlaceWithLegacyCoords.class)
                                                           .field("location")
-                                                          .within(Shape.centerSphere(point(0, 1), 1))
-                                                          .get();
+                                                          .within(Shape.centerSphere(point(0, 1), 1)).first();
         assertThat(found, is(expectedPoint));
     }
 
@@ -132,8 +126,7 @@ public class LegacyCoordsWithWithinQueries extends TestBase {
 
         final PlaceWithLegacyCoords found = getDatastore().find(PlaceWithLegacyCoords.class)
                                                           .field("location")
-                                                          .within(Shape.box(point(0, 0), point(2, 2)))
-                                                          .get();
+                                                          .within(Shape.box(point(0, 0), point(2, 2))).first();
         assertThat(found, is(expectedPoint));
     }
 }

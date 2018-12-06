@@ -45,8 +45,7 @@ public class NewAnnotationTest extends TestBase {
         final User uScott = getDatastore()
                                 .find(User.class)
                                 .disableValidation()
-                                .filter("email_lowercase", u.email.toLowerCase())
-                                .get();
+                                .filter("email_lowercase", u.email.toLowerCase()).first();
         Assert.assertNotNull(uScott);
     }
 

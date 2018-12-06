@@ -118,32 +118,32 @@ public class MapperOptionsTest extends TestBase {
 
     private void shouldFindField(final HasList hl, final List<String> expected) {
         getDatastore().save(hl);
-        assertEquals(expected, getDatastore().find(HasList.class).get().names);
+        assertEquals(expected, getDatastore().find(HasList.class).first().names);
     }
 
     private void shouldFindField(final HasMap hl, final Map<String, String> expected) {
         getDatastore().save(hl);
-        assertEquals(expected, getDatastore().find(HasMap.class).get().properties);
+        assertEquals(expected, getDatastore().find(HasMap.class).first().properties);
     }
 
     private void shouldFindField(final HasCollectionValuedMap hm, final Map<String, Collection<String>> expected) {
         getDatastore().save(hm);
-        assertEquals(expected, getDatastore().find(HasCollectionValuedMap.class).get().properties);
+        assertEquals(expected, getDatastore().find(HasCollectionValuedMap.class).first().properties);
     }
 
     private void shouldNotFindField(final HasMap hl) {
         getDatastore().save(hl);
-        assertNull(getDatastore().find(HasMap.class).get().properties);
+        assertNull(getDatastore().find(HasMap.class).first().properties);
     }
 
     private void shouldNotFindField(final HasList hl) {
         getDatastore().save(hl);
-        assertNull(getDatastore().find(HasList.class).get().names);
+        assertNull(getDatastore().find(HasList.class).first().names);
     }
 
     private void shouldNotFindField(final HasCollectionValuedMap hm) {
         getDatastore().save(hm);
-        assertNull(getDatastore().find(HasCollectionValuedMap.class).get().properties);
+        assertNull(getDatastore().find(HasCollectionValuedMap.class).first().properties);
     }
 
     private static class HasList {

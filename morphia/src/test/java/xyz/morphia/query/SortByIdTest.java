@@ -23,8 +23,8 @@ public class SortByIdTest extends TestBase {
         getDatastore().save(a2);
         getDatastore().save(a3);
 
-        Assert.assertEquals("last id", a3.id, getDatastore().find(A.class).order(descending("id")).get().id);
-        Assert.assertEquals("last id", a3.id, getDatastore().find(A.class).disableValidation().order(descending("_id")).get().id);
+        Assert.assertEquals("last id", a3.id, getDatastore().find(A.class).order(descending("id")).first().id);
+        Assert.assertEquals("last id", a3.id, getDatastore().find(A.class).disableValidation().order(descending("_id")).first().id);
     }
 
     @Entity("A")

@@ -468,7 +468,7 @@ public interface Datastore {
      */
     @Deprecated
     default <T> T getByKey(final Class<T> clazz, final Key<T> key) {
-        return find(clazz).filter("_id", key.getId()).get();
+        return find(clazz).filter("_id", key.getId()).first();
     }
 
     /**

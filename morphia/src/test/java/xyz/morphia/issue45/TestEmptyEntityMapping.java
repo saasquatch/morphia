@@ -22,9 +22,9 @@ public class TestEmptyEntityMapping extends TestBase {
         u.setUserId("USERID");
         getDatastore().save(u);
 
-        Assert.assertNull("Should not find the user.", getDatastore().find(User.class).filter("rights size", 0).get());
-        Assert.assertNull("Should not find the user.", getDatastore().find(User.class).field("rights").sizeEq(0).get());
-        Assert.assertNotNull("Should find the user.", getDatastore().find(User.class).field("rights").doesNotExist().get());
+        Assert.assertNull("Should not find the user.", getDatastore().find(User.class).filter("rights size", 0).first());
+        Assert.assertNull("Should not find the user.", getDatastore().find(User.class).field("rights").sizeEq(0).first());
+        Assert.assertNotNull("Should find the user.", getDatastore().find(User.class).field("rights").doesNotExist().first());
         getDatastore().deleteMany(getDatastore().find(User.class));
 
         u = new User();
@@ -33,9 +33,9 @@ public class TestEmptyEntityMapping extends TestBase {
         u.getRights().add(Rights.ADMIN);
         getDatastore().save(u);
 
-        Assert.assertNotNull("Should find the user.", getDatastore().find(User.class).filter("rights size", 1).get());
-        Assert.assertNotNull("Should find the user.", getDatastore().find(User.class).field("rights").sizeEq(1).get());
-        Assert.assertNotNull("Should find the user.", getDatastore().find(User.class).field("rights").exists().get());
+        Assert.assertNotNull("Should find the user.", getDatastore().find(User.class).filter("rights size", 1).first());
+        Assert.assertNotNull("Should find the user.", getDatastore().find(User.class).field("rights").sizeEq(1).first());
+        Assert.assertNotNull("Should find the user.", getDatastore().find(User.class).field("rights").exists().first());
     }
 
 

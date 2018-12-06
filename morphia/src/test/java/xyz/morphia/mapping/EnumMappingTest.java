@@ -23,7 +23,7 @@ public class EnumMappingTest extends TestBase {
 
         getMapper().map(Class1.class);
 
-        entity = getDatastore().find(Class1.class).get();
+        entity = getDatastore().find(Class1.class).first();
         final Map<String, Foo> map = entity.getMap();
         Foo b = map.get("key");
         Assert.assertNotNull(b);

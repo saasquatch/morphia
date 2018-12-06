@@ -1,11 +1,9 @@
 package xyz.morphia;
 
-import com.mongodb.WriteConcern;
 import com.mongodb.client.model.Collation;
 import com.mongodb.client.model.DeleteOptions;
 import com.mongodb.client.model.FindOneAndDeleteOptions;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
-import com.mongodb.client.model.InsertOneOptions;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
@@ -39,11 +37,9 @@ import java.util.List;
 import static com.mongodb.ReadPreference.secondaryPreferred;
 import static com.mongodb.WriteConcern.ACKNOWLEDGED;
 import static com.mongodb.WriteConcern.UNACKNOWLEDGED;
-import static com.mongodb.WriteConcern.W2;
 import static com.mongodb.client.model.CollationStrength.SECONDARY;
 import static com.mongodb.client.model.ReturnDocument.AFTER;
 import static com.mongodb.client.model.ReturnDocument.BEFORE;
-import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
@@ -113,7 +109,7 @@ public class TestDatastore extends TestBase {
         assertEquals(1, getDatastore().find(Hotel.class).count());
         assertNotNull(borg.getId());
 
-        final Hotel hotelLoaded = getDatastore().find(Hotel.class).filter("_id", borg.getId()).get();
+        final Hotel hotelLoaded = getDatastore().find(Hotel.class).filter("_id", borg.getId()).first();
         assertEquals(borg.getName(), hotelLoaded.getName());
         assertEquals(borg.getAddress().getPostCode(), hotelLoaded.getAddress().getPostCode());
     }
@@ -129,7 +125,7 @@ public class TestDatastore extends TestBase {
 
         getDatastore().saveMany(fbUsers);
         assertEquals(4, getDatastore().find(FacebookUser.class).count());
-        assertNotNull(getDatastore().find(FacebookUser.class).filter("_id", 1).get());
+        assertNotNull(getDatastore().find(FacebookUser.class).filter("_id", 1).first());
         List<FacebookUser> res = getDatastore().find(FacebookUser.class).filter(Mapper.ID_KEY + " in", asList(1L, 2L)).asList();
         assertEquals(2, res.size());
         assertNotNull(res.get(0));
@@ -140,7 +136,7 @@ public class TestDatastore extends TestBase {
         getDatastore().getCollection(FacebookUser.class).deleteMany(new Document());
         getAds().insertMany(fbUsers);
         assertEquals(4, getDatastore().find(FacebookUser.class).count());
-        assertNotNull(getDatastore().find(FacebookUser.class).filter("_id", 1).get());
+        assertNotNull(getDatastore().find(FacebookUser.class).filter("_id", 1).first());
         res = getDatastore().find(FacebookUser.class).filter(Mapper.ID_KEY + " in", asList(1L, 2L)).asList();
         assertEquals(2, res.size());
         assertNotNull(res.get(0));
@@ -297,8 +293,8 @@ public class TestDatastore extends TestBase {
                                                                         .inc("loginCount");
         UpdateResult results = getDatastore().updateMany(query, updateOperations);
         assertEquals(1, results.getModifiedCount());
-        assertEquals(0, getDatastore().find(FacebookUser.class).filter("id", 1).get().loginCount);
-        assertEquals(1, getDatastore().find(FacebookUser.class).filter("id", 2).get().loginCount);
+        assertEquals(0, getDatastore().find(FacebookUser.class).filter("id", 1).first().loginCount);
+        assertEquals(1, getDatastore().find(FacebookUser.class).filter("id", 2).first().loginCount);
 
         results = getDatastore().updateMany(query, updateOperations, new UpdateOptions()
             .collation(Collation.builder()
@@ -306,8 +302,8 @@ public class TestDatastore extends TestBase {
                                 .collationStrength(SECONDARY)
                                 .build()), getDatastore().getDefaultWriteConcern());
         assertEquals(2, results.getModifiedCount());
-        assertEquals(1, getDatastore().find(FacebookUser.class).filter("id", 1).get().loginCount);
-        assertEquals(2, getDatastore().find(FacebookUser.class).filter("id", 2).get().loginCount);
+        assertEquals(1, getDatastore().find(FacebookUser.class).filter("id", 1).first().loginCount);
+        assertEquals(2, getDatastore().find(FacebookUser.class).filter("id", 2).first().loginCount);
     }
 
     @Test
@@ -321,14 +317,14 @@ public class TestDatastore extends TestBase {
         UpdateOperations<FacebookUser> updateOperations = getDatastore().createUpdateOperations(FacebookUser.class)
                                                                         .inc("loginCount");
         FacebookUser results = getDatastore().findAndModify(query, updateOperations);
-        assertEquals(0, getDatastore().find(FacebookUser.class).filter("id", 1).get().loginCount);
-        assertEquals(1, getDatastore().find(FacebookUser.class).filter("id", 2).get().loginCount);
+        assertEquals(0, getDatastore().find(FacebookUser.class).filter("id", 1).first().loginCount);
+        assertEquals(1, getDatastore().find(FacebookUser.class).filter("id", 2).first().loginCount);
         assertEquals(1, results.loginCount);
 
         results = getDatastore().findAndModify(query, updateOperations, new FindOneAndUpdateOptions(),
             getDatastore().getDefaultWriteConcern());
-        assertEquals(0, getDatastore().find(FacebookUser.class).filter("id", 1).get().loginCount);
-        assertEquals(2, getDatastore().find(FacebookUser.class).filter("id", 2).get().loginCount);
+        assertEquals(0, getDatastore().find(FacebookUser.class).filter("id", 1).first().loginCount);
+        assertEquals(2, getDatastore().find(FacebookUser.class).filter("id", 2).first().loginCount);
         assertEquals(1, results.loginCount);
 
         results = getDatastore()
@@ -340,7 +336,7 @@ public class TestDatastore extends TestBase {
                               .returnDocument(BEFORE)
                               .upsert(true), getDatastore().getDefaultWriteConcern());
         assertNull(results);
-        FacebookUser user = getDatastore().find(FacebookUser.class).filter("id", 3).get();
+        FacebookUser user = getDatastore().find(FacebookUser.class).filter("id", 3).first();
         assertEquals(1, user.loginCount);
         assertEquals("Jon Snow", user.username);
 
@@ -352,7 +348,7 @@ public class TestDatastore extends TestBase {
                 .returnDocument(AFTER)
                 .upsert(true), getDatastore().getDefaultWriteConcern());
         assertNotNull(results);
-        user = getDatastore().find(FacebookUser.class).filter("id", 4).get();
+        user = getDatastore().find(FacebookUser.class).filter("id", 4).first();
         assertEquals(1, results.loginCount);
         assertEquals("Ron Swanson", results.username);
         assertEquals(1, user.loginCount);
@@ -375,8 +371,8 @@ public class TestDatastore extends TestBase {
             new FindOneAndUpdateOptions()
             .returnDocument(AFTER),
             getDatastore().getDefaultWriteConcern());
-        assertEquals(0, getDatastore().find(FacebookUser.class).filter("id", 1).get().loginCount);
-        assertEquals(1, getDatastore().find(FacebookUser.class).filter("id", 2).get().loginCount);
+        assertEquals(0, getDatastore().find(FacebookUser.class).filter("id", 1).first().loginCount);
+        assertEquals(1, getDatastore().find(FacebookUser.class).filter("id", 2).first().loginCount);
         assertEquals(1, results.loginCount);
 
         results = getDatastore().findAndModify(query, updateOperations,
@@ -387,9 +383,9 @@ public class TestDatastore extends TestBase {
                                     .collationStrength(SECONDARY)
                                     .build()),
             getDatastore().getDefaultWriteConcern());
-        assertEquals(0, getDatastore().find(FacebookUser.class).filter("id", 1).get().loginCount);
+        assertEquals(0, getDatastore().find(FacebookUser.class).filter("id", 1).first().loginCount);
         assertEquals(1, results.loginCount);
-        assertEquals(2, getDatastore().find(FacebookUser.class).filter("id", 2).get().loginCount);
+        assertEquals(2, getDatastore().find(FacebookUser.class).filter("id", 2).first().loginCount);
 
         results = getDatastore().findAndModify(getDatastore().find(FacebookUser.class)
                                                              .field("id").equal(3L)
@@ -398,7 +394,7 @@ public class TestDatastore extends TestBase {
                                   .returnDocument(BEFORE)
                                   .upsert(true), getDatastore().getDefaultWriteConcern());
         assertNull(results);
-        FacebookUser user = getDatastore().find(FacebookUser.class).filter("id", 3).get();
+        FacebookUser user = getDatastore().find(FacebookUser.class).filter("id", 3).first();
         assertEquals(1, user.loginCount);
         assertEquals("Jon Snow", user.username);
 
@@ -410,7 +406,7 @@ public class TestDatastore extends TestBase {
                                   .returnDocument(AFTER)
                                   .upsert(true), getDatastore().getDefaultWriteConcern());
         assertNotNull(results);
-        user = getDatastore().find(FacebookUser.class).filter("id", 4).get();
+        user = getDatastore().find(FacebookUser.class).filter("id", 4).first();
         assertEquals(1, results.loginCount);
         assertEquals("Ron Swanson", results.username);
         assertEquals(1, user.loginCount);
@@ -474,33 +470,33 @@ public class TestDatastore extends TestBase {
     }
 
     private void testFirstDatastore(final Datastore ds1) {
-        final FacebookUser user = ds1.find(FacebookUser.class).filter("id", 1).get();
+        final FacebookUser user = ds1.find(FacebookUser.class).filter("id", 1).first();
         Assert.assertNotNull(user);
-        Assert.assertNotNull(ds1.find(FacebookUser.class).filter("id", 3).get());
+        Assert.assertNotNull(ds1.find(FacebookUser.class).filter("id", 3).first());
 
         Assert.assertEquals("Should find 1 friend", 1, user.friends.size());
         Assert.assertEquals("Should find the right friend", 3, user.friends.get(0).id);
 
-        Assert.assertNull(ds1.find(FacebookUser.class).filter("id", 2).get());
-        Assert.assertNull(ds1.find(FacebookUser.class).filter("id", 4).get());
+        Assert.assertNull(ds1.find(FacebookUser.class).filter("id", 2).first());
+        Assert.assertNull(ds1.find(FacebookUser.class).filter("id", 4).first());
     }
 
     private void testSecondDatastore(final Datastore ds2) {
-        Assert.assertNull(ds2.find(FacebookUser.class).filter("id", 1).get());
-        Assert.assertNull(ds2.find(FacebookUser.class).filter("id", 3).get());
+        Assert.assertNull(ds2.find(FacebookUser.class).filter("id", 1).first());
+        Assert.assertNull(ds2.find(FacebookUser.class).filter("id", 3).first());
 
-        final FacebookUser db2FoundUser = ds2.find(FacebookUser.class).filter("id", 2).get();
+        final FacebookUser db2FoundUser = ds2.find(FacebookUser.class).filter("id", 2).first();
         Assert.assertNotNull(db2FoundUser);
-        Assert.assertNotNull(ds2.find(FacebookUser.class).filter("id", 4).get());
+        Assert.assertNotNull(ds2.find(FacebookUser.class).filter("id", 4).first());
         Assert.assertEquals("Should find 1 friend", 1, db2FoundUser.friends.size());
         Assert.assertEquals("Should find the right friend", 4, db2FoundUser.friends.get(0).id);
     }
 
     private void testStandardDatastore() {
-        Assert.assertNull(getDatastore().find(FacebookUser.class).filter("id", 1).get());
-        Assert.assertNull(getDatastore().find(FacebookUser.class).filter("id", 2).get());
-        Assert.assertNull(getDatastore().find(FacebookUser.class).filter("id", 3).get());
-        Assert.assertNull(getDatastore().find(FacebookUser.class).filter("id", 4).get());
+        Assert.assertNull(getDatastore().find(FacebookUser.class).filter("id", 1).first());
+        Assert.assertNull(getDatastore().find(FacebookUser.class).filter("id", 2).first());
+        Assert.assertNull(getDatastore().find(FacebookUser.class).filter("id", 3).first());
+        Assert.assertNull(getDatastore().find(FacebookUser.class).filter("id", 4).first());
     }
 
     @Entity("facebook_users")

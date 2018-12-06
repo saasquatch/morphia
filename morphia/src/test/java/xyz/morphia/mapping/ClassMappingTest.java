@@ -22,7 +22,7 @@ public class ClassMappingTest extends TestBase {
         e.testClass2 = LinkedList.class;
         getDatastore().save(e);
 
-        Assert.assertNull(getDatastore().find(E.class).field("testClass2").equal(ArrayList.class).get());
+        Assert.assertNull(getDatastore().find(E.class).field("testClass2").equal(ArrayList.class).first());
     }
 
     @Test

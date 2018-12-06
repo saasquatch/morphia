@@ -19,10 +19,10 @@ public class KeyMappingTest extends TestBase {
         insertData();
 
         final Datastore datastore = getDatastore();
-        User user = datastore.find(User.class).get();
+        User user = datastore.find(User.class).first();
         List<Key<Channel>> followedChannels = user.followedChannels;
 
-        Channel channel = datastore.find(Channel.class).filter("name", "Sport channel").get();
+        Channel channel = datastore.find(Channel.class).filter("name", "Sport channel").first();
 
         Key<Channel> key = getMapper().getKey(channel);
         Assert.assertTrue(followedChannels.contains(key));

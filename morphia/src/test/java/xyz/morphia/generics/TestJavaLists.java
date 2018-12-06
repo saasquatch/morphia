@@ -40,7 +40,7 @@ public class TestJavaLists extends TestBase {
         model.wrapped = new TestEmptyModel.Wrapped();
         model.wrapped.text = "textWrapper";
         getDatastore().save(model);
-        TestEmptyModel model2 = getDatastore().find(TestEmptyModel.class).filter("id", model.id).get();
+        TestEmptyModel model2 = getDatastore().find(TestEmptyModel.class).filter("id", model.id).first();
         assertNull(model.wrapped.others);
         assertNull(model2.wrapped.others);
     }
@@ -59,7 +59,7 @@ public class TestJavaLists extends TestBase {
                 employee.byteList = asList((byte) 1, (byte) 2);
                 ds.save(employee);
 
-                Employee loaded = ds.find(Employee.class).get();
+                Employee loaded = ds.find(Employee.class).first();
 
                 assertEquals(employee.byteList, loaded.byteList);
                 assertNull(loaded.floatList);

@@ -335,12 +335,10 @@ public class QueryImpl<T> extends CriteriaContainerImpl implements Query<T> {
         return collection.countDocuments(getQueryDocument(), options);
     }
 
-    @Override
     public T get() {
         return get(new FindOptions());
     }
 
-    @Override
     public T get(final FindOptions options) {
         try (MongoCursor<T> it = find(new FindOptions(options).limit(1))) {
             return it.tryNext();
@@ -448,8 +446,13 @@ public class QueryImpl<T> extends CriteriaContainerImpl implements Query<T> {
 
     @Override
     public T first() {
-        try (MongoCursor<T> tMongoCursor = find(new FindOptions().limit(1))) {
-            return tMongoCursor.tryNext();
+        return first(new FindOptions());
+    }
+
+    @Override
+    public T first(final FindOptions options) {
+        try (MongoCursor<T> cursor = find(new FindOptions(options).limit(1))) {
+            return cursor.tryNext();
         }
     }
 

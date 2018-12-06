@@ -39,7 +39,7 @@ public class TestFrontPageExample extends TestBase {
 
         getDatastore().save(new Employee("Mister", "GOD", null, 0));
 
-        final Employee boss = getDatastore().find(Employee.class).field("manager").equal(null).get(); // get an employee without a manager
+        final Employee boss = getDatastore().find(Employee.class).field("manager").equal(null).first(); // get an employee without a manager
         Assert.assertNotNull(boss);
         final Key<Employee> key = getDatastore().save(new Employee("Scott", "Hernandez", getMapper().getKey(boss), 150 * 1000));
         Assert.assertNotNull(key);
@@ -50,7 +50,7 @@ public class TestFrontPageExample extends TestBase {
         Assert.assertTrue("Should update existing document", res.getModifiedCount() > 0);
         Assert.assertEquals("Should update one document", 1, res.getModifiedCount());
 
-        final Employee scottsBoss = getDatastore().find(Employee.class).filter("underlings", key).get();
+        final Employee scottsBoss = getDatastore().find(Employee.class).filter("underlings", key).first();
         Assert.assertNotNull(scottsBoss);
         Assert.assertEquals(boss.id, scottsBoss.id);
     }

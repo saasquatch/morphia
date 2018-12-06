@@ -19,8 +19,8 @@ public class TestIssue463 extends TestBase {
         class2.setText("hello world");
         getDatastore().save(class2);
 
-        Assert.assertNull(getDatastore().find(Class1.class).filter("_id", class2.getId()).get());
-        Assert.assertNotNull(getDatastore().find(Class2.class).filter("_id", class2.getId()).get());
+        Assert.assertNull(getDatastore().find(Class1.class).filter("_id", class2.getId()).first());
+        Assert.assertNotNull(getDatastore().find(Class2.class).filter("_id", class2.getId()).first());
     }
 
     @Entity(value = "class1", useDiscriminator = false)

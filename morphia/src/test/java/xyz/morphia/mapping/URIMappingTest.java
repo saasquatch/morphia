@@ -20,7 +20,7 @@ public class URIMappingTest extends TestBase {
 
         entity.uri = testURI;
         getDatastore().save(entity);
-        final ContainsURI loaded = getDatastore().find(ContainsURI.class).get();
+        final ContainsURI loaded = getDatastore().find(ContainsURI.class).first();
         Assert.assertNotNull(loaded.uri);
         Assert.assertEquals(testURI, loaded.uri);
 
@@ -33,7 +33,7 @@ public class URIMappingTest extends TestBase {
 
         entity.uris.put(testURI, "first");
         getDatastore().save(entity);
-        final ContainsURIKeyedMap loaded = getDatastore().find(ContainsURIKeyedMap.class).get();
+        final ContainsURIKeyedMap loaded = getDatastore().find(ContainsURIKeyedMap.class).first();
         Assert.assertNotNull(loaded.uris);
         Assert.assertEquals(1, loaded.uris.size());
         Assert.assertEquals(testURI, loaded.uris.keySet().iterator().next());

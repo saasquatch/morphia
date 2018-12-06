@@ -98,7 +98,7 @@ public class LegacyCoordsTest extends TestBase {
                                                                    .near(1.0, 2.0, 0.1);
         // then
         assertThat(locationQuery.asList().size(), is(0));
-        assertThat(locationQuery.get(), is(nullValue()));
+        assertThat(locationQuery.first(), is(nullValue()));
     }
 
     @Test
@@ -151,7 +151,6 @@ public class LegacyCoordsTest extends TestBase {
 
         getDatastore().find(PlaceWithLegacyCoords.class)
                       .field("location")
-                      .near(0, 0)
-                      .get();
+                      .near(0, 0).first();
     }
 }

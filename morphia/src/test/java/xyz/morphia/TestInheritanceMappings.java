@@ -52,7 +52,7 @@ public class TestInheritanceMappings extends TestBase {
         assertNotNull(m.id);
         assertEquals(1, getDatastore().find(MapLike.class).count());
 
-        m = getDatastore().find(MapLike.class).get();
+        m = getDatastore().find(MapLike.class).first();
         assertNotNull(m.id);
         assertTrue(m.containsKey("Name"));
         assertEquals("Scott", m.get("Name"));
@@ -67,7 +67,7 @@ public class TestInheritanceMappings extends TestBase {
         c.b = "eh";
         c.setK(12L);
         getDatastore().save(c);
-        c = getDatastore().find(ParameterizedEntity.class).filter("_id", "foo").get();
+        c = getDatastore().find(ParameterizedEntity.class).filter("_id", "foo").first();
         assertNotNull(c.getId());
         assertNotNull(c.b);
         assertNotNull(c.getK());
@@ -84,7 +84,7 @@ public class TestInheritanceMappings extends TestBase {
         ParameterizedIdEntity c = new ParameterizedIdEntity();
         c.setId("foo");
         getDatastore().save(c);
-        c = getDatastore().find(ParameterizedIdEntity.class).filter("_id", "foo").get();
+        c = getDatastore().find(ParameterizedIdEntity.class).filter("_id", "foo").first();
         assertNotNull(c.getId());
 
         assertEquals("foo", c.getId());
@@ -97,7 +97,7 @@ public class TestInheritanceMappings extends TestBase {
         ParameterizedIdEntity2 c = new ParameterizedIdEntity2();
         c.setId("foo");
         getDatastore().save(c);
-        c = getDatastore().find(ParameterizedIdEntity2.class).filter("_id", "foo").get();
+        c = getDatastore().find(ParameterizedIdEntity2.class).filter("_id", "foo").first();
         assertNotNull(c.getId());
 
         assertEquals("foo", c.getId());

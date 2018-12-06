@@ -34,7 +34,7 @@ public class UpdateRetainsClassInfoTest extends TestBase {
         getDatastore().updateMany(query, update);
 
         // fails due to type now missing
-        getDatastore().find(X.class).get();
+        getDatastore().find(X.class).first();
     }
 
     public abstract static class E {

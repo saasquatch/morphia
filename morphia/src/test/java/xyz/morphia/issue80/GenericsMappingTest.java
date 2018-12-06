@@ -47,7 +47,7 @@ public class GenericsMappingTest extends TestBase {
         getDatastore().save(ct);
         assertNotNull(ct.id);
         assertEquals(1, getDatastore().find(ContainsThings.class).count());
-        final ContainsThings ctLoaded = getDatastore().find(ContainsThings.class).get();
+        final ContainsThings ctLoaded = getDatastore().find(ContainsThings.class).first();
         assertNotNull(ctLoaded);
         assertNotNull(ctLoaded.id);
         assertNotNull(ctLoaded.stringThing);

@@ -293,7 +293,7 @@ public class AggregationTest extends TestBase {
                                                    .group("author", grouping("books", push("title")))
                                                    .out(Author.class);
         assertEquals(2, getDatastore().getCollection(Author.class).countDocuments());
-        Author author = getDatastore().find(Author.class).get();
+        Author author = getDatastore().find(Author.class).first();
         assertEquals("Homer", author.name);
         assertEquals(asList("The Odyssey", "Iliad"), author.books);
 

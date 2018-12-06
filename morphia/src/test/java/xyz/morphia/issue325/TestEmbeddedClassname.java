@@ -29,7 +29,7 @@ public class TestEmbeddedClassname extends TestBase {
         ds.save(r);
 
         ds.updateOne(ds.find(Root.class), ds.createUpdateOperations(Root.class).addToSet("aList", new A()));
-        r = ds.find(Root.class).filter("_id", "id").get();
+        r = ds.find(Root.class).filter("_id", "id").first();
         Document aRaw = r.singleA.raw;
 
         // Test that singleA does not contain the class name
@@ -41,7 +41,7 @@ public class TestEmbeddedClassname extends TestBase {
 
         // Test that bList does not contain the class name of the subclass
         ds.updateOne(ds.find(Root.class), ds.createUpdateOperations(Root.class).addToSet("bList", new B()));
-        r = ds.find(Root.class).filter("_id", "id").get();
+        r = ds.find(Root.class).filter("_id", "id").first();
 
         aRaw = r.aList.get(0).raw;
         Assert.assertFalse(aRaw.containsKey(Mapper.CLASS_NAME_FIELDNAME));
@@ -56,7 +56,7 @@ public class TestEmbeddedClassname extends TestBase {
         entity.singleA = new B();
         ds.save(entity);
         ds.updateOne(ds.find(Root.class), ds.createUpdateOperations(Root.class).addToSet("aList", new B()));
-        r = ds.find(Root.class).filter("_id", "id").get();
+        r = ds.find(Root.class).filter("_id", "id").first();
 
         // test that singleA.raw *does* contain the classname because we stored a subclass there
         aRaw = r.singleA.raw;

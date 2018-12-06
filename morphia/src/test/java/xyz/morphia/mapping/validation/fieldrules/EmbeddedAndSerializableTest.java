@@ -31,7 +31,7 @@ public class EmbeddedAndSerializableTest extends TestBase {
         }
         getDatastore().save(project);
 
-        Project project1 = getDatastore().find(Project.class).get();
+        Project project1 = getDatastore().find(Project.class).first();
 
         final List<Period> periods = project1.periods;
         for (int i = 0; i < periods.size(); i++) {

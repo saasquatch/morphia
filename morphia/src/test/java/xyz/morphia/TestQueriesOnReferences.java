@@ -23,10 +23,10 @@ public class TestQueriesOnReferences extends TestBase {
 
         Assert.assertNotNull(getDatastore().find(ContainsPic.class)
                                            .field("pic").exists()
-                                           .project("pic", true).get());
+                                           .project("pic", true).first());
         Assert.assertNull(getDatastore().find(ContainsPic.class)
                                         .field("pic").doesNotExist()
-                                        .project("pic", true).get());
+                                        .project("pic", true).first());
     }
 
     @Test(expected = MappingException.class)
@@ -73,8 +73,7 @@ public class TestQueriesOnReferences extends TestBase {
         getDatastore().save(user);
 
         final FacebookUser facebookUser = getDatastore().find(FacebookUser.class)
-                                                        .filter("_id", 100)
-                                                        .get();
+                                                        .filter("_id", 100).first();
         Assert.assertEquals(10, facebookUser.getFriends().size());
         for (int i = 0; i < 5; i++) {
             Assert.assertSame(facebookUser.getFriends().get(2 * i), facebookUser.getFriends().get(2 * i + 1));
@@ -92,8 +91,7 @@ public class TestQueriesOnReferences extends TestBase {
 
         final Query<ContainsPic> query = getDatastore().find(ContainsPic.class);
         final ContainsPic object = query.field("pic")
-                                        .equal(p)
-                                        .get();
+                                        .equal(p).first();
         Assert.assertNotNull(object);
 
     }
@@ -107,11 +105,10 @@ public class TestQueriesOnReferences extends TestBase {
         getDatastore().save(cpk);
 
         ContainsPic containsPic = getDatastore().find(ContainsPic.class)
-                                                .field("pic").equal(new Key<>(Pic.class, "Pic", p.getId()))
-                                                .get();
+                                                .field("pic").equal(new Key<>(Pic.class, "Pic", p.getId())).first();
         Assert.assertEquals(cpk.getId(), containsPic.getId());
 
-        containsPic = getDatastore().find(ContainsPic.class).field("pic").equal(new Key<>(Pic.class, "Pic", p.getId())).get();
+        containsPic = getDatastore().find(ContainsPic.class).field("pic").equal(new Key<>(Pic.class, "Pic", p.getId())).first();
         Assert.assertEquals(cpk.getId(), containsPic.getId());
     }
 }

@@ -98,7 +98,7 @@ public class TestSuperDatastore extends TestBase {
 
         getAds().save(ns, rect);
         assertEquals(1, getAds().find(ns, Object.class).count());
-        Rectangle rectLoaded = getAds().find(ns, Rectangle.class).get();
+        Rectangle rectLoaded = getAds().find(ns, Rectangle.class).first();
         assertEquals(rect.getId(), rectLoaded.getId());
         assertEquals(rect.getArea(), rectLoaded.getArea(), 0);
 
@@ -120,8 +120,7 @@ public class TestSuperDatastore extends TestBase {
 
         getAds()
             .find(ns, Rectangle.class)
-            .filter("_id !=", "-1")
-            .get(new FindOptions()
+            .filter("_id !=", "-1").first(new FindOptions()
                      .skip(1)
                      .limit(1));
     }
@@ -136,8 +135,7 @@ public class TestSuperDatastore extends TestBase {
         getAds().save(ns, rect);
         assertEquals(1, getAds().find(ns, Object.class).count());
         final Rectangle rectLoaded = getAds().find(ns, Rectangle.class)
-                                             .filter("_id", rect.getId())
-                                             .get();
+                                             .filter("_id", rect.getId()).first();
         assertEquals(rect.getId(), rectLoaded.getId());
         assertEquals(rect.getArea(), rectLoaded.getArea(), 0);
     }

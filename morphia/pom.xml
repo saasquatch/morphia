@@ -135,6 +135,22 @@
                     <output>../config/revapi.json</output>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <configLocation>../config/checkstyle.xml</configLocation>
+                    <suppressionsLocation>../config/checkstyle-exclude.xml</suppressionsLocation>
+                    <encoding>UTF-8</encoding>
+                    <linkXRef>false</linkXRef>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <dependencies>

@@ -32,8 +32,7 @@ public class TestMaxMin extends TestBase {
 
     @Test(expected = MongoException.class)
     public void testExceptionForIndexMismatch() {
-        getDatastore().find(IndexedEntity.class)
-                      .get(new FindOptions()
+        getDatastore().find(IndexedEntity.class).first(new FindOptions()
                                .min(new Document("doesNotExist", 1)));
     }
 
@@ -52,9 +51,8 @@ public class TestMaxMin extends TestBase {
         Assert.assertEquals("last",
             b.id,
             ds.find(IndexedEntity.class)
-              .order(descending("id"))
-              .get(new FindOptions()
-                       .max(new Document("testField", "c")))
+              .order(descending("id")).first(new FindOptions()
+                                                 .max(new Document("testField", "c")))
                 .id);
     }
 
@@ -99,9 +97,9 @@ public class TestMaxMin extends TestBase {
         ds.save(b);
         ds.save(c);
 
-        Assert.assertEquals("last", b.id, ds.find(IndexedEntity.class).order(ascending("id"))
-                                            .get(new FindOptions()
-                                                     .min(new Document("testField", "b"))).id);
+        Assert.assertEquals("last", b.id, ds.find(IndexedEntity.class).order(ascending("id")).first(new FindOptions()
+                                                                                                        .min(new Document("testField",
+                                                                                                            "b"))).id);
     }
 
     @Test

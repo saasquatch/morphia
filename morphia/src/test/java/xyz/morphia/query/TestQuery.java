@@ -95,7 +95,7 @@ public class TestQuery extends TestBase {
 
         final Query<KeyValue> query = getDatastore().find(KeyValue.class).field("key").hasAnyOf(keys);
         Assert.assertEquals(query.getQueryDocument(), parse("{\"key\": {\"$in\": [\"key1\", \"key2\"]}}"));
-        assertEquals(query.get().id, value.id);
+        assertEquals(query.first().id, value.id);
     }
 
     @Override
@@ -119,16 +119,14 @@ public class TestQuery extends TestBase {
             new Rectangle(10, 1)));
 
         Rectangle r1 = getDatastore().find(Rectangle.class)
-                                     .order(ascending("w"))
-                                     .get(new FindOptions()
-                                              .limit(1));
+                                     .order(ascending("w")).first(new FindOptions()
+                                                                      .limit(1));
         assertNotNull(r1);
         assertEquals(1, r1.getWidth(), 0);
 
         r1 = getDatastore().find(Rectangle.class)
-                           .order(descending("w"))
-                           .get(new FindOptions()
-                                    .limit(1));
+                           .order(descending("w")).first(new FindOptions()
+                                                             .limit(1));
         assertNotNull(r1);
         assertEquals(10, r1.getWidth(), 0);
     }
@@ -260,8 +258,7 @@ public class TestQuery extends TestBase {
                                  .elemMatch(getDatastore()
                                                 .find(Keyword.class)
                                                 .filter("keyword = ", "Oscar")
-                                                .filter("score = ", 12))
-                                 .get());
+                                                .filter("score = ", 12)).first());
 
         List<PhotoWithKeywords> keywords = getDatastore().find(PhotoWithKeywords.class)
                                                          .field("keywords")
@@ -285,9 +282,9 @@ public class TestQuery extends TestBase {
         object.setText("hllo");
         getDatastore().save(object);
 
-        assertNotNull(getDatastore().find(UsesCustomIdObject.class).filter("_id.type", "banker").get());
+        assertNotNull(getDatastore().find(UsesCustomIdObject.class).filter("_id.type", "banker").first());
 
-        assertNotNull(getDatastore().find(UsesCustomIdObject.class).field("_id").hasAnyOf(singletonList(cId)).get());
+        assertNotNull(getDatastore().find(UsesCustomIdObject.class).field("_id").hasAnyOf(singletonList(cId)).first());
     }
 
     @Test
@@ -301,7 +298,7 @@ public class TestQuery extends TestBase {
         object.setText("hllo");
         getDatastore().save(object);
 
-        assertNotNull(getDatastore().find(UsesCustomIdObject.class).filter("_id.t", "banker").get());
+        assertNotNull(getDatastore().find(UsesCustomIdObject.class).filter("_id.t", "banker").first());
     }
 
     @Test
@@ -331,12 +328,12 @@ public class TestQuery extends TestBase {
             new Rectangle(10, 10),
             new Rectangle(10, 1)));
 
-        Rectangle r1 = getDatastore().find(Rectangle.class).order(ascending("width"), descending("height")).get();
+        Rectangle r1 = getDatastore().find(Rectangle.class).order(ascending("width"), descending("height")).first();
         assertNotNull(r1);
         assertEquals(1, r1.getWidth(), 0);
         assertEquals(10, r1.getHeight(), 0);
 
-        r1 = getDatastore().find(Rectangle.class).order(descending("height"), descending("width")).get();
+        r1 = getDatastore().find(Rectangle.class).order(descending("height"), descending("width")).first();
         assertNotNull(r1);
         assertEquals(10, r1.getWidth(), 0);
         assertEquals(10, r1.getHeight(), 0);
@@ -400,23 +397,23 @@ public class TestQuery extends TestBase {
     @Test
     public void testDeepQuery() {
         getDatastore().save(new PhotoWithKeywords(new Keyword("california"), new Keyword("nevada"), new Keyword("arizona")));
-        assertNotNull(getDatastore().find(PhotoWithKeywords.class).filter("keywords.keyword", "california").get());
-        assertNull(getDatastore().find(PhotoWithKeywords.class).filter("keywords.keyword", "not").get());
+        assertNotNull(getDatastore().find(PhotoWithKeywords.class).filter("keywords.keyword", "california").first());
+        assertNull(getDatastore().find(PhotoWithKeywords.class).filter("keywords.keyword", "not").first());
     }
 
     @Test
     public void testDeepQueryWithBadArgs() {
         getDatastore().save(new PhotoWithKeywords(new Keyword("california"), new Keyword("nevada"), new Keyword("arizona")));
-        assertNull(getDatastore().find(PhotoWithKeywords.class).filter("keywords.keyword", 1).get());
-        assertNull(getDatastore().find(PhotoWithKeywords.class).filter("keywords.keyword", "california".getBytes()).get());
-        assertNull(getDatastore().find(PhotoWithKeywords.class).filter("keywords.keyword", null).get());
+        assertNull(getDatastore().find(PhotoWithKeywords.class).filter("keywords.keyword", 1).first());
+        assertNull(getDatastore().find(PhotoWithKeywords.class).filter("keywords.keyword", "california".getBytes()).first());
+        assertNull(getDatastore().find(PhotoWithKeywords.class).filter("keywords.keyword", null).first());
     }
 
     @Test
     public void testDeepQueryWithRenamedFields() {
         getDatastore().save(new PhotoWithKeywords(new Keyword("california"), new Keyword("nevada"), new Keyword("arizona")));
-        assertNotNull(getDatastore().find(PhotoWithKeywords.class).filter("keywords.keyword", "california").get());
-        assertNull(getDatastore().find(PhotoWithKeywords.class).filter("keywords.keyword", "not").get());
+        assertNotNull(getDatastore().find(PhotoWithKeywords.class).filter("keywords.keyword", "california").first());
+        assertNull(getDatastore().find(PhotoWithKeywords.class).filter("keywords.keyword", "not").first());
     }
 
     @Test
@@ -436,11 +433,9 @@ public class TestQuery extends TestBase {
     public void testElemMatchQuery() {
         getDatastore().saveMany(asList(new PhotoWithKeywords(), new PhotoWithKeywords("Scott", "Joe", "Sarah")));
         assertNotNull(getDatastore().find(PhotoWithKeywords.class)
-                                    .field("keywords").elemMatch(getDatastore().find(Keyword.class).filter("keyword", "Scott"))
-                                    .get());
+                                    .field("keywords").elemMatch(getDatastore().find(Keyword.class).filter("keyword", "Scott")).first());
         assertNull(getDatastore().find(PhotoWithKeywords.class)
-                                 .field("keywords").elemMatch(getDatastore().find(Keyword.class).filter("keyword", "Randy"))
-                                 .get());
+                                 .field("keywords").elemMatch(getDatastore().find(Keyword.class).filter("keyword", "Randy")).first());
     }
 
     @Test
@@ -554,7 +549,7 @@ public class TestQuery extends TestBase {
     public void testIdFieldNameQuery() {
         getDatastore().save(new PhotoWithKeywords("scott", "hernandez"));
 
-        assertNotNull(getDatastore().find(PhotoWithKeywords.class).filter("id !=", "scott").get());
+        assertNotNull(getDatastore().find(PhotoWithKeywords.class).filter("id !=", "scott").first());
     }
 
     @Test
@@ -570,8 +565,7 @@ public class TestQuery extends TestBase {
 
         assertNotNull(getDatastore()
                           .find(Photo.class)
-                          .field("keywords").in(asList("red", "yellow"))
-                          .get());
+                          .field("keywords").in(asList("red", "yellow")).first());
     }
 
     @Test
@@ -581,7 +575,7 @@ public class TestQuery extends TestBase {
         final Query<PhotoWithKeywords> query = getDatastore()
                                                    .find(PhotoWithKeywords.class)
                                                    .field("keywords").in(asList(new Keyword("Scott"), new Keyword("Randy")));
-        assertNotNull(query.get());
+        assertNotNull(query.first());
     }
 
     @Test
@@ -646,7 +640,7 @@ public class TestQuery extends TestBase {
 
         final Datastore datastore = getDatastore();
         final KeysKeysKeys k1Reloaded = datastore.find(k1.getClass()).filter("_id", datastore.getMapper().getId(k1)).first();
-        final KeysKeysKeys k1Loaded = getDatastore().find(KeysKeysKeys.class).filter("_id", k1Key.getId()).get();
+        final KeysKeysKeys k1Loaded = getDatastore().find(KeysKeysKeys.class).filter("_id", k1Key.getId()).first();
         assertNotNull(k1Reloaded);
         assertNotNull(k1Loaded);
         for (final Key<FacebookUser> key : k1Loaded.getUsers()) {
@@ -786,12 +780,12 @@ public class TestQuery extends TestBase {
 
     @Test
     public void testNonexistentFindGet() {
-        assertNull(getDatastore().find(Hotel.class).filter("_id", -1).get());
+        assertNull(getDatastore().find(Hotel.class).filter("_id", -1).first());
     }
 
     @Test
     public void testNonexistentGet() {
-        assertNull(getDatastore().find(Hotel.class).filter("_id", -1).get());
+        assertNull(getDatastore().find(Hotel.class).filter("_id", -1).first());
     }
 
     @Test
@@ -806,22 +800,19 @@ public class TestQuery extends TestBase {
         getDatastore().save(new ContainsRenamedFields("Frank", "Zappa"));
 
         ContainsRenamedFields found = getDatastore().find(ContainsRenamedFields.class)
-                                                    .project("first_name", true)
-                                                    .get();
+                                                    .project("first_name", true).first();
         assertNotNull(found.firstName);
         assertNull(found.lastName);
 
         found = getDatastore().find(ContainsRenamedFields.class)
-                              .project("firstName", true)
-                              .get();
+                              .project("firstName", true).first();
         assertNotNull(found.firstName);
         assertNull(found.lastName);
 
         try {
             getDatastore()
                 .find(ContainsRenamedFields.class)
-                .project("bad field name", true)
-                .get();
+                .project("bad field name", true).first();
             fail("Validation should have caught the bad field");
         } catch (ValidationException e) {
             // success!
@@ -842,17 +833,13 @@ public class TestQuery extends TestBase {
         getDatastore().save(vector);
 
         assertArrayEquals(copy(ints, 0, 4), getDatastore().find(IntVector.class)
-                                                          .project("scalars", new ArraySlice(4))
-                                                          .get().scalars);
+                                                          .project("scalars", new ArraySlice(4)).first().scalars);
         assertArrayEquals(copy(ints, 5, 4), getDatastore().find(IntVector.class)
-                                                          .project("scalars", new ArraySlice(5, 4))
-                                                          .get().scalars);
+                                                          .project("scalars", new ArraySlice(5, 4)).first().scalars);
         assertArrayEquals(copy(ints, ints.length - 10, 6), getDatastore().find(IntVector.class)
-                                                                         .project("scalars", new ArraySlice(-10, 6))
-                                                                         .get().scalars);
+                                                                         .project("scalars", new ArraySlice(-10, 6)).first().scalars);
         assertArrayEquals(copy(ints, ints.length - 12, 12), getDatastore().find(IntVector.class)
-                                                                          .project("scalars", new ArraySlice(-12))
-                                                                          .get().scalars);
+                                                                          .project("scalars", new ArraySlice(-12)).first().scalars);
     }
 
     private int[] copy(final int[] array, final int start, final int count) {
@@ -879,7 +866,7 @@ public class TestQuery extends TestBase {
 
         final UsesCustomIdObject ex = new UsesCustomIdObject();
         ex.setText(object.getText());
-        loaded = getDatastore().queryByExample(ex).get();
+        loaded = getDatastore().queryByExample(ex).first();
         assertNotNull(loaded);
     }
 
@@ -927,7 +914,7 @@ public class TestQuery extends TestBase {
         assertEquals(1, query.field("pic").equal(p).asList().size());
 
         try {
-            getDatastore().find(ContainsPic.class).filter("pic.name", "foo").get();
+            getDatastore().find(ContainsPic.class).filter("pic.name", "foo").first();
             fail("query validation should have thrown an exception");
         } catch (ValidationException e) {
             assertTrue(e.getMessage().contains("Cannot use dot-"));
@@ -957,19 +944,19 @@ public class TestQuery extends TestBase {
         cpk.photo = getDatastore().save(p);
         getDatastore().save(cpk);
 
-        assertNotNull(getDatastore().find(ContainsPhotoKey.class).filter("photo", getMapper().getKey(p)).get());
-        assertNotNull(getDatastore().find(ContainsPhotoKey.class).filter("photo", cpk.photo).get());
-        assertNull(getDatastore().find(ContainsPhotoKey.class).filter("photo", 1).get());
+        assertNotNull(getDatastore().find(ContainsPhotoKey.class).filter("photo", getMapper().getKey(p)).first());
+        assertNotNull(getDatastore().find(ContainsPhotoKey.class).filter("photo", cpk.photo).first());
+        assertNull(getDatastore().find(ContainsPhotoKey.class).filter("photo", 1).first());
 
-        getDatastore().find(ContainsPhotoKey.class).filter("photo.keywords", "foo").get();
+        getDatastore().find(ContainsPhotoKey.class).filter("photo.keywords", "foo").first();
     }
 
     @Test
     public void testRegexInsensitiveQuery() {
         getDatastore().save(new PhotoWithKeywords(new Keyword("california"), new Keyword("nevada"), new Keyword("arizona")));
         final Pattern p = Pattern.compile("(?i)caLifornia");
-        assertNotNull(getDatastore().find(PhotoWithKeywords.class).disableValidation().filter("keywords.keyword", p).get());
-        assertNull(getDatastore().find(PhotoWithKeywords.class).filter("keywords.keyword", Pattern.compile("blah")).get());
+        assertNotNull(getDatastore().find(PhotoWithKeywords.class).disableValidation().filter("keywords.keyword", p).first());
+        assertNull(getDatastore().find(PhotoWithKeywords.class).filter("keywords.keyword", Pattern.compile("blah")).first());
     }
 
     @Test
@@ -977,17 +964,16 @@ public class TestQuery extends TestBase {
         getDatastore().save(new PhotoWithKeywords(new Keyword("california"), new Keyword("nevada"), new Keyword("arizona")));
         assertNotNull(getDatastore().find(PhotoWithKeywords.class)
                                     .disableValidation()
-                                    .filter("keywords.keyword", Pattern.compile("california"))
-                                    .get());
-        assertNull(getDatastore().find(PhotoWithKeywords.class).filter("keywords.keyword", Pattern.compile("blah")).get());
+                                    .filter("keywords.keyword", Pattern.compile("california")).first());
+        assertNull(getDatastore().find(PhotoWithKeywords.class).filter("keywords.keyword", Pattern.compile("blah")).first());
     }
 
     @Test
     public void testRenamedFieldQuery() {
         getDatastore().save(new ContainsRenamedFields("Scott", "Bakula"));
 
-        assertNotNull(getDatastore().find(ContainsRenamedFields.class).field("firstName").equal("Scott").get());
-        assertNotNull(getDatastore().find(ContainsRenamedFields.class).field("first_name").equal("Scott").get());
+        assertNotNull(getDatastore().find(ContainsRenamedFields.class).field("firstName").equal("Scott").first());
+        assertNotNull(getDatastore().find(ContainsRenamedFields.class).field("first_name").equal("Scott").first());
     }
 
     @Test
@@ -997,10 +983,9 @@ public class TestQuery extends TestBase {
         getDatastore().ensureIndexes();
 
         Pic foundItem = getDatastore().find(Pic.class)
-                                      .field("name").equal("pic2")
-                                      .get(new FindOptions()
-                                               .returnKey(true)
-                                               .limit(1));
+                                      .field("name").equal("pic2").first(new FindOptions()
+                                                                             .returnKey(true)
+                                                                             .limit(1));
         assertNotNull(foundItem);
         assertThat("Name should be populated", foundItem.getName(), is("pic2"));
         assertNull("ID should not be populated", foundItem.getId());
@@ -1015,14 +1000,12 @@ public class TestQuery extends TestBase {
             new Rectangle(10, 1)));
 
         Rectangle r1 = getDatastore().find(Rectangle.class)
-                                     .order(ascending("width"))
-                                     .get();
+                                     .order(ascending("width")).first();
         assertNotNull(r1);
         assertEquals(1, r1.getWidth(), 0);
 
         r1 = getDatastore().find(Rectangle.class)
-                           .order(descending("width"))
-                           .get();
+                           .order(descending("width")).first();
         assertNotNull(r1);
         assertEquals(10, r1.getWidth(), 0);
     }
@@ -1037,9 +1020,9 @@ public class TestQuery extends TestBase {
     @Test
     public void testStartsWithQuery() {
         getDatastore().save(new Photo());
-        Photo p = getDatastore().find(Photo.class).field("keywords").startsWith("amaz").get();
+        Photo p = getDatastore().find(Photo.class).field("keywords").startsWith("amaz").first();
         assertNotNull(p);
-        p = getDatastore().find(Photo.class).field("keywords").startsWith("notareal").get();
+        p = getDatastore().find(Photo.class).field("keywords").startsWith("notareal").first();
         assertNull(p);
 
     }
@@ -1095,22 +1078,18 @@ public class TestQuery extends TestBase {
         assertNotNull(getDatastore().find(PhotoWithKeywords.class)
                                     .field("keywords")
                                     .elemMatch(getDatastore().find(Keyword.class)
-                                                             .filter("keyword = ", "Scott"))
-                                    .get());
+                                                             .filter("keyword = ", "Scott")).first());
         assertNotNull(getDatastore().find(PhotoWithKeywords.class)
                                     .field("keywords").elemMatch(getDatastore().find(Keyword.class)
-                                                                               .filter("keyword", "Scott"))
-                                    .get());
+                                                                               .filter("keyword", "Scott")).first());
 
         assertNull(getDatastore().find(PhotoWithKeywords.class)
                                  .field("keywords")
                                  .elemMatch(getDatastore().find(Keyword.class)
-                                                          .filter("keyword = ", "Randy"))
-                                 .get());
+                                                          .filter("keyword = ", "Randy")).first());
         assertNull(getDatastore().find(PhotoWithKeywords.class)
                                  .field("keywords").elemMatch(getDatastore().find(Keyword.class)
-                                                                            .filter("keyword", "Randy"))
-                                 .get());
+                                                                            .filter("keyword", "Randy")).first());
     }
 
     @Test
@@ -1119,13 +1098,13 @@ public class TestQuery extends TestBase {
         //        CodeWScope hasKeyword = new CodeWScope("for (kw in this.keywords) { if(kw.keyword == kwd) return true; } return false;
         // ", new Document("kwd","california"));
         final CodeWithScope hasKeyword = new CodeWithScope("this.keywords != null", new Document());
-        assertNotNull(getDatastore().find(PhotoWithKeywords.class).where(hasKeyword).get());
+        assertNotNull(getDatastore().find(PhotoWithKeywords.class).where(hasKeyword).first());
     }
 
     @Test
     public void testWhereStringQuery() {
         getDatastore().save(new PhotoWithKeywords(new Keyword("california"), new Keyword("nevada"), new Keyword("arizona")));
-        assertNotNull(getDatastore().find(PhotoWithKeywords.class).where("this.keywords != null").get());
+        assertNotNull(getDatastore().find(PhotoWithKeywords.class).where("this.keywords != null").first());
     }
 
     @Test
@@ -1134,7 +1113,7 @@ public class TestQuery extends TestBase {
         final CodeWithScope hasKeyword = new CodeWithScope("keywords != null", new Document());
         try {
             // must fail
-            assertNotNull(getDatastore().find(PhotoWithKeywords.class).where(hasKeyword.getCode()).get());
+            assertNotNull(getDatastore().find(PhotoWithKeywords.class).where(hasKeyword.getCode()).first());
             fail("Invalid javascript magically isn't invalid anymore?");
         } catch (MongoException e) {
             // fine
@@ -1155,7 +1134,7 @@ public class TestQuery extends TestBase {
 
         Query<Class1> query = getDatastore().createQuery(Class1.class);
         query.disableValidation().criteria("someMap.someKey").equal("value");
-        Class1 retrievedValue = query.get();
+        Class1 retrievedValue = query.first();
         Assert.assertNotNull(retrievedValue);
         Assert.assertEquals("foo", retrievedValue.value1);
     }

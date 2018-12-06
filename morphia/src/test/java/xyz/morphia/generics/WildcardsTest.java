@@ -20,7 +20,7 @@ public class WildcardsTest extends TestBase {
             new AnotherChildEmbedded("third")));
         getDatastore().save(entity);
 
-        ChildEntity childEntity = getDatastore().find(ChildEntity.class).get();
+        ChildEntity childEntity = getDatastore().find(ChildEntity.class).first();
 
         Assert.assertEquals(entity, childEntity);
     }

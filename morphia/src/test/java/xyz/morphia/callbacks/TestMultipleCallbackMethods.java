@@ -25,8 +25,7 @@ public class TestMultipleCallbackMethods extends TestBase {
 
         final SomeEntity someEntity = getDatastore()
                                           .find(SomeEntity.class)
-                                          .filter("_id", entity.getId())
-                                          .get();
+                                          .filter("_id", entity.getId()).first();
 
         Assert.assertEquals(4, entity.getPersist());
 

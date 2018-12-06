@@ -155,7 +155,7 @@ public class TestDocumentValidation extends TestBase {
         getDatastore().findAndModify(query, updates, options,
             getDatastore().getDefaultWriteConcern());
 
-        Assert.assertNotNull(query.field("number").equal(5).get());
+        Assert.assertNotNull(query.field("number").equal(5).first());
     }
 
     @Test
@@ -182,7 +182,7 @@ public class TestDocumentValidation extends TestBase {
         getDatastore().updateMany(query, updates, options,
             getDatastore().getDefaultWriteConcern());
 
-        Assert.assertNotNull(query.field("number").equal(5).get());
+        Assert.assertNotNull(query.field("number").equal(5).first());
     }
 
     @Test
@@ -203,7 +203,7 @@ public class TestDocumentValidation extends TestBase {
 
         Query<DocumentValidation> query = getDatastore().find(DocumentValidation.class)
                                                         .field("number").equal(8);
-        Assert.assertNotNull(query.get());
+        Assert.assertNotNull(query.first());
 
         List<DocumentValidation> list = asList(new DocumentValidation("Harold", 8, new Date()),
             new DocumentValidation("Harold", 8, new Date()),
@@ -244,7 +244,7 @@ public class TestDocumentValidation extends TestBase {
 
         Query<DocumentValidation> query = getAds().createQuery(collection, DocumentValidation.class)
                                                   .field("number").equal(8);
-        Assert.assertNotNull(query.get());
+        Assert.assertNotNull(query.first());
     }
 
     @Test
@@ -265,7 +265,7 @@ public class TestDocumentValidation extends TestBase {
 
         Query<DocumentValidation> query = getDatastore().find(DocumentValidation.class)
                                                         .field("number").equal(8);
-        Assert.assertNotNull(query.get());
+        Assert.assertNotNull(query.first());
 
         List<DocumentValidation> list = asList(new DocumentValidation("Harold", 8, new Date()),
             new DocumentValidation("John", 8, new Date()),

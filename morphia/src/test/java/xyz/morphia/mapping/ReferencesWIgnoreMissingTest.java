@@ -20,7 +20,7 @@ public class ReferencesWIgnoreMissingTest extends TestBase {
         getDatastore().save(c);
         getDatastore().save(c.refs[0]);
 
-        Container reloadedContainer = getDatastore().find(Container.class).get();
+        Container reloadedContainer = getDatastore().find(Container.class).first();
         Assert.assertNotNull(reloadedContainer);
         Assert.assertNotNull(reloadedContainer.refs);
         Assert.assertEquals(1, reloadedContainer.refs.length);

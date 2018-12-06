@@ -28,7 +28,7 @@ public class CompoundIdTest extends TestBase {
     @Test
     public void testFetchKey() {
         getDatastore().save(new ConfigEntry(new ConfigKey("env", "key", "subenv")));
-        ConfigEntry entry = getDatastore().find(ConfigEntry.class).get();
+        ConfigEntry entry = getDatastore().find(ConfigEntry.class).first();
         entry.setValue("something");
         getDatastore().save(entry);
     }

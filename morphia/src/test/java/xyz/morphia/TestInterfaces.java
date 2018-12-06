@@ -54,8 +54,7 @@ public class TestInterfaces extends TestBase {
         getDatastore().save(shifter);
 
         final ShapeShifter shifterLoaded = getDatastore().find(ShapeShifter.class)
-                                                            .filter("_id ==", shifter.getId())
-                                                            .get();
+                                                         .filter("_id ==", shifter.getId()).first();
         assertEquals(shifter, shifterLoaded);
     }
 }

@@ -50,8 +50,7 @@ public class EmbeddedMappingTest extends TestBase {
         getDatastore().save(entry);
 
         final AuditEntry fetched = getDatastore().find(AuditEntry.class)
-                                                 .filter("id = ", entry.id)
-                                                 .get();
+                                                 .filter("id = ", entry.id).first();
 
         Assert.assertEquals(entry, fetched);
     }
@@ -68,23 +67,20 @@ public class EmbeddedMappingTest extends TestBase {
         WithNested found;
         try {
             getDatastore().find(WithNested.class)
-                          .field("nested.field").equal("nested value")
-                          .get();
+                          .field("nested.field").equal("nested value").first();
             Assert.fail("Querying against an interface should fail validation");
         } catch (ValidationException ignore) {
             // all good
         }
         found = getDatastore().find(WithNested.class)
                               .disableValidation()
-                              .field("nested.field").equal("nested value")
-                              .get();
+                              .field("nested.field").equal("nested value").first();
         Assert.assertNotNull(found);
         Assert.assertEquals(nested, found);
 
         found = getDatastore().find(WithNested.class)
                               .disableValidation()
-                              .field("nested.field.fails").equal("nested value")
-                              .get();
+                              .field("nested.field.fails").equal("nested value").first();
         Assert.assertNull(found);
     }
 

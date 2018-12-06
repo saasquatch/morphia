@@ -80,7 +80,7 @@ public class CollectionOfValuesTest extends TestBase {
         entity.oneDimArray = "Joseph".getBytes();
         entity.twoDimArray = new byte[][]{"Joseph".getBytes(), "uwe".getBytes()};
         getDatastore().save(entity);
-        final ContainsTwoDimensionalArray loaded = getDatastore().find(ContainsTwoDimensionalArray.class).filter("_id", entity.id).get();
+        final ContainsTwoDimensionalArray loaded = getDatastore().find(ContainsTwoDimensionalArray.class).filter("_id", entity.id).first();
         Assert.assertNotNull(loaded.id);
         Assert.assertNotNull(loaded.oneDimArray);
         Assert.assertNotNull(loaded.twoDimArray);

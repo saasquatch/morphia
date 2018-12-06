@@ -31,18 +31,17 @@ public class TestArrayUpdates extends TestBase {
         Query<Student> testQuery = datastore.find(Student.class)
                                             .field("_id").equal(1L)
                                             .field("grades.data.name").equal("Test");
-        Assert.assertNotNull(testQuery.get());
+        Assert.assertNotNull(testQuery.first());
 
         UpdateOperations<Student> operations = datastore.createUpdateOperations(Student.class);
         operations.set("grades.$.data.name", "Makeup Test");
         datastore.updateMany(testQuery, operations);
 
-        Assert.assertNull(testQuery.get());
+        Assert.assertNull(testQuery.first());
 
         Assert.assertNotNull(datastore.find(Student.class)
                                       .field("_id").equal(1L)
-                                      .field("grades.data.name").equal("Makeup Test")
-                                      .get());
+                                      .field("grades.data.name").equal("Makeup Test").first());
     }
 
     @Test
@@ -57,19 +56,18 @@ public class TestArrayUpdates extends TestBase {
         Query<Student> testQuery = datastore.find(Student.class)
                                             .field("_id").equal(1L)
                                             .field("grades.data.name").equal("Test");
-        Assert.assertNotNull(testQuery.get());
+        Assert.assertNotNull(testQuery.first());
 
         // Update the second element. Array indexes are zero-based.
         UpdateOperations<Student> operations = datastore.createUpdateOperations(Student.class);
         operations.set("grades.1.data.name", "Makeup Test");
         datastore.updateMany(testQuery, operations);
 
-        Assert.assertNull(testQuery.get());
+        Assert.assertNull(testQuery.first());
 
         Assert.assertNotNull(datastore.find(Student.class)
                                       .field("_id").equal(1L)
-                                      .field("grades.data.name").equal("Makeup Test")
-                                      .get());
+                                      .field("grades.data.name").equal("Makeup Test").first());
     }
 
     @Test
@@ -95,15 +93,13 @@ public class TestArrayUpdates extends TestBase {
                        updateOperations);
 
         BatchData data = getDatastore().find(BatchData.class)
-                                       .filter("_id", id)
-                                       .get();
+                                       .filter("_id", id).first();
 
         Assert.assertEquals("new hash", data.files.get(0).fileHash);
         Assert.assertEquals("fileHash2", data.files.get(1).fileHash);
 
         data = getDatastore().find(BatchData.class)
-                             .filter("_id", id2)
-                             .get();
+                             .filter("_id", id2).first();
 
         Assert.assertEquals("fileHash3", data.files.get(0).fileHash);
         Assert.assertEquals("fileHash4", data.files.get(1).fileHash);

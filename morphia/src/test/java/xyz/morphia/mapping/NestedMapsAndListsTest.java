@@ -29,7 +29,7 @@ public class NestedMapsAndListsTest extends TestBase {
         list.list.add(asList("123", "456"));
         getDatastore().save(list);
 
-        ListOfList listOfList = getDatastore().find(ListOfList.class).get();
+        ListOfList listOfList = getDatastore().find(ListOfList.class).first();
         Assert.assertEquals(list, listOfList);
     }
 
@@ -41,7 +41,7 @@ public class NestedMapsAndListsTest extends TestBase {
         list.list.add(asList(new Person("Crosby"), new Person("Stills"), new Person("Nash")));
         getDatastore().save(list);
 
-        ListListPerson result = getDatastore().find(ListListPerson.class).get();
+        ListListPerson result = getDatastore().find(ListListPerson.class).first();
         Assert.assertEquals(list, result);
     }
 
@@ -59,7 +59,7 @@ public class NestedMapsAndListsTest extends TestBase {
 
         getDatastore().save(entity);
 
-        ListOfMap object = getDatastore().find(ListOfMap.class).get();
+        ListOfMap object = getDatastore().find(ListOfMap.class).first();
         Assert.assertNotNull(object);
         Assert.assertEquals(entity, object);
     }
@@ -73,7 +73,7 @@ public class NestedMapsAndListsTest extends TestBase {
 
         getDatastore().save(listMap);
 
-        Assert.assertEquals(listMap, getDatastore().find(ListMapPerson.class).get());
+        Assert.assertEquals(listMap, getDatastore().find(ListMapPerson.class).first());
     }
 
     @Test
@@ -83,7 +83,7 @@ public class NestedMapsAndListsTest extends TestBase {
         map.mol.put("entry2", Collections.singletonList("val2"));
 
         getDatastore().save(map);
-        map = getDatastore().find(HashMapOfList.class).get();
+        map = getDatastore().find(HashMapOfList.class).first();
         Assert.assertNotNull(map.mol);
         Assert.assertNotNull(map.mol.get("entry1"));
         Assert.assertNotNull(map.mol.get("entry1").get(0));
@@ -118,7 +118,7 @@ public class NestedMapsAndListsTest extends TestBase {
         mapMap.mol.put("r2", Collections.singletonList(mapOfMap));
 
         getDatastore().save(mapMap);
-        mapMap = getDatastore().find(HashMapOfListOfMapMap.class).get();
+        mapMap = getDatastore().find(HashMapOfListOfMapMap.class).first();
         Assert.assertNotNull(mapMap.mol);
         Assert.assertNotNull(mapMap.mol.get("r1"));
         Assert.assertNotNull(mapMap.mol.get("r1").get(0));
@@ -138,7 +138,7 @@ public class NestedMapsAndListsTest extends TestBase {
         map.put("peer", "lame");
 
         getDatastore().save(mapOfMap);
-        mapOfMap = getDatastore().find(HashMapOfMap.class).get();
+        mapOfMap = getDatastore().find(HashMapOfMap.class).first();
         Assert.assertNotNull(mapOfMap.mom);
         Assert.assertNotNull(mapOfMap.mom.get("root"));
         Assert.assertNotNull(mapOfMap.mom.get("root").get("deep"));
