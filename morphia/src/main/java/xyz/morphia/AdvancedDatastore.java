@@ -66,11 +66,10 @@ public interface AdvancedDatastore extends Datastore {
      * Delete one document
      *
      * @param collectionName the document's collection
-     * @param clazz the document type
-     * @param id the ID of the document to delete
-     * @param <T> the document type
-     * @param <V> the ID type
-     *
+     * @param clazz          the document type
+     * @param id             the ID of the document to delete
+     * @param <T>            the document type
+     * @param <V>            the ID type
      * @return the results of the delete operation
      */
     <T, V> DeleteResult delete(String collectionName, Class<T> clazz, V id);
@@ -79,13 +78,12 @@ public interface AdvancedDatastore extends Datastore {
      * Delete one document
      *
      * @param collectionName the document's collection
-     * @param clazz the document type
-     * @param id the ID of the document to delete
-     * @param options the options to apply
-     * @param writeConcern the WriteConcern to apply
-     * @param <T> the document type
-     * @param <V> the ID type
-     *
+     * @param clazz          the document type
+     * @param id             the ID of the document to delete
+     * @param options        the options to apply
+     * @param writeConcern   the WriteConcern to apply
+     * @param <T>            the document type
+     * @param <V>            the ID type
      * @return the results of the delete operation
      */
     <T, V> DeleteResult delete(String collectionName, Class<T> clazz, V id, DeleteOptions options, WriteConcern writeConcern);
@@ -94,11 +92,10 @@ public interface AdvancedDatastore extends Datastore {
      * Delete multiple documents
      *
      * @param collectionName the document's collection
-     * @param clazz the document type
-     * @param ids the IDs of the documents to delete
-     * @param <T> the document type
-     * @param <V> the ID type
-     *
+     * @param clazz          the document type
+     * @param ids            the IDs of the documents to delete
+     * @param <T>            the document type
+     * @param <V>            the ID type
      * @return the results of the delete operation
      */
     <T, V> DeleteResult delete(String collectionName, Class<T> clazz, List<V> ids);
@@ -107,13 +104,12 @@ public interface AdvancedDatastore extends Datastore {
      * Delete many documents
      *
      * @param collectionName the document's collection
-     * @param clazz the document type
-     * @param ids the IDs of the documents to delete
-     * @param options the options to apply
-     * @param writeConcern the WriteConcern to apply
-     * @param <T> the document type
-     * @param <V> the ID type
-     *
+     * @param clazz          the document type
+     * @param ids            the IDs of the documents to delete
+     * @param options        the options to apply
+     * @param writeConcern   the WriteConcern to apply
+     * @param <T>            the document type
+     * @param <V>            the ID type
      * @return the results of the delete operation
      */
     <T, V> DeleteResult delete(String collectionName, Class<T> clazz, List<V> ids, DeleteOptions options, WriteConcern writeConcern);
@@ -130,16 +126,6 @@ public interface AdvancedDatastore extends Datastore {
     <T> void ensureIndexes(String collection, Class<T> clazz, boolean background);
 
     /**
-     * Find all instances by type in a different collection than what is mapped on the class given.
-     *
-     * @param collection the collection to query against
-     * @param clazz      the class to use for mapping the results
-     * @param <T>        the type to query
-     * @return the query
-     */
-    <T> Query<T> find(String collection, Class<T> clazz);
-
-    /**
      * Inserts an entity in to the mapped collection.
      *
      * @param entity the entity to insert
@@ -151,10 +137,10 @@ public interface AdvancedDatastore extends Datastore {
     /**
      * Inserts an entity in to the mapped collection.
      *
-     * @param entity  the entity to insert
-     * @param options the options to apply to the insert operation
+     * @param entity       the entity to insert
+     * @param options      the options to apply to the insert operation
      * @param writeConcern the WriteConcern to apply
-     * @param <T>     the type of the entity
+     * @param <T>          the type of the entity
      * @return the new key of the inserted entity
      * @since 1.3
      */
@@ -173,11 +159,11 @@ public interface AdvancedDatastore extends Datastore {
     /**
      * Inserts an entity in to the named collection.
      *
-     * @param collection the collection to update
-     * @param entity     the entity to insert
-     * @param options    the options to apply to the insert operation
+     * @param collection   the collection to update
+     * @param entity       the entity to insert
+     * @param options      the options to apply to the insert operation
      * @param writeConcern the WriteConcern to apply
-     * @param <T>        the type of the entity
+     * @param <T>          the type of the entity
      * @return the new key of the inserted entity
      * @since 1.3
      */
@@ -195,10 +181,10 @@ public interface AdvancedDatastore extends Datastore {
     /**
      * Inserts entities in to the mapped collection.
      *
-     * @param entities the entities to insert
-     * @param options  the options to apply to the insert operation
+     * @param entities     the entities to insert
+     * @param options      the options to apply to the insert operation
      * @param writeConcern the WriteConcern to apply
-     * @param <T>      the type of the entity
+     * @param <T>          the type of the entity
      * @return the new keys of the inserted entities
      * @since 1.3
      */
@@ -218,11 +204,11 @@ public interface AdvancedDatastore extends Datastore {
     /**
      * Inserts entities in to the named collection.
      *
-     * @param collection the collection to update
-     * @param entities   the entities to insert
-     * @param options    the options to apply to the insert operation
+     * @param collection   the collection to update
+     * @param entities     the entities to insert
+     * @param options      the options to apply to the insert operation
      * @param writeConcern the WriteConcern to apply
-     * @param <T>        the type of the entity
+     * @param <T>          the type of the entity
      * @return the new keys of the inserted entities
      * @since 1.3
      */
@@ -251,18 +237,14 @@ public interface AdvancedDatastore extends Datastore {
     /**
      * Saves an entity in to the named collection.
      *
-     * @param collection the collection to update
-     * @param entity     the entity to save
-     * @param options    the options to apply to the save operation
+     * @param collection   the collection to update
+     * @param entity       the entity to save
+     * @param options      the options to apply to the save operation
      * @param writeConcern the WriteConcern to apply
-     * @param <T>        the type of the entity
+     * @param <T>          the type of the entity
      * @return the new key of the inserted entity
      */
     <T> Key<T> save(String collection, T entity, InsertOneOptions options, WriteConcern writeConcern);
-
-    //
-    // Migration helpers for deprecated methods
-    //
 
     /**
      * Gets the count this collection
@@ -275,4 +257,14 @@ public interface AdvancedDatastore extends Datastore {
     default long getCount(String collection) {
         return find(collection, Object.class).count();
     }
+
+    /**
+     * Find all instances by type in a different collection than what is mapped on the class given.
+     *
+     * @param collection the collection to query against
+     * @param clazz      the class to use for mapping the results
+     * @param <T>        the type to query
+     * @return the query
+     */
+    <T> Query<T> find(String collection, Class<T> clazz);
 }

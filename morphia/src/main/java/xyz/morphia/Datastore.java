@@ -207,15 +207,6 @@ public interface Datastore {
     <T> void ensureIndexes(Class<T> clazz, boolean background);
 
     /**
-     * Find all instances by type
-     *
-     * @param clazz the class to use for mapping the results
-     * @param <T>   the type to query
-     * @return the query
-     */
-    <T> Query<T> find(Class<T> clazz);
-
-    /**
      * Deletes the given entities based on the query (first item only).
      *
      * @param query the query to use when finding entities to delete
@@ -323,11 +314,6 @@ public interface Datastore {
      * @return the query
      */
     <T> Query<T> queryByExample(T example);
-
-    /**
-     * @return the Mapper used by this Datastore
-     */
-    Mapper getMapper();
 
     /**
      * Saves the entities (Objects) and updates the @Id field
@@ -440,11 +426,6 @@ public interface Datastore {
      */
     <T> UpdateResult updateMany(Query<T> query, UpdateOperations<T> operations, UpdateOptions options, WriteConcern writeConcern);
 
-    //
-    // Migration helpers for deprecated methods
-    //
-
-    // CHECKSTYLE:OFF
     /**
      * @deprecated Inline this method to update to the new usage
      */
@@ -455,6 +436,15 @@ public interface Datastore {
     }
 
     /**
+     * Find all instances by type
+     *
+     * @param clazz the class to use for mapping the results
+     * @param <T>   the type to query
+     * @return the query
+     */
+    <T> Query<T> find(Class<T> clazz);
+
+    /**
      * @deprecated Inline this method to update to the new usage
      */
     @Deprecated
@@ -462,6 +452,11 @@ public interface Datastore {
     default <T> T get(final T entity) {
         return (T) find(entity.getClass()).filter("_id", getMapper().getId(entity)).first();
     }
+
+    /**
+     * @return the Mapper used by this Datastore
+     */
+    Mapper getMapper();
 
     /**
      * @deprecated Inline this method to update to the new usage
