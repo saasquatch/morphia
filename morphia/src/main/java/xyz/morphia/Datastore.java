@@ -218,6 +218,17 @@ public interface Datastore {
     /**
      * Deletes the given entities based on the query (first item only).
      *
+     * @param query   the query to use when finding entities to delete
+     * @param options the options to apply to the delete
+     * @param <T>     the type to query
+     * @return the deleted Entity
+     * @since 1.3
+     */
+    <T> T findAndDelete(Query<T> query, FindAndModifyOptions options);
+
+    /**
+     * Deletes the given entities based on the query (first item only).
+     *
      * @param query        the query to use when finding entities to delete
      * @param options      the options to apply to the delete
      * @param writeConcern the WriteConcern to apply
