@@ -19,11 +19,7 @@ public abstract class TestBase {
     private AdvancedDatastore ads;
 
     protected TestBase() {
-        try {
-            mongoClient = new MongoClient();
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
+        mongoClient = new MongoClient();
     }
 
     public AdvancedDatastore getAds() {
