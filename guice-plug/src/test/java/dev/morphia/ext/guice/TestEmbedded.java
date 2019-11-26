@@ -24,11 +24,14 @@ public class TestEmbedded extends TestBase {
     @Test
     public void embedded() {
         Profile profile = new Profile(new ProfileCache<Profile>(), new Core());
+        profile.groups.name = "test";
 
         getDs().save(profile);
 
         Profile first = getDs().find(Profile.class).filter("_id", profile.id).first();
-        Assert.assertNotNull(first.);
+        Assert.assertNotNull(first.cache);
+        Assert.assertNotNull(first.core);
+        Assert.assertNotNull(first.groups.groupManager);
     }
 
     @Entity
@@ -56,7 +59,9 @@ public class TestEmbedded extends TestBase {
 
     @Embedded
     static class ProfileGroupCache<T> {
+        private String name;
 
+        @Transient
         private GroupManager groupManager;
 
         @Inject

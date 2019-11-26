@@ -3,6 +3,7 @@ package dev.morphia.ext.guice;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import dev.morphia.AdvancedDatastore;
 import dev.morphia.Datastore;
@@ -47,15 +48,14 @@ public abstract class TestBase {
 
     @After
     public void tearDown() {
-        dropDB();
+        cleanup();
+        mongoClient.close();
     }
 
-    protected void dropDB() {
-        // this.mongoClient.dropDatabase("morphia_test");
-        for (final MappedClass mc : morphia.getMapper().getMappedClasses()) {
-            // if( mc.getEntityAnnotation() != null )
-            db.getCollection(mc.getCollectionName()).drop();
+    protected void cleanup() {
+        DB db = getDb();
+        if (db != null) {
+            db.dropDatabase();
         }
-
     }
 }
