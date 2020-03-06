@@ -1,6 +1,22 @@
 package dev.morphia.query;
 
 
+import static com.mongodb.CursorType.Tailable;
+import static com.mongodb.CursorType.TailableAwait;
+import static dev.morphia.query.CriteriaJoin.AND;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import org.bson.Document;
+import org.bson.types.CodeWScope;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.Block;
 import com.mongodb.DBCollection;
@@ -11,6 +27,7 @@ import com.mongodb.ReadPreference;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoIterable;
 import com.mongodb.client.model.DBCollectionFindOptions;
+
 import dev.morphia.Datastore;
 import dev.morphia.Key;
 import dev.morphia.annotations.Entity;
@@ -22,22 +39,6 @@ import dev.morphia.mapping.cache.EntityCache;
 import dev.morphia.query.internal.MappingIterable;
 import dev.morphia.query.internal.MorphiaCursor;
 import dev.morphia.query.internal.MorphiaKeyCursor;
-import org.bson.Document;
-import org.bson.types.CodeWScope;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import static com.mongodb.CursorType.NonTailable;
-import static com.mongodb.CursorType.Tailable;
-import static com.mongodb.CursorType.TailableAwait;
-import static dev.morphia.query.CriteriaJoin.AND;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 
 /**
@@ -49,7 +50,6 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 public class QueryImpl<T> implements CriteriaContainer, Query<T> {
     private static final Logger LOG = LoggerFactory.getLogger(QueryImpl.class);
     private final dev.morphia.DatastoreImpl ds;
-    private final DBCollection dbColl;
     private final Class<T> clazz;
     private EntityCache cache;
     private boolean validateName = true;
@@ -73,10 +73,9 @@ public class QueryImpl<T> implements CriteriaContainer, Query<T> {
      * @param coll  the collection to query
      * @param ds    the Datastore to use
      */
-    public QueryImpl(final Class<T> clazz, final DBCollection coll, final Datastore ds) {
+    public QueryImpl(final Class<T> clazz, final Datastore ds) {
         this.clazz = clazz;
         this.ds = ((dev.morphia.DatastoreImpl) ds);
-        dbColl = coll;
         cache = this.ds.getMapper().createEntityCache();
 
         final MappedClass mc = this.ds.getMapper().getMappedClass(clazz);
@@ -86,6 +85,10 @@ public class QueryImpl<T> implements CriteriaContainer, Query<T> {
                                         ? ReadPreference.secondaryPreferred()
                                         : null);
         }
+    }
+
+    public QueryImpl(final Class<T> clazz, final DBCollection coll, final Datastore ds) {
+        this(clazz, ds);
     }
 
     /**
@@ -126,11 +129,7 @@ public class QueryImpl<T> implements CriteriaContainer, Query<T> {
 
     @Override
     public MorphiaKeyCursor<T> keys(final FindOptions options) {
-        QueryImpl<T> cloned = cloneQuery();
-        cloned.getOptions().projection(new BasicDBObject("_id", 1));
-        cloned.includeFields = true;
-
-        return new MorphiaKeyCursor<T>(ds, cloned.prepareCursor(options), ds.getMapper(), clazz, dbColl.getName());
+    	return null;
     }
 
     @Override
@@ -156,21 +155,17 @@ public class QueryImpl<T> implements CriteriaContainer, Query<T> {
     @Override
     @Deprecated
     public long countAll() {
-        final DBObject query = getQueryObject();
-        if (LOG.isTraceEnabled()) {
-            LOG.trace("Executing count(" + dbColl.getName() + ") for query: " + query);
-        }
-        return dbColl.getCount(query);
+    	return 0;
     }
 
     @Override
     public long count() {
-        return dbColl.getCount(getQueryObject());
+    	return 0;
     }
 
     @Override
     public long count(final CountOptions options) {
-        return dbColl.getCount(getQueryObject(), options.getOptions());
+    	return 0;
     }
 
     @Override
@@ -180,12 +175,7 @@ public class QueryImpl<T> implements CriteriaContainer, Query<T> {
 
     @Override
     public MorphiaIterator<T, T> fetch(final FindOptions options) {
-        final DBCursor cursor = prepareCursor(options);
-        if (LOG.isTraceEnabled()) {
-            LOG.trace("Getting cursor(" + dbColl.getName() + ")  for query:" + cursor.getQuery());
-        }
-
-        return new MorphiaIterator<T, T>(ds, prepareCursor(options), ds.getMapper(), clazz, dbColl.getName(), cache);
+    	return null;
     }
 
     @Override
@@ -218,12 +208,7 @@ public class QueryImpl<T> implements CriteriaContainer, Query<T> {
 
     @Override
     public MorphiaKeyIterator<T> fetchKeys(final FindOptions options) {
-        QueryImpl<T> cloned = cloneQuery();
-        final FindOptions opts = cloned.getOptions();
-        opts.projection(new BasicDBObject("_id", 1));
-        cloned.includeFields = true;
-
-        return new MorphiaKeyIterator<T>(ds, cloned.prepareCursor(options), ds.getMapper(), clazz, dbColl.getName());
+    	return null;
     }
 
     @Override
@@ -294,7 +279,7 @@ public class QueryImpl<T> implements CriteriaContainer, Query<T> {
 
     @Override
     public QueryImpl<T> cloneQuery() {
-        final QueryImpl<T> n = new QueryImpl<T>(clazz, dbColl, ds);
+        final QueryImpl<T> n = new QueryImpl<T>(clazz, ds);
         n.cache = ds.getMapper().createEntityCache(); // fresh cache
         n.includeFields = includeFields;
         n.validateName = validateName;
@@ -407,7 +392,7 @@ public class QueryImpl<T> implements CriteriaContainer, Query<T> {
     @Override
     @Deprecated
     public DBCollection getCollection() {
-        return dbColl;
+    	return null;
     }
 
     @Override
@@ -747,25 +732,7 @@ public class QueryImpl<T> implements CriteriaContainer, Query<T> {
     }
 
     private DBCursor prepareCursor(final FindOptions findOptions) {
-        final DBObject query = getQueryObject();
-
-        if (LOG.isTraceEnabled()) {
-            LOG.trace(String.format("Running query(%s) : %s, options: %s,", dbColl.getName(), query, findOptions));
-        }
-
-        if (findOptions.isSnapshot() && (findOptions.getSortDBObject() != null || findOptions.hasHint())) {
-            LOG.warn("Snapshotted query should not have hint/sort.");
-        }
-
-        if (findOptions.getCursorType() != NonTailable && (findOptions.getSortDBObject() != null)) {
-            LOG.warn("Sorting on tail is not allowed.");
-        }
-
-        return dbColl.find(query, findOptions.getOptions()
-                                             .copy()
-                                             .sort(getSortObject())
-                                             .projection(getFieldsObject()))
-                     .setDecoderFactory(ds.getDecoderFact());
+    	return null;
     }
 
     @Override
@@ -826,9 +793,6 @@ public class QueryImpl<T> implements CriteriaContainer, Query<T> {
             return false;
         }
         if (validateType != query.validateType) {
-            return false;
-        }
-        if (!dbColl.equals(query.dbColl)) {
             return false;
         }
         if (!clazz.equals(query.clazz)) {
@@ -927,7 +891,7 @@ public class QueryImpl<T> implements CriteriaContainer, Query<T> {
 
     @Override
     public int hashCode() {
-        int result = dbColl.hashCode();
+        int result = 123;
         result = 31 * result + clazz.hashCode();
         result = 31 * result + (validateName ? 1 : 0);
         result = 31 * result + (validateType ? 1 : 0);
