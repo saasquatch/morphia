@@ -15,20 +15,22 @@
 package dev.morphia;
 
 
+import java.lang.reflect.Modifier;
+import java.util.Collections;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+
 import dev.morphia.annotations.Embedded;
 import dev.morphia.annotations.Entity;
 import dev.morphia.mapping.Mapper;
 import dev.morphia.mapping.MappingException;
 import dev.morphia.mapping.cache.EntityCache;
 import dev.morphia.utils.ReflectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.Modifier;
-import java.util.Collections;
-import java.util.Set;
 
 
 /**
@@ -86,7 +88,7 @@ public class Morphia {
      */
     @SuppressWarnings("deprecation")
     public Datastore createDatastore(final MongoClient mongoClient, final String dbName) {
-        return new DatastoreImpl(this, mongoClient, dbName);
+        return new DatastoreImpl(this);
     }
 
     /**
@@ -99,7 +101,7 @@ public class Morphia {
      */
     @SuppressWarnings("deprecation")
     public Datastore createDatastore(final MongoClient mongoClient, final Mapper mapper, final String dbName) {
-        return new DatastoreImpl(this, mapper, mongoClient, dbName);
+        return new DatastoreImpl(this, mapper);
     }
 
     /**

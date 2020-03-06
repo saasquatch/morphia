@@ -1,5 +1,26 @@
 package dev.morphia;
 
+import static com.mongodb.BasicDBObject.parse;
+import static com.mongodb.BasicDBObjectBuilder.start;
+import static com.mongodb.DBCollection.ID_FIELD_NAME;
+import static java.lang.String.format;
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.ConcurrentModificationException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.CommandResult;
 import com.mongodb.DB;
@@ -12,7 +33,6 @@ import com.mongodb.DuplicateKeyException;
 import com.mongodb.MapReduceCommand;
 import com.mongodb.MapReduceCommand.OutputType;
 import com.mongodb.MongoClient;
-import com.mongodb.MongoClientSettings;
 import com.mongodb.ReadPreference;
 import com.mongodb.WriteConcern;
 import com.mongodb.WriteResult;
@@ -21,10 +41,10 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.CreateCollectionOptions;
 import com.mongodb.client.model.DBCollectionUpdateOptions;
 import com.mongodb.client.model.ValidationOptions;
+
 import dev.morphia.aggregation.AggregationPipeline;
 import dev.morphia.aggregation.AggregationPipelineImpl;
 import dev.morphia.annotations.CappedAt;
-import dev.morphia.annotations.Entity;
 import dev.morphia.annotations.NotSaved;
 import dev.morphia.annotations.PostPersist;
 import dev.morphia.annotations.Validation;
@@ -45,27 +65,6 @@ import dev.morphia.query.UpdateOperations;
 import dev.morphia.query.UpdateOpsImpl;
 import dev.morphia.query.UpdateResults;
 import dev.morphia.utils.Assert;
-import org.bson.codecs.configuration.CodecRegistries;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.ConcurrentModificationException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import static com.mongodb.BasicDBObject.parse;
-import static com.mongodb.BasicDBObjectBuilder.start;
-import static com.mongodb.DBCollection.ID_FIELD_NAME;
-import static java.lang.String.format;
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 
 /**
  * A generic (type-safe) wrapper around mongodb collections
@@ -78,12 +77,7 @@ public class DatastoreImpl implements AdvancedDatastore {
     private static final Logger LOG = LoggerFactory.getLogger(DatastoreImpl.class);
 
     private final Morphia morphia;
-    private final MongoClient mongoClient;
-    private final MongoDatabase database;
-    private final IndexHelper indexHelper;
-    private DB db;
     private Mapper mapper;
-    private WriteConcern defConcern;
     private DBDecoderFactory decoderFactory;
 
     private volatile QueryFactory queryFactory = new DefaultQueryFactory();
@@ -92,42 +86,19 @@ public class DatastoreImpl implements AdvancedDatastore {
      * Create a new DatastoreImpl
      *
      * @param morphia     the Morphia instance
-     * @param mongoClient the connection to the MongoDB instance
-     * @param dbName      the name of the database for this data store.
-     * @deprecated This is not meant to be directly instantiated by end user code.  Use
-     * {@link Morphia#createDatastore(MongoClient, Mapper, String)}
-     */
-    @Deprecated
-    public DatastoreImpl(final Morphia morphia, final MongoClient mongoClient, final String dbName) {
-        this(morphia, morphia.getMapper(), mongoClient, dbName);
-    }
-
-    /**
-     * Create a new DatastoreImpl
-     *
-     * @param morphia     the Morphia instance
      * @param mapper      an initialised Mapper
-     * @param mongoClient the connection to the MongoDB instance
-     * @param dbName      the name of the database for this data store.
      * @deprecated This is not meant to be directly instantiated by end user code.  Use
      * {@link Morphia#createDatastore(MongoClient, Mapper, String)}
      */
     @Deprecated
-    public DatastoreImpl(final Morphia morphia, final Mapper mapper, final MongoClient mongoClient, final String dbName) {
-        this(morphia, mapper, mongoClient, mongoClient.getDatabase(dbName));
-    }
-
-    private DatastoreImpl(final Morphia morphia, final Mapper mapper, final MongoClient mongoClient, final MongoDatabase database) {
+    public DatastoreImpl(final Morphia morphia, final Mapper mapper) {
         this.morphia = morphia;
         this.mapper = mapper;
-        this.mongoClient = mongoClient;
-        this.database =
-            database.withCodecRegistry(CodecRegistries.fromRegistries(
-                mongoClient.getMongoClientOptions().getCodecRegistry(),
-                MongoClientSettings.getDefaultCodecRegistry()));
-        this.db = mongoClient.getDB(database.getName());
-        this.defConcern = mongoClient.getWriteConcern();
-        this.indexHelper = new IndexHelper(mapper, database);
+    }
+
+    @Deprecated
+    public DatastoreImpl(final Morphia morphia) {
+    	this(morphia, morphia.getMapper());
     }
 
     /**
@@ -138,8 +109,8 @@ public class DatastoreImpl implements AdvancedDatastore {
      * @deprecated use {@link Morphia#createDatastore(MongoClient, Mapper, String)}
      */
     @Deprecated
-    public DatastoreImpl copy(final String database) {
-        return new DatastoreImpl(morphia, mapper, mongoClient, database);
+    public DatastoreImpl copy() {
+        return new DatastoreImpl(morphia, mapper);
     }
 
     /**
@@ -485,26 +456,21 @@ public class DatastoreImpl implements AdvancedDatastore {
      */
     @Deprecated
     public DBCollection getCollection(final Object obj) {
-        if (obj == null) {
-            return null;
-        }
-        return getCollection(obj instanceof Class ? (Class) obj : obj.getClass());
+    	return null;
     }
 
     @Override
     public DBCollection getCollection(final Class clazz) {
-        final String collName = mapper.getCollectionName(clazz);
-        return getDB().getCollection(collName);
+    	return null;
     }
 
     private <T> MongoCollection<T> getMongoCollection(final Class<T> clazz) {
-        return getMongoCollection(mapper.getCollectionName(clazz), clazz);
+    	return null;
     }
 
     @SuppressWarnings("unchecked")
     private <T> MongoCollection<T> getMongoCollection(final String name, final Class<T> clazz) {
-        final MongoCollection<T> collection = database.getCollection(name, clazz);
-        return enforceWriteConcern(collection, clazz);
+    	return null;
     }
 
     @Override
@@ -529,22 +495,21 @@ public class DatastoreImpl implements AdvancedDatastore {
 
     @Override
     public DB getDB() {
-        return db;
+        return null;
     }
 
     @Override
     public MongoDatabase getDatabase() {
-        return database;
+        return null;
     }
 
     @Override
     public WriteConcern getDefaultWriteConcern() {
-        return defConcern;
+        return null;
     }
 
     @Override
     public void setDefaultWriteConcern(final WriteConcern wc) {
-        defConcern = wc;
     }
 
     @Override
@@ -556,7 +521,7 @@ public class DatastoreImpl implements AdvancedDatastore {
 
     @Override
     public MongoClient getMongo() {
-        return mongoClient;
+        return null;
     }
 
     @Override
@@ -947,9 +912,6 @@ public class DatastoreImpl implements AdvancedDatastore {
 
     @Override
     public void ensureIndexes(final boolean background) {
-        for (final MappedClass mc : mapper.getMappedClasses()) {
-            indexHelper.createIndex(getMongoCollection(mc.getClazz()), mc, background);
-        }
     }
 
     @Override
@@ -959,7 +921,6 @@ public class DatastoreImpl implements AdvancedDatastore {
 
     @Override
     public <T> void ensureIndexes(final Class<T> clazz, final boolean background) {
-        indexHelper.createIndex(getMongoCollection(clazz), mapper.getMappedClass(clazz), background);
     }
 
     @Override
@@ -975,14 +936,6 @@ public class DatastoreImpl implements AdvancedDatastore {
         if (dropDupsOnCreate) {
             LOG.warn("Support for dropDups has been removed from the server.  Please remove this setting.");
         }
-
-        indexHelper.createIndex(getMongoCollection(collection, clazz), getMapper().getMappedClass(clazz),
-            new IndexBuilder()
-                .fields(fields)
-                .options(new IndexOptionsBuilder()
-                             .name(name)
-                             .unique(unique)
-                        ), false);
     }
 
     @Override
@@ -992,7 +945,6 @@ public class DatastoreImpl implements AdvancedDatastore {
 
     @Override
     public <T> void ensureIndexes(final String collection, final Class<T> clazz, final boolean background) {
-        indexHelper.createIndex(getMongoCollection(collection, clazz), mapper.getMappedClass(clazz), background);
     }
 
     @Override
@@ -1158,6 +1110,7 @@ public class DatastoreImpl implements AdvancedDatastore {
     /**
      * @return the Mapper used by this Datastore
      */
+    @Override
     public Mapper getMapper() {
         return mapper;
     }
@@ -1180,8 +1133,7 @@ public class DatastoreImpl implements AdvancedDatastore {
      */
     @Override
     public <T> Iterable<Key<T>> insert(final Iterable<T> entities) {
-        return insert(entities, new InsertOptions()
-                                    .writeConcern(defConcern));
+        return insert(entities, new InsertOptions());
     }
 
     /**
@@ -1583,14 +1535,6 @@ public class DatastoreImpl implements AdvancedDatastore {
      * @param clazzOrEntity the class or entity to use when looking up the WriteConcern
      */
     private WriteConcern getWriteConcern(final Object clazzOrEntity) {
-        WriteConcern wc = defConcern;
-        if (clazzOrEntity != null) {
-            final Entity entityAnn = getMapper().getMappedClass(clazzOrEntity).getEntityAnnotation();
-            if (entityAnn != null && !entityAnn.concern().isEmpty()) {
-                wc = WriteConcern.valueOf(entityAnn.concern());
-            }
-        }
-
-        return wc;
+        return null;
     }
 }
