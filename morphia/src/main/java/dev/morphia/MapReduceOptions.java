@@ -16,18 +16,13 @@
 
 package dev.morphia;
 
-import com.mongodb.DBCollection;
-import com.mongodb.MapReduceCommand;
-import com.mongodb.MapReduceCommand.OutputType;
+import java.util.Map;
+
 import com.mongodb.ReadPreference;
 import com.mongodb.client.model.Collation;
-import dev.morphia.mapping.Mapper;
-import dev.morphia.query.Query;
-import dev.morphia.query.QueryException;
-import dev.morphia.utils.Assert;
 
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import dev.morphia.query.Query;
+import dev.morphia.utils.Assert;
 
 /**
  * This defines options that can be applied to a mapreduce job
@@ -43,7 +38,6 @@ public class MapReduceOptions<T> {
     private String inputCollection;
     private String map;
     private String reduce;
-    private OutputType outputType;
     private Query query;
     private String finalize;
     private ReadPreference readPreference;
@@ -172,17 +166,6 @@ public class MapReduceOptions<T> {
     }
 
     /**
-     * Sets the output type of the job
-     *
-     * @param outputType the output type
-     * @return this
-     */
-    public MapReduceOptions<T> outputType(final OutputType outputType) {
-        this.outputType = outputType;
-        return this;
-    }
-
-    /**
      * Sets the query defining the input for the job.  Must not be null.
      *
      * @param query the query to use
@@ -251,10 +234,6 @@ public class MapReduceOptions<T> {
         return this;
     }
 
-    OutputType getOutputType() {
-        return outputType;
-    }
-
     Query getQuery() {
         return query;
     }
@@ -263,29 +242,4 @@ public class MapReduceOptions<T> {
         return resultType;
     }
 
-    @SuppressWarnings("deprecation")
-    MapReduceCommand toCommand(final Mapper mapper) {
-        if (query.getOffset() != 0 || query.getFieldsObject() != null) {
-            throw new QueryException("mapReduce does not allow the offset/retrievedFields query ");
-        }
-
-        final DBCollection dbColl = inputCollection != null ? getQuery().getCollection().getDB().getCollection(inputCollection)
-                                                            : query.getCollection();
-        final String target = outputCollection != null ? outputCollection : mapper.getMappedClass(resultType).getCollectionName();
-
-        final MapReduceCommand command = new MapReduceCommand(dbColl, map, reduce, target, outputType, query.getQueryObject());
-        command.setBypassDocumentValidation(bypassDocumentValidation);
-        command.setCollation(collation);
-        command.setFinalize(finalize);
-        command.setJsMode(jsMode);
-        command.setLimit(limit);
-        command.setMaxTime(maxTimeMS, TimeUnit.MILLISECONDS);
-        command.setOutputDB(outputDB);
-        command.setReadPreference(readPreference);
-        command.setScope(scope);
-        command.setSort(query.getSortObject());
-        command.setVerbose(verbose);
-
-        return command;
-    }
 }

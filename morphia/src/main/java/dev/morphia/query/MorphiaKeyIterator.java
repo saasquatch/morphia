@@ -1,8 +1,9 @@
 package dev.morphia.query;
 
-import com.mongodb.DBCursor;
+import java.util.Collections;
+
 import com.mongodb.DBObject;
-import com.mongodb.client.MongoCursor;
+
 import dev.morphia.Datastore;
 import dev.morphia.Key;
 import dev.morphia.mapping.Mapper;
@@ -24,9 +25,9 @@ public class MorphiaKeyIterator<T> extends MorphiaIterator<T, Key<T>> {
      * @param clazz      the original type being iterated
      * @param collection the mongodb collection
      */
-    public MorphiaKeyIterator(final Datastore datastore, final DBCursor cursor, final Mapper mapper,
+    public MorphiaKeyIterator(final Datastore datastore, final Mapper mapper,
                               final Class<T> clazz, final String collection) {
-        super(datastore, cursor, mapper, clazz, collection, null);
+        super(datastore, Collections.<DBObject>emptyIterator(), mapper, clazz, collection, null);
     }
 
     @Override

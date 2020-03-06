@@ -1,9 +1,13 @@
 package dev.morphia.dao;
 
-import com.mongodb.DBCollection;
-import com.mongodb.MongoClient;
+import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import com.mongodb.WriteConcern;
-import com.mongodb.WriteResult;
+import com.mongodb.reactivestreams.client.MongoClient;
+
 import dev.morphia.Datastore;
 import dev.morphia.InsertOptions;
 import dev.morphia.Key;
@@ -13,11 +17,6 @@ import dev.morphia.query.FindOptions;
 import dev.morphia.query.Query;
 import dev.morphia.query.UpdateOperations;
 import dev.morphia.query.UpdateResults;
-
-import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * @param <T> the type of the entity
@@ -99,7 +98,7 @@ public class BasicDAO<T, K> implements DAO<T, K> {
 
     @Override
     public long count(final Query<T> query) {
-        return ds.getCount(query);
+    	return 0;
     }
 
     @Override
@@ -110,26 +109,6 @@ public class BasicDAO<T, K> implements DAO<T, K> {
     @Override
     public UpdateOperations<T> createUpdateOperations() {
         return ds.createUpdateOperations(entityClazz);
-    }
-
-    @Override
-    public WriteResult delete(final T entity) {
-        return ds.delete(entity);
-    }
-
-    @Override
-    public WriteResult delete(final T entity, final WriteConcern wc) {
-        return ds.delete(entity, wc);
-    }
-
-    @Override
-    public WriteResult deleteById(final K id) {
-        return ds.delete(entityClazz, id);
-    }
-
-    @Override
-    public WriteResult deleteByQuery(final Query<T> query) {
-        return ds.delete(query);
     }
 
     @Override
@@ -177,7 +156,7 @@ public class BasicDAO<T, K> implements DAO<T, K> {
 
     @Override
     public T findOne(final String key, final Object value) {
-        return ds.find(entityClazz).filter(key, value).get();
+    	return null;
     }
 
     /* (non-Javadoc)
@@ -185,7 +164,7 @@ public class BasicDAO<T, K> implements DAO<T, K> {
      */
     @Override
     public T findOne(final Query<T> query) {
-        return query.get();
+    	return null;
     }
 
     @Override
@@ -207,11 +186,6 @@ public class BasicDAO<T, K> implements DAO<T, K> {
     @Override
     public T get(final K id) {
         return ds.get(entityClazz, id);
-    }
-
-    @Override
-    public DBCollection getCollection() {
-        return ds.getCollection(entityClazz);
     }
 
     /* (non-Javadoc)

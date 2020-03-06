@@ -1,15 +1,13 @@
 package dev.morphia.query;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
-import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.client.MongoCursor;
+
 import dev.morphia.Datastore;
 import dev.morphia.mapping.Mapper;
 import dev.morphia.mapping.cache.EntityCache;
-
-import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 
 /**
@@ -53,9 +51,6 @@ public class MorphiaIterator<T, V> implements Iterable<V>, Iterator<V> {
      * Closes the underlying cursor.
      */
     public void close() {
-        if (wrapped != null && wrapped instanceof DBCursor) {
-            ((DBCursor) wrapped).close();
-        }
     }
 
     /**
@@ -70,13 +65,6 @@ public class MorphiaIterator<T, V> implements Iterable<V>, Iterator<V> {
      */
     public String getCollection() {
         return collection;
-    }
-
-    /**
-     * @return the underlying DBCursor
-     */
-    public DBCursor getCursor() {
-        return (DBCursor) wrapped;
     }
 
     /**

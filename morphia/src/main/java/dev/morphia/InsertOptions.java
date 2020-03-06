@@ -17,6 +17,7 @@
 package dev.morphia;
 
 import com.mongodb.WriteConcern;
+import com.mongodb.client.model.InsertManyOptions;
 
 /**
  * Options related to insertion of documents into MongoDB.  The setter methods return {@code this} so that a chaining style can be used.
@@ -24,7 +25,7 @@ import com.mongodb.WriteConcern;
  * @since 1.3
  */
 public class InsertOptions {
-    private com.mongodb.InsertOptions options = new com.mongodb.InsertOptions();
+    private InsertManyOptions options = new InsertManyOptions();
 
     /**
      * Creates a new options instance.
@@ -44,7 +45,7 @@ public class InsertOptions {
             .writeConcern(getWriteConcern());
     }
 
-    com.mongodb.InsertOptions getOptions() {
+    InsertManyOptions getOptions() {
         return options;
     }
 
@@ -55,7 +56,6 @@ public class InsertOptions {
      * @return this
      */
     public InsertOptions writeConcern(final WriteConcern writeConcern) {
-        options.writeConcern(writeConcern);
         return this;
     }
 
@@ -66,7 +66,6 @@ public class InsertOptions {
      * @return this
      */
     public InsertOptions continueOnError(final boolean continueOnError) {
-        options.continueOnError(continueOnError);
         return this;
     }
 
@@ -76,7 +75,7 @@ public class InsertOptions {
      * @return the write concern, or null if the default will be used.
      */
     public WriteConcern getWriteConcern() {
-        return options.getWriteConcern();
+    	return null;
     }
 
     /**
@@ -86,7 +85,7 @@ public class InsertOptions {
      * @return whether insertion will continue on error.
      */
     public boolean isContinueOnError() {
-        return options.isContinueOnError();
+    	return false;
     }
 
     /**

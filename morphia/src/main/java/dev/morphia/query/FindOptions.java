@@ -16,14 +16,13 @@
 
 package dev.morphia.query;
 
+import java.util.concurrent.TimeUnit;
+
 import com.mongodb.CursorType;
 import com.mongodb.DBObject;
 import com.mongodb.ReadConcern;
 import com.mongodb.ReadPreference;
 import com.mongodb.client.model.Collation;
-import com.mongodb.client.model.DBCollectionFindOptions;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * The options to apply to a find operation (also commonly referred to as a query).
@@ -33,7 +32,6 @@ import java.util.concurrent.TimeUnit;
  * @mongodb.driver.manual ../meta-driver/latest/legacy/mongodb-wire-protocol/#op-query OP_QUERY
  */
 public class FindOptions {
-    private DBCollectionFindOptions options = new DBCollectionFindOptions();
 
     /**
      * Creates an empty options instance.
@@ -41,16 +39,12 @@ public class FindOptions {
     public FindOptions() {
     }
 
-    private FindOptions(final DBCollectionFindOptions copy) {
-        options = copy.copy();
-    }
-
     /**
      * Makes a copy of these find options
      * @return the new copy
      */
     public FindOptions copy() {
-        return new FindOptions(options.copy());
+        return new FindOptions();
     }
 
     /**
@@ -60,7 +54,7 @@ public class FindOptions {
      * @mongodb.driver.manual reference/method/cursor.limit/#cursor.limit Limit
      */
     public int getLimit() {
-        return options.getLimit();
+    	return 0;
     }
 
     /**
@@ -71,7 +65,6 @@ public class FindOptions {
      * @mongodb.driver.manual reference/method/cursor.limit/#cursor.limit Limit
      */
     public FindOptions limit(final int limit) {
-        options.limit(limit);
         return this;
     }
 
@@ -82,7 +75,7 @@ public class FindOptions {
      * @mongodb.driver.manual reference/method/cursor.skip/#cursor.skip Skip
      */
     public int getSkip() {
-        return options.getSkip();
+    	return 0;
     }
 
     /**
@@ -93,7 +86,6 @@ public class FindOptions {
      * @mongodb.driver.manual reference/method/cursor.skip/#cursor.skip Skip
      */
     public FindOptions skip(final int skip) {
-        options.skip(skip);
         return this;
     }
 
@@ -105,7 +97,7 @@ public class FindOptions {
      * @mongodb.driver.manual reference/method/cursor.maxTimeMS/#cursor.maxTimeMS Max Time
      */
     public long getMaxTime(final TimeUnit timeUnit) {
-        return options.getMaxTime(timeUnit);
+    	return 0;
     }
 
     /**
@@ -117,7 +109,6 @@ public class FindOptions {
      * @mongodb.driver.manual reference/method/cursor.maxTimeMS/#cursor.maxTimeMS Max Time
      */
     public FindOptions maxTime(final long maxTime, final TimeUnit timeUnit) {
-        options.maxTime(maxTime, timeUnit);
         return this;
     }
 
@@ -138,7 +129,7 @@ public class FindOptions {
      * @mongodb.driver.manual reference/method/cursor.maxTimeMS/#cursor.maxTimeMS Max Time
      */
     public long getMaxAwaitTime(final TimeUnit timeUnit) {
-        return options.getMaxAwaitTime(timeUnit);
+    	return 0;
     }
 
     /**
@@ -151,7 +142,6 @@ public class FindOptions {
      * @mongodb.driver.manual reference/method/cursor.maxTimeMS/#cursor.maxTimeMS Max Time
      */
     public FindOptions maxAwaitTime(final long maxAwaitTime, final TimeUnit timeUnit) {
-        options.maxAwaitTime(maxAwaitTime, timeUnit);
         return this;
     }
 
@@ -163,7 +153,7 @@ public class FindOptions {
      * @mongodb.driver.manual reference/method/cursor.batchSize/#cursor.batchSize Batch Size
      */
     public int getBatchSize() {
-        return options.getBatchSize();
+    	return 0;
     }
 
     /**
@@ -174,7 +164,6 @@ public class FindOptions {
      * @mongodb.driver.manual reference/method/cursor.batchSize/#cursor.batchSize Batch Size
      */
     public FindOptions batchSize(final int batchSize) {
-        options.batchSize(batchSize);
         return this;
     }
 
@@ -185,7 +174,7 @@ public class FindOptions {
      * @mongodb.driver.manual reference/operator/query-modifier/ Query Modifiers
      */
     DBObject getModifiers() {
-        return options.getModifiers();
+    	return null;
     }
 
     /**
@@ -196,7 +185,6 @@ public class FindOptions {
      * @return this
      */
     public FindOptions modifier(final String key, final Object value) {
-        options.getModifiers().put(key, value);
         return this;
     }
 
@@ -207,7 +195,7 @@ public class FindOptions {
      * @mongodb.driver.manual reference/method/db.collection.find/ Projection
      */
     DBObject getProjection() {
-        return options.getProjection();
+    	return null;
     }
 
     /**
@@ -218,7 +206,6 @@ public class FindOptions {
      * @mongodb.driver.manual reference/method/db.collection.find/ Projection
      */
     FindOptions projection(final DBObject projection) {
-        options.projection(projection);
         return this;
     }
 
@@ -230,7 +217,7 @@ public class FindOptions {
      * @mongodb.driver.manual reference/method/cursor.sort/ Sort
      */
     DBObject getSortDBObject() {
-        return options.getSort();
+    	return null;
     }
 
     /**
@@ -241,7 +228,6 @@ public class FindOptions {
      * @mongodb.driver.manual reference/method/cursor.sort/ Sort
      */
     FindOptions sort(final DBObject sort) {
-        options.sort(sort);
         return this;
     }
 
@@ -252,7 +238,7 @@ public class FindOptions {
      * @return true if cursor timeout is disabled
      */
     public boolean isNoCursorTimeout() {
-        return options.isNoCursorTimeout();
+    	return false;
     }
 
     /**
@@ -263,7 +249,6 @@ public class FindOptions {
      * @return this
      */
     public FindOptions noCursorTimeout(final boolean noCursorTimeout) {
-        options.noCursorTimeout(noCursorTimeout);
         return this;
     }
 
@@ -273,7 +258,7 @@ public class FindOptions {
      * @return if oplog replay is enabled
      */
     public boolean isOplogReplay() {
-        return options.isOplogReplay();
+    	return false;
     }
 
     /**
@@ -283,7 +268,6 @@ public class FindOptions {
      * @return this
      */
     public FindOptions oplogReplay(final boolean oplogReplay) {
-        options.oplogReplay(oplogReplay);
         return this;
     }
 
@@ -293,7 +277,7 @@ public class FindOptions {
      * @return if partial results for sharded clusters is enabled
      */
     public boolean isPartial() {
-        return options.isPartial();
+    	return false;
     }
 
     /**
@@ -303,7 +287,6 @@ public class FindOptions {
      * @return this
      */
     public FindOptions partial(final boolean partial) {
-        options.partial(partial);
         return this;
     }
 
@@ -313,7 +296,7 @@ public class FindOptions {
      * @return the cursor type
      */
     public CursorType getCursorType() {
-        return options.getCursorType();
+    	return null;
     }
 
     /**
@@ -323,7 +306,6 @@ public class FindOptions {
      * @return this
      */
     public FindOptions cursorType(final CursorType cursorType) {
-        options.cursorType(cursorType);
         return this;
     }
 
@@ -333,7 +315,7 @@ public class FindOptions {
      * @return the readPreference
      */
     public ReadPreference getReadPreference() {
-        return options.getReadPreference();
+    	return null;
     }
 
     /**
@@ -343,7 +325,6 @@ public class FindOptions {
      * @return this
      */
     public FindOptions readPreference(final ReadPreference readPreference) {
-        options.readPreference(readPreference);
         return this;
     }
 
@@ -354,7 +335,7 @@ public class FindOptions {
      * @mongodb.server.release 3.2
      */
     public ReadConcern getReadConcern() {
-        return options.getReadConcern();
+    	return null;
     }
 
     /**
@@ -365,7 +346,6 @@ public class FindOptions {
      * @mongodb.server.release 3.2
      */
     public FindOptions readConcern(final ReadConcern readConcern) {
-        options.readConcern(readConcern);
         return this;
     }
 
@@ -376,7 +356,7 @@ public class FindOptions {
      * @mongodb.server.release 3.4
      */
     public Collation getCollation() {
-        return options.getCollation();
+    	return null;
     }
 
     /**
@@ -387,12 +367,7 @@ public class FindOptions {
      * @mongodb.server.release 3.4
      */
     public FindOptions collation(final Collation collation) {
-        options.collation(collation);
         return this;
-    }
-
-    DBCollectionFindOptions getOptions() {
-        return options;
     }
 
     boolean isSnapshot() {

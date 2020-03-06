@@ -16,14 +16,13 @@
 
 package dev.morphia;
 
-import com.mongodb.DBObject;
-import com.mongodb.WriteConcern;
-import com.mongodb.client.model.Collation;
-import com.mongodb.client.model.DBCollectionFindAndModifyOptions;
+import static com.mongodb.assertions.Assertions.notNull;
 
 import java.util.concurrent.TimeUnit;
 
-import static com.mongodb.assertions.Assertions.notNull;
+import com.mongodb.DBObject;
+import com.mongodb.WriteConcern;
+import com.mongodb.client.model.Collation;
 
 /**
  * The options for find and modify operations.
@@ -31,8 +30,6 @@ import static com.mongodb.assertions.Assertions.notNull;
  * @since 1.3
  */
 public final class FindAndModifyOptions {
-    private DBCollectionFindAndModifyOptions options = new DBCollectionFindAndModifyOptions()
-        .returnNew(true);
 
     /**
      * Creates a new options instance.
@@ -55,16 +52,15 @@ public final class FindAndModifyOptions {
         return copy;
     }
 
-    DBCollectionFindAndModifyOptions getOptions() {
-        return copy().options;
+    FindAndModifyOptions getOptions() {
+    	return null;
     }
 
     DBObject getProjection() {
-        return options.getProjection();
+    	return null;
     }
 
     FindAndModifyOptions projection(final DBObject projection) {
-        options.projection(projection);
         return this;
     }
 
@@ -74,7 +70,7 @@ public final class FindAndModifyOptions {
      * @return the sort
      */
     DBObject getSort() {
-        return options.getSort();
+    	return null;
     }
 
     /**
@@ -84,7 +80,6 @@ public final class FindAndModifyOptions {
      * @return this
      */
     FindAndModifyOptions sort(final DBObject sort) {
-        options.sort(sort);
         return this;
     }
 
@@ -94,7 +89,7 @@ public final class FindAndModifyOptions {
      * @return the remove
      */
     public boolean isRemove() {
-        return options.isRemove();
+    	return false;
     }
 
     /**
@@ -104,7 +99,6 @@ public final class FindAndModifyOptions {
      * @return this
      */
     public FindAndModifyOptions remove(final boolean remove) {
-        options.remove(remove);
         return this;
     }
 
@@ -114,7 +108,7 @@ public final class FindAndModifyOptions {
      * @return the update
      */
     DBObject getUpdate() {
-        return options.getUpdate();
+    	return null;
     }
 
     /**
@@ -124,7 +118,6 @@ public final class FindAndModifyOptions {
      * @return this
      */
     FindAndModifyOptions update(final DBObject update) {
-        options.update(update);
         return this;
     }
 
@@ -134,7 +127,7 @@ public final class FindAndModifyOptions {
      * @return the upsert
      */
     public boolean isUpsert() {
-        return options.isUpsert();
+    	return false;
     }
 
     /**
@@ -145,7 +138,6 @@ public final class FindAndModifyOptions {
      * @mongodb.driver.manual reference/method/db.collection.update/#upsert-behavior upsert
      */
     public FindAndModifyOptions upsert(final boolean upsert) {
-        options.upsert(upsert);
         return this;
     }
 
@@ -155,7 +147,7 @@ public final class FindAndModifyOptions {
      * @return the returnNew
      */
     public boolean isReturnNew() {
-        return options.returnNew();
+    	return false;
     }
 
     /**
@@ -165,7 +157,6 @@ public final class FindAndModifyOptions {
      * @return this
      */
     public FindAndModifyOptions returnNew(final boolean returnNew) {
-        options.returnNew(returnNew);
         return this;
     }
 
@@ -175,7 +166,7 @@ public final class FindAndModifyOptions {
      * @return the bypassDocumentValidation
      */
     public Boolean getBypassDocumentValidation() {
-        return options.getBypassDocumentValidation();
+    	return false;
     }
 
     /**
@@ -185,7 +176,6 @@ public final class FindAndModifyOptions {
      * @return this
      */
     public FindAndModifyOptions bypassDocumentValidation(final Boolean bypassDocumentValidation) {
-        options.bypassDocumentValidation(bypassDocumentValidation);
         return this;
     }
 
@@ -198,7 +188,7 @@ public final class FindAndModifyOptions {
      */
     public long getMaxTime(final TimeUnit timeUnit) {
         notNull("timeUnit", timeUnit);
-        return options.getMaxTime(timeUnit);
+        return 0;
     }
 
     /**
@@ -210,7 +200,6 @@ public final class FindAndModifyOptions {
      * @mongodb.driver.manual reference/method/cursor.maxTimeMS/#cursor.maxTimeMS Max Time
      */
     public FindAndModifyOptions maxTime(final long maxTime, final TimeUnit timeUnit) {
-        options.maxTime(maxTime, timeUnit);
         return this;
     }
 
@@ -221,7 +210,7 @@ public final class FindAndModifyOptions {
      * @mongodb.server.release 3.2
      */
     public WriteConcern getWriteConcern() {
-        return options.getWriteConcern();
+    	return null;
     }
 
     /**
@@ -232,7 +221,6 @@ public final class FindAndModifyOptions {
      * @mongodb.server.release 3.2
      */
     public FindAndModifyOptions writeConcern(final WriteConcern writeConcern) {
-        options.writeConcern(writeConcern);
         return this;
     }
 
@@ -243,7 +231,7 @@ public final class FindAndModifyOptions {
      * @mongodb.server.release 3.4
      */
     public Collation getCollation() {
-        return options.getCollation();
+    	return null;
     }
 
     /**
@@ -254,7 +242,6 @@ public final class FindAndModifyOptions {
      * @mongodb.server.release 3.4
      */
     public FindAndModifyOptions collation(final Collation collation) {
-        options.collation(collation);
         return this;
     }
 }

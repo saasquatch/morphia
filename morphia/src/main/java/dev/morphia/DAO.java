@@ -1,7 +1,8 @@
 package dev.morphia;
 
 
-import com.mongodb.MongoClient;
+import com.mongodb.reactivestreams.client.MongoClient;
+
 import dev.morphia.dao.BasicDAO;
 
 

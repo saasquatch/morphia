@@ -1,15 +1,13 @@
 package dev.morphia;
 
 
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.MapReduceCommand;
-import com.mongodb.MongoClient;
+import java.util.List;
+
 import com.mongodb.WriteConcern;
-import com.mongodb.WriteResult;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import dev.morphia.aggregation.AggregationPipeline;
+import com.mongodb.reactivestreams.client.MongoClient;
+import com.mongodb.reactivestreams.client.MongoCollection;
+import com.mongodb.reactivestreams.client.MongoDatabase;
+
 import dev.morphia.annotations.Indexed;
 import dev.morphia.annotations.Indexes;
 import dev.morphia.annotations.Text;
@@ -21,9 +19,6 @@ import dev.morphia.query.QueryFactory;
 import dev.morphia.query.UpdateOperations;
 import dev.morphia.query.UpdateResults;
 
-import java.util.List;
-import java.util.Map;
-
 
 /**
  * Datastore interface to get/delete/save objects
@@ -31,13 +26,6 @@ import java.util.Map;
  * @author Scott Hernandez
  */
 public interface Datastore {
-    /**
-     * Returns a new query bound to the kind (a specific {@link DBCollection})
-     *
-     * @param source The class to create aggregation against
-     * @return the aggregation pipeline
-     */
-    AggregationPipeline createAggregation(Class source);
 
     /**
      * Returns a new query bound to the collection (a specific {@link DBCollection})
@@ -56,126 +44,6 @@ public interface Datastore {
      * @return the new UpdateOperations instance
      */
     <T> UpdateOperations<T> createUpdateOperations(Class<T> clazz);
-
-    /**
-     * Deletes the given entity (by id)
-     *
-     * @param clazz the type to delete
-     * @param id    the ID of the entity to delete
-     * @param <T>   the type to delete
-     * @param <V>   the type of the id
-     * @return results of the delete
-     * @deprecated use {@link #delete(Query)} instead
-     */
-    @Deprecated
-    <T, V> WriteResult delete(Class<T> clazz, V id);
-
-    /**
-     * Deletes the given entity (by id)
-     *
-     * @param clazz   the type to delete
-     * @param id      the ID of the entity to delete
-     * @param options the options to use when deleting
-     * @param <T>     the type to delete
-     * @param <V>     the type of the id
-     * @return results of the delete
-     * @since 1.3
-     * @deprecated use {@link #delete(Query, DeleteOptions)} instead
-     */
-    @Deprecated
-    <T, V> WriteResult delete(Class<T> clazz, V id, DeleteOptions options);
-
-    /**
-     * Deletes the given entities (by id)
-     *
-     * @param clazz the type to delete
-     * @param ids   the IDs of the entity to delete
-     * @param <T>   the type to delete
-     * @param <V>   the type of the id
-     * @return results of the delete
-     * @deprecated use {@link #delete(Query)} instead
-     */
-    @Deprecated
-    <T, V> WriteResult delete(Class<T> clazz, Iterable<V> ids);
-
-    /**
-     * Deletes the given entities (by id)
-     *
-     * @param clazz   the type to delete
-     * @param ids     the IDs of the entity to delete
-     * @param options the options to use when deleting
-     * @param <T>     the type to delete
-     * @param <V>     the type of the id
-     * @return results of the delete
-     * @since 1.3
-     * @deprecated use {@link #delete(Query, DeleteOptions)} instead
-     */
-    @Deprecated
-    <T, V> WriteResult delete(Class<T> clazz, Iterable<V> ids, DeleteOptions options);
-
-    /**
-     * Deletes entities based on the query
-     *
-     * @param query the query to use when finding documents to delete
-     * @param <T>   the type to delete
-     * @return results of the delete
-     */
-    <T> WriteResult delete(Query<T> query);
-
-    /**
-     * Deletes entities based on the query
-     *
-     * @param query   the query to use when finding documents to delete
-     * @param options the options to apply to the delete
-     * @param <T>     the type to delete
-     * @return results of the delete
-     * @since 1.3
-     */
-    <T> WriteResult delete(Query<T> query, DeleteOptions options);
-
-    /**
-     * Deletes entities based on the query, with the WriteConcern
-     *
-     * @param query the query to use when finding documents to delete
-     * @param wc    the WriteConcern to use when deleting
-     * @param <T>   the type to delete
-     * @return results of the delete
-     * @deprecated use {@link AdvancedDatastore#delete(Query, DeleteOptions)} instead
-     */
-    @Deprecated
-    <T> WriteResult delete(Query<T> query, WriteConcern wc);
-
-    /**
-     * Deletes the given entity (by @Id)
-     *
-     * @param entity the entity to delete
-     * @param <T>    the type to delete
-     * @return results of the delete
-     */
-    <T> WriteResult delete(T entity);
-
-    /**
-     * Deletes the given entity (by @Id), with the WriteConcern
-     *
-     * @param entity  the entity to delete
-     * @param options the options to use when deleting
-     * @param <T>     the type to delete
-     * @return results of the delete
-     * @since 1.3
-     */
-    <T> WriteResult delete(T entity, DeleteOptions options);
-
-    /**
-     * Deletes the given entity (by @Id), with the WriteConcern
-     *
-     * @param entity the entity to delete
-     * @param wc     the WriteConcern to use when deleting
-     * @param <T>    the type to delete
-     * @return results of the delete
-     * @deprecated use {@link #delete(Query, DeleteOptions)} instead
-     */
-    @Deprecated
-    <T> WriteResult delete(T entity, WriteConcern wc);
 
     /**
      * ensure capped collections for {@code Entity}(s)
@@ -466,15 +334,6 @@ public interface Datastore {
     <T> List<T> getByKeys(Iterable<Key<T>> keys);
 
     /**
-     * @param clazz the class to use for mapping
-     * @return the mapped collection for the collection
-     * @deprecated the return type for this method will change in 2.0
-     * @morphia.internal
-     */
-    @Deprecated
-    DBCollection getCollection(Class<?> clazz);
-
-    /**
      * Gets the count this kind ({@link DBCollection})
      *
      * @param entity The entity whose type to count
@@ -522,16 +381,6 @@ public interface Datastore {
      */
     @Deprecated
     <T> long getCount(Query<T> query, CountOptions options);
-
-    /**
-     * @return the DB this Datastore uses
-     * @see MongoClient#getDB(String)
-     * @see MongoDatabase
-     * @deprecated use #getDatabase(). In general, should you need a DB reference, please use the MongoClient used to create this
-     * Datastore to retrieve it.
-     */
-    @Deprecated
-    DB getDB();
 
     /**
      * @return the MongoDatabase used by this DataStore
@@ -587,50 +436,6 @@ public interface Datastore {
      * @see QueryFactory
      */
     void setQueryFactory(QueryFactory queryFactory);
-
-    /**
-     * Runs a map/reduce job at the server
-     *
-     * @param <T>     The type of resulting data
-     * @param options the options to apply to the map/reduce job
-     * @return the results
-     * @since 1.3
-     * @deprecated This feature will not be supported in 2.0
-     */
-    @Deprecated
-    <T> MapreduceResults<T> mapReduce(MapReduceOptions<T> options);
-
-    /**
-     * Runs a map/reduce job at the server; this should be used with a server version 1.7.4 or higher
-     *
-     * @param <T>         The type of resulting data
-     * @param outputType  The type of resulting data; inline is not working yet
-     * @param type        MapreduceType
-     * @param q           The query (only the criteria, limit and sort will be used)
-     * @param map         The map function, in javascript, as a string
-     * @param reduce      The reduce function, in javascript, as a string
-     * @param finalize    The finalize function, in javascript, as a string; can be null
-     * @param scopeFields Each map entry will be a global variable in all the functions; can be null
-     * @return counts and stuff
-     * @deprecated This feature will not be supported in 2.0
-     */
-    @Deprecated
-    <T> MapreduceResults<T> mapReduce(MapreduceType type, Query q, String map, String reduce, String finalize,
-                                      Map<String, Object> scopeFields, Class<T> outputType);
-
-    /**
-     * Runs a map/reduce job at the server; this should be used with a server version 1.7.4 or higher
-     *
-     * @param <T>         The type of resulting data
-     * @param type        MapreduceType
-     * @param q           The query (only the criteria, limit and sort will be used)
-     * @param outputType  The type of resulting data; inline is not working yet
-     * @param baseCommand The base command to fill in and send to the server
-     * @return counts and stuff
-     * @deprecated This feature will not be supported in 2.0
-     */
-    @Deprecated
-    <T> MapreduceResults<T> mapReduce(MapreduceType type, Query q, Class<T> outputType, MapReduceCommand baseCommand);
 
     /**
      * Work as if you did an update with each field in the entity doing a $set; Only at the top level of the entity.

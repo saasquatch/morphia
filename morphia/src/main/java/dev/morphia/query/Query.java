@@ -1,25 +1,22 @@
 package dev.morphia.query;
 
 
-import com.mongodb.Bytes;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.ReadPreference;
-import com.mongodb.client.MongoIterable;
-import dev.morphia.Key;
-import dev.morphia.query.internal.MorphiaCursor;
-import dev.morphia.query.internal.MorphiaKeyCursor;
-import org.bson.types.CodeWScope;
-
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import org.bson.types.CodeWScope;
+
+import com.mongodb.DBObject;
+import com.mongodb.ReadPreference;
+
+import dev.morphia.Key;
 
 
 /**
  * @param <T> The java type to query against
  */
-public interface Query<T> extends QueryResults<T>, MongoIterable<T> {
+public interface Query<T> extends QueryResults<T> {
     /**
      * Creates a container to hold 'and' clauses
      *
@@ -190,15 +187,6 @@ public interface Query<T> extends QueryResults<T>, MongoIterable<T> {
      */
     @Deprecated
     int getBatchSize();
-
-    /**
-     * @return the collection this query targets
-     *
-     * @deprecated This is an internal method and subject to change or removal.  Do not use.
-     * @morphia.internal
-     */
-    @Deprecated
-    DBCollection getCollection();
 
     /**
      * @return the entity {@link Class}.
@@ -541,22 +529,6 @@ public interface Query<T> extends QueryResults<T>, MongoIterable<T> {
     List<Key<T>> asKeyList(FindOptions options);
 
     /**
-     * Execute the query and get the results (as a {@code MorphiaCursor<Key<T>>})
-     *
-     * @return the keys of the documents returned by this query
-     */
-    MorphiaKeyCursor<T> keys();
-
-    /**
-     * Execute the query and get the results (as a {@code MorphiaCursor<Key<T>>})
-     *
-     * @param options the options to apply to the find operation
-     * @return the keys of the documents returned by this query
-     * @since 1.4
-     */
-    MorphiaKeyCursor<T> keys(FindOptions options);
-
-    /**
      * Execute the query and get the results.
      *
      * @return returns a List of the documents returned by a query
@@ -621,26 +593,6 @@ public interface Query<T> extends QueryResults<T>, MongoIterable<T> {
      */
     @Deprecated
     MorphiaIterator<T, T> fetch(FindOptions options);
-
-    /**
-     * Execute the query and get the results.
-     *
-     * *note* the return type of this will change in 2.0.
-     *
-     * @return a MorphiaCursor
-     * @since 1.4
-     * @see #find(FindOptions)
-     */
-    MorphiaCursor<T> find();
-
-    /**
-     * Execute the query and get the results.
-     *
-     * @param options the options to apply to the find operation
-     * @return a MorphiaCursor
-     * @since 1.4
-     */
-    MorphiaCursor<T> find(FindOptions options);
 
     /**
      * Execute the query and get only the ids of the results.  This is more efficient than fetching the actual results (transfers less

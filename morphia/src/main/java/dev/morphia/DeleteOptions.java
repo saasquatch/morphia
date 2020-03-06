@@ -18,7 +18,6 @@ package dev.morphia;
 
 import com.mongodb.WriteConcern;
 import com.mongodb.client.model.Collation;
-import com.mongodb.client.model.DBCollectionRemoveOptions;
 
 /**
  * The options to apply when removing documents from the DBCollection
@@ -27,7 +26,7 @@ import com.mongodb.client.model.DBCollectionRemoveOptions;
  * @mongodb.driver.manual tutorial/remove-documents/ Remove Documents
  */
 public final class DeleteOptions {
-    private final DBCollectionRemoveOptions options = new DBCollectionRemoveOptions();
+    private final com.mongodb.client.model.DeleteOptions options = new com.mongodb.client.model.DeleteOptions();
 
     /**
      * Creates a new options instance.
@@ -79,7 +78,7 @@ public final class DeleteOptions {
      * @return the write concern, or null if the default will be used.
      */
     public WriteConcern getWriteConcern() {
-        return options.getWriteConcern();
+    	return null;
     }
 
     /**
@@ -89,11 +88,10 @@ public final class DeleteOptions {
      * @return this
      */
     public DeleteOptions writeConcern(final WriteConcern writeConcern) {
-        options.writeConcern(writeConcern);
         return this;
     }
 
-    DBCollectionRemoveOptions getOptions() {
+    com.mongodb.client.model.DeleteOptions getOptions() {
         return options;
     }
 }

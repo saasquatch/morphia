@@ -11,10 +11,37 @@
 package dev.morphia.mapping;
 
 
+import static dev.morphia.utils.ReflectionUtils.getParameterizedClass;
+import static dev.morphia.utils.ReflectionUtils.implementsInterface;
+import static dev.morphia.utils.ReflectionUtils.isPropertyType;
+import static java.lang.String.format;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
+
+import org.bson.BSONEncoder;
+import org.bson.BasicBSONEncoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.DBRef;
+
 import dev.morphia.Datastore;
 import dev.morphia.EntityInterceptor;
 import dev.morphia.Key;
@@ -40,31 +67,6 @@ import dev.morphia.mapping.lazy.proxy.ProxyHelper;
 import dev.morphia.query.Query;
 import dev.morphia.query.QueryImpl;
 import dev.morphia.query.ValidationException;
-import org.bson.BSONEncoder;
-import org.bson.BasicBSONEncoder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.io.Serializable;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
-
-import static dev.morphia.utils.ReflectionUtils.getParameterizedClass;
-import static dev.morphia.utils.ReflectionUtils.implementsInterface;
-import static dev.morphia.utils.ReflectionUtils.isPropertyType;
-import static java.lang.String.format;
 
 
 /**
@@ -311,7 +313,7 @@ public class Mapper {
                 Object id = dbObject.get("_id");
                 String entityName = entity.getClass().getName();
                 throw new MappingException(format("Could not map %s with ID: %s in database '%s'", entityName, id,
-                    datastore.getDB().getName()), e);
+                    ""), e);
             }
 
             if (updated.containsField("_id") && getMappedClass(entity).getIdField() != null) {
@@ -405,7 +407,8 @@ public class Mapper {
      * @morphia.internal
      * @deprecated no replacement is planned
      */
-    public Map<Class, Object> getInstanceCache() {
+    @Deprecated
+	public Map<Class, Object> getInstanceCache() {
         return instanceCache;
     }
 

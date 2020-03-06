@@ -1,13 +1,11 @@
 package dev.morphia;
 
-import com.mongodb.DBDecoderFactory;
 import com.mongodb.DBObject;
 import com.mongodb.DBRef;
 import com.mongodb.ReadPreference;
 import com.mongodb.WriteConcern;
-import com.mongodb.WriteResult;
-import com.mongodb.client.MongoCollection;
-import dev.morphia.aggregation.AggregationPipeline;
+import com.mongodb.reactivestreams.client.MongoCollection;
+
 import dev.morphia.query.Query;
 import dev.morphia.query.UpdateOperations;
 
@@ -18,32 +16,6 @@ import dev.morphia.query.UpdateOperations;
  * @author ScottHernandez
  */
 public interface AdvancedDatastore extends Datastore {
-
-    /**
-     * Returns the DBDecoderFactory used by this Datastore
-     *
-     * @return the decoder factory
-     * @see DBDecoderFactory
-     * @morphia.internal
-     */
-    DBDecoderFactory getDecoderFact();
-
-    /**
-     * Sets the DBDecoderFactory to use in this Datastore
-     *
-     * @param fact the DBDecoderFactory to use
-     * @morphia.internal
-     */
-    void setDecoderFact(DBDecoderFactory fact);
-
-    /**
-     * Returns an {@link AggregationPipeline} bound to the given collection and class.
-     *
-     * @param collection the collection to query
-     * @param clazz      The class to create aggregation against
-     * @return the aggregation pipeline
-     */
-    AggregationPipeline createAggregation(String collection, Class<?> clazz);
 
     /**
      * @param <T>        The type of the entity
@@ -103,65 +75,6 @@ public interface AdvancedDatastore extends Datastore {
      * @return the UpdateOperations instance
      */
     <T> UpdateOperations<T> createUpdateOperations(Class<T> type, DBObject ops);
-
-    /**
-     * Deletes an entity of the given type T, with the given {@code id}, from the collection with the name in the {@code kind} param.
-     * Validates the {@code id}, checking it's the correct type for an ID for entities of type {@code T}. The entity type {@code clazz} is
-     * used only for validation, not for filtering, therefore if you have entities of different types in the same collection ({@code
-     * kind}),
-     * this method will delete any entity with the given {@code id}, regardless of its type.
-     *
-     * @param kind  the collection name
-     * @param clazz the Class of the entity to delete
-     * @param id    the value of the ID
-     * @param <T>   the entity type
-     * @param <V>   is the type of the ID, for example ObjectId
-     * @return the result of this delete operation.
-     * @morphia.inline
-     * @deprecated use {@link #find(String, Class)} and {@link #delete(Query)} instead
-     */
-    @Deprecated
-    <T, V> WriteResult delete(String kind, Class<T> clazz, V id);
-
-    /**
-     * Deletes an entity of the given type T, with the given {@code id}, from the collection with the name in the {@code kind} param.
-     * Validates the {@code id}, checking it's the correct type for an ID for entities of type {@code T}. The entity type {@code clazz} is
-     * used only for validation, not for filtering, therefore if you have entities of different types in the same collection ({@code
-     * kind}),
-     * this method will delete any entity with the given {@code id}, regardless of its type.
-     *
-     * @param kind    the collection name
-     * @param clazz   the Class of the entity to delete
-     * @param id      the value of the ID
-     * @param options the options to use when deleting
-     * @param <T>     the entity type
-     * @param <V>     is the type of the ID, for example ObjectId
-     * @return the result of this delete operation.
-     * @morphia.inline
-     * @since 1.3
-     * @deprecated use {@link #find(String, Class)} and {@link #delete(Query, DeleteOptions)} instead
-     */
-    @Deprecated
-    <T, V> WriteResult delete(String kind, Class<T> clazz, V id, DeleteOptions options);
-
-    /**
-     * Deletes an entity of the given type T, with the given {@code id}, from the collection with the name in the {@code kind} param.
-     * Validates the {@code id}, checking it's the correct type for an ID for entities of type {@code T}. The entity type {@code clazz} is
-     * used only for validation, not for filtering, therefore if you have entities of different types in the same collection ({@code
-     * kind}),
-     * this method will delete any entity with the given {@code id}, regardless of its type.
-     *
-     * @param kind  the collection name
-     * @param clazz the Class of the entity to delete
-     * @param id    the value of the ID
-     * @param wc    the WriteConcern for this operation
-     * @param <T>   the entity type
-     * @param <V>   is the type of the ID, for example ObjectId
-     * @return the result of this delete operation.
-     * @deprecated use {@link #find(String, Class)} and {@link #delete(Query, DeleteOptions)} instead
-     */
-    @Deprecated
-    <T, V> WriteResult delete(String kind, Class<T> clazz, V id, WriteConcern wc);
 
     /**
      * Ensures (creating if necessary) the index including the field(s) + directions on the given collection name; eg fields = "field1,

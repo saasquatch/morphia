@@ -1,13 +1,6 @@
 package dev.morphia.mapping.experimental;
 
-import com.mongodb.DBObject;
-import com.mongodb.DBRef;
-import com.mongodb.client.MongoCursor;
-import dev.morphia.AdvancedDatastore;
-import dev.morphia.Datastore;
-import dev.morphia.mapping.MappedClass;
-import dev.morphia.mapping.MappedField;
-import dev.morphia.mapping.Mapper;
+import static java.util.Arrays.asList;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,7 +10,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import static java.util.Arrays.asList;
+import com.mongodb.DBObject;
+import com.mongodb.DBRef;
+
+import dev.morphia.Datastore;
+import dev.morphia.mapping.MappedClass;
+import dev.morphia.mapping.MappedField;
+import dev.morphia.mapping.Mapper;
 
 /**
  * @param <C>
@@ -70,7 +69,8 @@ public abstract class CollectionReference<C extends Collection> extends MorphiaR
     /**
      * {@inheritDoc}
      */
-    public final boolean isResolved() {
+    @Override
+	public final boolean isResolved() {
         return getValues() != null;
     }
 
@@ -79,7 +79,8 @@ public abstract class CollectionReference<C extends Collection> extends MorphiaR
     /**
      * {@inheritDoc}
      */
-    public abstract C get();
+    @Override
+	public abstract C get();
 
     final List<Object> getIds() {
         return ids;
@@ -95,28 +96,6 @@ public abstract class CollectionReference<C extends Collection> extends MorphiaR
     }
 
     void query(final String collection, final List<Object> collectionIds, final List<Object> values) {
-
-        final MongoCursor<?> cursor = ((AdvancedDatastore) getDatastore()).find(collection, Object.class)
-                                                                          .disableValidation()
-                                                                          .filter("_id in ", collectionIds)
-                                                                          .find();
-        try {
-            final Map<Object, Object> idMap = new HashMap<Object, Object>();
-            while (cursor.hasNext()) {
-                final Object entity = cursor.next();
-                idMap.put(getDatastore().getMapper().getId(entity), entity);
-            }
-
-            for (int i = 0; i < ids.size(); i++) {
-                final Object id = ids.get(i);
-                final Object value = idMap.get(id instanceof DBRef ? ((DBRef) id).getId() : id);
-                if (value != null) {
-                    values.set(i, value);
-                }
-            }
-        } finally {
-            cursor.close();
-        }
     }
 
     @Override

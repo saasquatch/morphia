@@ -1,16 +1,15 @@
 package dev.morphia.dao;
 
 
-import com.mongodb.DBCollection;
+import java.util.List;
+
 import com.mongodb.WriteConcern;
-import com.mongodb.WriteResult;
+
 import dev.morphia.Datastore;
 import dev.morphia.Key;
 import dev.morphia.query.Query;
 import dev.morphia.query.UpdateOperations;
 import dev.morphia.query.UpdateResults;
-
-import java.util.List;
 
 
 /**
@@ -53,44 +52,6 @@ public interface DAO<T, K> {
      * @return a new empty UpdateOperations instance
      */
     UpdateOperations<T> createUpdateOperations();
-
-    /**
-     * Deletes an entity
-     *
-     * @param entity the entity to delete
-     * @return the results of the deletion
-     * @see WriteResult
-     */
-    WriteResult delete(T entity);
-
-    /**
-     * Deletes an entity
-     *
-     * @param entity the entity to delete
-     * @param wc     the WriteConcern to use when deleting
-     * @return the results of the deletion
-     * @see WriteConcern
-     * @see WriteResult
-     */
-    WriteResult delete(T entity, WriteConcern wc);
-
-    /**
-     * Delete the entity by id value
-     *
-     * @param id the ID of the document to delete
-     * @return the results of the deletion
-     * @see WriteResult
-     */
-    WriteResult deleteById(K id);
-
-    /**
-     * Delete the entity matching a query
-     *
-     * @param query the query to use when finding the documents to delete
-     * @return the results of the deletion
-     * @see WriteResult
-     */
-    WriteResult deleteByQuery(Query<T> query);
 
     /**
      * ensures indexed for this DAO
@@ -202,14 +163,6 @@ public interface DAO<T, K> {
      * @return the entity with the given ID or null if no document in the database has the given ID
      */
     T get(K id);
-
-    /**
-     * @return the collection mapped by the entity class
-     * @see #getEntityClass()
-     * @deprecated the return type for this method will change in 2.0
-     */
-    @Deprecated
-    DBCollection getCollection();
 
     /**
      * @return the underlying datastore

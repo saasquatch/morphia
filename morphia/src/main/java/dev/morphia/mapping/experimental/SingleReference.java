@@ -2,6 +2,7 @@ package dev.morphia.mapping.experimental;
 
 import com.mongodb.DBObject;
 import com.mongodb.DBRef;
+
 import dev.morphia.AdvancedDatastore;
 import dev.morphia.Datastore;
 import dev.morphia.mapping.MappedClass;
@@ -33,12 +34,10 @@ public class SingleReference<T> extends MorphiaReference<T> {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
+    @Override
+	@SuppressWarnings("unchecked")
     public T get() {
-        if (value == null && id != null) {
-            value = (T) buildQuery().find().tryNext();
-        }
-        return value;
+    	return null;
     }
 
     Query<?> buildQuery() {
@@ -63,7 +62,8 @@ public class SingleReference<T> extends MorphiaReference<T> {
     /**
      * {@inheritDoc}
      */
-    public boolean isResolved() {
+    @Override
+	public boolean isResolved() {
         return value != null;
     }
 

@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mongodb.DBObject;
-import com.mongodb.MongoClient;
+import com.mongodb.reactivestreams.client.MongoClient;
 
 import dev.morphia.annotations.Embedded;
 import dev.morphia.annotations.Entity;

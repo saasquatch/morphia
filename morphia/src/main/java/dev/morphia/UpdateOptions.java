@@ -18,7 +18,6 @@ package dev.morphia;
 
 import com.mongodb.WriteConcern;
 import com.mongodb.client.model.Collation;
-import com.mongodb.client.model.DBCollectionUpdateOptions;
 
 /**
  * The options to apply when updating documents in the DBCollection
@@ -30,11 +29,6 @@ import com.mongodb.client.model.DBCollectionUpdateOptions;
  * @since 1.3
  */
 public class UpdateOptions {
-    private DBCollectionUpdateOptions options = new DBCollectionUpdateOptions();
-
-    DBCollectionUpdateOptions getOptions() {
-        return options;
-    }
 
     /**
      * Creates a new options instance.
@@ -62,7 +56,7 @@ public class UpdateOptions {
      * @return true if a new document should be inserted if there are no matches to the query filter
      */
     public boolean isUpsert() {
-        return options.isUpsert();
+    	return false;
     }
 
     /**
@@ -72,7 +66,6 @@ public class UpdateOptions {
      * @return this
      */
     public UpdateOptions upsert(final boolean isUpsert) {
-        options.upsert(isUpsert);
         return this;
     }
 
@@ -83,7 +76,7 @@ public class UpdateOptions {
      * @mongodb.server.release 3.2
      */
     public Boolean getBypassDocumentValidation() {
-        return options.getBypassDocumentValidation();
+    	return false;
     }
 
     /**
@@ -94,7 +87,6 @@ public class UpdateOptions {
      * @mongodb.server.release 3.2
      */
     public UpdateOptions bypassDocumentValidation(final Boolean bypassDocumentValidation) {
-        options.bypassDocumentValidation(bypassDocumentValidation);
         return this;
     }
 
@@ -105,7 +97,6 @@ public class UpdateOptions {
      * @return this
      */
     public UpdateOptions multi(final boolean multi) {
-        options.multi(multi);
         return this;
     }
 
@@ -115,7 +106,7 @@ public class UpdateOptions {
      * @return whether all documents matching the query filter will be removed
      */
     public boolean isMulti() {
-        return options.isMulti();
+    	return false;
     }
 
     /**
@@ -125,7 +116,7 @@ public class UpdateOptions {
      * @mongodb.server.release 3.4
      */
     public Collation getCollation() {
-        return options.getCollation();
+    	return null;
     }
 
     /**
@@ -136,7 +127,6 @@ public class UpdateOptions {
      * @mongodb.server.release 3.4
      */
     public UpdateOptions collation(final Collation collation) {
-        options.collation(collation);
         return this;
     }
 
@@ -146,7 +136,7 @@ public class UpdateOptions {
      * @return the write concern, or null if the default will be used.
      */
     public WriteConcern getWriteConcern() {
-        return options.getWriteConcern();
+    	return null;
     }
 
     /**
@@ -156,7 +146,6 @@ public class UpdateOptions {
      * @return this
      */
     public UpdateOptions writeConcern(final WriteConcern writeConcern) {
-        options.writeConcern(writeConcern);
         return this;
     }
 }

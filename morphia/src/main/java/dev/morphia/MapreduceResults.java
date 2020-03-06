@@ -1,18 +1,19 @@
 package dev.morphia;
 
 
-import com.mongodb.MapReduceCommand.OutputType;
-import com.mongodb.MapReduceOutput;
+import java.util.Collections;
+import java.util.Iterator;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.mongodb.DBObject;
+
 import dev.morphia.annotations.NotSaved;
 import dev.morphia.annotations.Transient;
 import dev.morphia.mapping.Mapper;
-import dev.morphia.mapping.MappingException;
 import dev.morphia.mapping.cache.EntityCache;
 import dev.morphia.query.Query;
-
-import java.util.Iterator;
 
 /**
  * Stores the results of a map reduce operation
@@ -21,14 +22,11 @@ import java.util.Iterator;
  * @deprecated This feature will not be supported in 2.0
  */
 @NotSaved
-@SuppressWarnings("deprecation")
 @Deprecated
 public class MapreduceResults<T> implements Iterable<T> {
     private static final Logger LOG = LoggerFactory.getLogger(MapreduceResults.class);
     private final Stats counts = new Stats();
-    private MapReduceOutput output;
     private String outputCollectionName;
-    private OutputType outputType;
     private Query<T> query;
 
     @Transient
@@ -44,18 +42,13 @@ public class MapreduceResults<T> implements Iterable<T> {
      *
      * @param output the output of the operation
      */
-    public MapreduceResults(final MapReduceOutput output) {
-        this.output = output;
-        outputCollectionName = output.getCollectionName();
+    public MapreduceResults() {
     }
 
     /**
      * @return the query to use against these results
      */
     public Query<T> createQuery() {
-        if (outputType == OutputType.INLINE) {
-            throw new MappingException("No collection available for inline mapreduce jobs");
-        }
         return query.cloneQuery();
     }
 
@@ -70,7 +63,7 @@ public class MapreduceResults<T> implements Iterable<T> {
      * @return the duration of the operation
      */
     public long getElapsedMillis() {
-        return output.getDuration();
+    	return 0;
     }
 
     /**
@@ -91,7 +84,7 @@ public class MapreduceResults<T> implements Iterable<T> {
      * @see MapreduceType
      */
     public Iterator<T> getInlineResults() {
-        return new dev.morphia.query.MorphiaIterator<T, T>(datastore, output.results().iterator(), mapper, clazz, null, cache);
+        return new dev.morphia.query.MorphiaIterator<T, T>(datastore, Collections.<DBObject>emptyIterator(), mapper, clazz, null, cache);
     }
 
     /**
@@ -100,39 +93,11 @@ public class MapreduceResults<T> implements Iterable<T> {
      */
     @Deprecated
     public MapreduceType getType() {
-        if (outputType == OutputType.REDUCE) {
-            return MapreduceType.REDUCE;
-        } else if (outputType == OutputType.MERGE) {
-            return MapreduceType.MERGE;
-        } else if (outputType == OutputType.INLINE) {
-            return MapreduceType.INLINE;
-        } else {
-            return MapreduceType.REPLACE;
-        }
-
+    	return null;
     }
 
     @Deprecated
     void setType(final MapreduceType type) {
-        this.outputType = type.toOutputType();
-    }
-
-    /**
-     * @return the type of the operation
-     * @since 1.3
-     */
-    public OutputType getOutputType() {
-        return outputType;
-    }
-
-    /**
-     * Sets the output type for this mapreduce job
-     *
-     * @param outputType the output type
-     * @since 1.3
-     */
-    public void setOutputType(final OutputType outputType) {
-        this.outputType = outputType;
     }
 
     /**
@@ -151,7 +116,7 @@ public class MapreduceResults<T> implements Iterable<T> {
      */
     @Override
     public Iterator<T> iterator() {
-        return outputType == OutputType.INLINE ? getInlineResults() : createQuery().fetch().iterator();
+    	return null;
     }
 
     /**
@@ -178,21 +143,21 @@ public class MapreduceResults<T> implements Iterable<T> {
          * @return the emit count of the operation
          */
         public int getEmitCount() {
-            return output.getEmitCount();
+        	return 0;
         }
 
         /**
          * @return the input count of the operation
          */
         public int getInputCount() {
-            return output.getInputCount();
+        	return 0;
         }
 
         /**
          * @return the output count of the operation
          */
         public int getOutputCount() {
-            return output.getOutputCount();
+        	return 0;
         }
     }
 

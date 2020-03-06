@@ -1,9 +1,17 @@
 package dev.morphia.mapping;
 
 
-import com.mongodb.DBCollection;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mongodb.DBObject;
 import com.mongodb.DBRef;
+
 import dev.morphia.Datastore;
 import dev.morphia.Key;
 import dev.morphia.annotations.Reference;
@@ -21,13 +29,6 @@ import dev.morphia.utils.IterHelper;
 import dev.morphia.utils.IterHelper.IterCallback;
 import dev.morphia.utils.IterHelper.MapIterCallback;
 import dev.morphia.utils.ReflectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @morphia.internal
@@ -312,48 +313,7 @@ class ReferenceMapper implements CustomMapper {
 
     Object resolveObject(final Datastore datastore, final Mapper mapper, final EntityCache cache, final MappedField mf,
                          final boolean idOnly, final Object ref) {
-        if (ref == null) {
-            return null;
-        }
-
-        final DBRef dbRef = idOnly ? null : (DBRef) ref;
-        final Key key = mapper.createKey(mf.isSingleValue() ? mf.getType() : mf.getSubClass(),
-            idOnly ? ref : dbRef.getId());
-
-        final Object cached = cache.getEntity(key);
-        if (cached != null) {
-            return cached;
-        }
-
-        final DBObject refDbObject;
-        DBCollection collection;
-        Object id;
-
-        if (idOnly) {
-            collection = datastore.getCollection(key.getType());
-            id = ref;
-        } else {
-            collection = datastore.getDB().getCollection(dbRef.getCollectionName());
-            id = dbRef.getId();
-        }
-        if (id instanceof DBObject) {
-            ((DBObject) id).removeField(mapper.getOptions().getDiscriminatorField());
-        }
-        refDbObject = collection.findOne(id);
-
-        if (refDbObject != null) {
-            Object refObj = mapper.getOptions().getObjectFactory().createInstance(mapper, mf, refDbObject);
-            refObj = mapper.fromDb(datastore, refDbObject, refObj, cache);
-            cache.putEntity(key, refObj);
-            return refObj;
-        }
-
-        final boolean ignoreMissing = mf.getAnnotation(Reference.class) != null && mf.getAnnotation(Reference.class).ignoreMissing();
-        if (!ignoreMissing) {
-            throw new MappingException(String.format("The reference (%s) could not be fetched for %s", ref, mf.getFullName()));
-        } else {
-            return null;
-        }
+    	return null;
     }
 
     void readMorphiaReferenceValues(final Mapper mapper, final Datastore datastore, final MappedField mappedField,

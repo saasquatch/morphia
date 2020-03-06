@@ -16,6 +16,10 @@
 
 package dev.morphia.query;
 
+import static com.mongodb.assertions.Assertions.notNull;
+
+import java.util.concurrent.TimeUnit;
+
 /*
  * Copyright 2016 MongoDB, Inc.
  *
@@ -35,11 +39,6 @@ package dev.morphia.query;
 import com.mongodb.ReadConcern;
 import com.mongodb.ReadPreference;
 import com.mongodb.client.model.Collation;
-import com.mongodb.client.model.DBCollectionCountOptions;
-
-import java.util.concurrent.TimeUnit;
-
-import static com.mongodb.assertions.Assertions.notNull;
 
 /**
  * The options for a count operation.
@@ -48,7 +47,6 @@ import static com.mongodb.assertions.Assertions.notNull;
  * @since 1.3
  */
 public class CountOptions {
-    private DBCollectionCountOptions options = new DBCollectionCountOptions();
 
     /**
      * Sets the collation
@@ -58,7 +56,6 @@ public class CountOptions {
      * @mongodb.server.release 3.4
      */
     public CountOptions collation(final Collation collation) {
-        options.collation(collation);
         return this;
     }
 
@@ -69,7 +66,7 @@ public class CountOptions {
      * @mongodb.server.release 3.4
      */
     public Collation getCollation() {
-        return options.getCollation();
+    	return null;
     }
 
     /**
@@ -78,7 +75,7 @@ public class CountOptions {
      * @return the hint, which should describe an existing
      */
     public String getHint() {
-        return options.getHintString();
+    	return null;
     }
 
     /**
@@ -88,7 +85,7 @@ public class CountOptions {
      * @mongodb.driver.manual reference/method/cursor.limit/#cursor.limit Limit
      */
     public int getLimit() {
-        return options.getLimit();
+    	return 0;
     }
 
     /**
@@ -99,7 +96,7 @@ public class CountOptions {
      */
     public long getMaxTime(final TimeUnit timeUnit) {
         notNull("timeUnit", timeUnit);
-        return options.getMaxTime(timeUnit);
+        return 0;
     }
 
     /**
@@ -109,7 +106,7 @@ public class CountOptions {
      * @mongodb.server.release 3.2
      */
     public ReadConcern getReadConcern() {
-        return options.getReadConcern();
+    	return null;
     }
 
     /**
@@ -118,7 +115,7 @@ public class CountOptions {
      * @return the readPreference
      */
     public ReadPreference getReadPreference() {
-        return options.getReadPreference();
+    	return null;
     }
 
     /**
@@ -128,7 +125,7 @@ public class CountOptions {
      * @mongodb.driver.manual reference/method/cursor.skip/#cursor.skip Skip
      */
     public int getSkip() {
-        return options.getSkip();
+    	return 0;
     }
 
     /**
@@ -138,7 +135,6 @@ public class CountOptions {
      * @return this
      */
     public CountOptions hint(final String hint) {
-        options.hintString(hint);
         return this;
     }
 
@@ -150,7 +146,6 @@ public class CountOptions {
      * @mongodb.driver.manual reference/method/cursor.limit/#cursor.limit Limit
      */
     public CountOptions limit(final int limit) {
-        options.limit(limit);
         return this;
     }
 
@@ -163,7 +158,6 @@ public class CountOptions {
      */
     public CountOptions maxTime(final long maxTime, final TimeUnit timeUnit) {
         notNull("timeUnit", timeUnit);
-        options.maxTime(maxTime, timeUnit);
         return this;
     }
 
@@ -175,7 +169,6 @@ public class CountOptions {
      * @mongodb.server.release 3.2
      */
     public CountOptions readConcern(final ReadConcern readConcern) {
-        options.readConcern(readConcern);
         return this;
     }
 
@@ -186,7 +179,6 @@ public class CountOptions {
      * @return this
      */
     public CountOptions readPreference(final ReadPreference readPreference) {
-        options.readPreference(readPreference);
         return this;
     }
 
@@ -198,12 +190,8 @@ public class CountOptions {
      * @mongodb.driver.manual reference/method/cursor.skip/#cursor.skip Skip
      */
     public CountOptions skip(final int skip) {
-        options.skip(skip);
         return this;
     }
 
-    DBCollectionCountOptions getOptions() {
-        return options;
-    }
 }
 
